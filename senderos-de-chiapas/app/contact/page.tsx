@@ -41,7 +41,7 @@ export default function Contact() {
                   </div>
                   <div className="info">
                     <span className="title">Email</span>
-                    <p><a href="mailto:info@senderosdechiapas.com.mx">info@senderosdechiapas.com.mx</a></p>
+                    <p><a href="mailto:reservas@senderosdechiapas.com.mx">reservas@senderosdechiapas.com.mx</a></p>
                   </div>
                 </div>
                 <div className="contact-info-item mb-30">

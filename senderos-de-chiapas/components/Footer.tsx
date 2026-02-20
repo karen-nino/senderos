@@ -33,7 +33,7 @@ export default function Footer() {
                   </div>
                   <div className="info">
                     <span className="title">Email</span>
-                    <p><a href="mailto:support@gmail.com">info@senderosdechiapas.com.mx</a></p>
+                    <p><a href="mailto:reservas@senderosdechiapas.com.mx">reservas@senderosdechiapas.com.mx</a></p>
                   </div>
                 </div>
               </div>

@@ -3,7 +3,7 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const DESTINATION_EMAIL = "karen.nino23@gmail.com";
+const DESTINATION_EMAIL = "reservas@senderosdechiapas.com.mx";
 
 const LIMITS = {
   name: { max: 100, min: 2 },
