@@ -1,9 +1,6 @@
 # OS
 .DS_Store
-.AppleDouble
-.LSOverride
 Thumbs.db
-Desktop.ini
 
 # Editor / IDE
 .idea
@@ -17,15 +14,17 @@ Desktop.ini
 .env.*
 !.env.example
 
-# Dependencias (por si se instalan en raíz)
+# Dependencias
 node_modules
 
-# Logs y temporales
+# Logs
 *.log
+
+# Temporales
 .tmp
 .cache
 
-# Builds y artefactos (por si se generan en raíz)
+# Builds (global)
 dist
 build
 .next
@@ -33,19 +32,19 @@ out
 coverage
 
 ############################
-# NEXT.JS (subcarpeta)
+# NEXT.JS
 ############################
-senderos-de-chiapas/node_modules
 senderos-de-chiapas/.next
 senderos-de-chiapas/out
 senderos-de-chiapas/build
 senderos-de-chiapas/coverage
 senderos-de-chiapas/*.tsbuildinfo
+senderos-de-chiapas/.turbo
+senderos-de-chiapas/.vercel
 
 ############################
-# STRAPI (backend)
+# STRAPI
 ############################
-backend/node_modules
 backend/dist
 backend/build
 backend/.cache
