@@ -25,12 +25,14 @@ export default ({ env }) => {
     postgres: {
       connection: {
         connectionString: env('DATABASE_URL'),
-        ssl: false,
+        ssl: {
+          rejectUnauthorized: false,
+        },
         schema: env('DATABASE_SCHEMA', 'public'),
       },
       pool: {
         min: 0,
-        max: 2, // 👈 CRÍTICO para Fly dev
+        max: 5,
       },
     },
     sqlite: {
