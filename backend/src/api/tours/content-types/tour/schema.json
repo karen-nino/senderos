@@ -1,0 +1,28 @@
+{
+  "kind": "singleType",
+  "collectionName": "tours",
+  "info": {
+    "singularName": "tour",
+    "pluralName": "tours",
+    "displayName": "Tours"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Banner": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "Tours": {
+      "type": "component",
+      "component": "destinations.destinations",
+      "repeatable": true
+    }
+  }
+}

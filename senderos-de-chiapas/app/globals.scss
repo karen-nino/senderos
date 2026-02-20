@@ -1,0 +1,2377 @@
+/* Importar el SCSS principal */
+@import "../styles/scss/main";
+
+/* Global styles adicionales */
+.preloader.fade-out {
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+}
+
+/* Asegurar que las fuentes del template se apliquen correctamente */
+html {
+  font-size: 100%;
+}
+
+/* Estilos base del body - usar especificidad en lugar de !important donde sea posible */
+body {
+  font-family: "Prompt", sans-serif;
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 29.6px;
+  color: #484848; /* $text-color del template */
+  overflow-x: hidden;
+}
+
+/* Colores de texto - usar especificidad */
+p {
+  color: #484848; /* $text-color */
+  font-weight: 300; /* Hereda del body */
+}
+
+/* Sub-title con color primary por defecto */
+.sub-title {
+  color: #63ab45; /* $primary-color */
+  background: rgba(99, 171, 69, 0.1);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 19px;
+}
+
+/* Sub-title en black-bg tiene color secondary */
+.black-bg .sub-title {
+  color: #f7921e; /* $secondary-color */
+  background-color: rgba(247, 146, 30, 0.1);
+}
+
+/* Headings - usar especificidad */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Prompt", sans-serif;
+  margin: 0;
+  color: #1c231f; /* $title-color del template */
+}
+
+h1 {
+  font-weight: 700;
+  line-height: 1.12;
+  color: #1c231f; /* $title-color */
+}
+
+h2 {
+  font-weight: 700;
+  line-height: 1.2;
+  color: #1c231f; /* $title-color */
+}
+
+h3 {
+  font-weight: 600;
+  line-height: 1.3;
+  color: #1c231f; /* $title-color */
+}
+
+h4 {
+  font-weight: 600;
+  line-height: 1.37;
+  color: #1c231f; /* $title-color */
+}
+
+h5 {
+  font-weight: 600;
+  line-height: 1.3;
+  color: #1c231f; /* $title-color */
+}
+
+h6 {
+  font-weight: 600;
+  line-height: 1.2;
+  color: #1c231f; /* $title-color */
+}
+
+/* Títulos de grupos en la galería - destacados y responsive */
+.gallery-area .gallery-group-title {
+  font-size: clamp(22px, 4.5vw, 30px);
+  font-weight: 700;
+  color: #63ab45;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+}
+@media (max-width: 767px) {
+  .gallery-area .gallery-group-title {
+    font-size: clamp(22px, 6vw, 26px);
+    letter-spacing: 0.1em;
+  }
+}
+
+/* Grupos de galería - tarjetas con sombra suave */
+.gallery-area .gallery-group {
+  padding: 45px 30px 50px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+/* Text decoration y colores - usar especificidad */
+/* Por defecto, todos los elementos de texto no tienen decoración */
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+span,
+div,
+li,
+td,
+th {
+  text-decoration: none;
+}
+
+/* Enlaces por defecto sin decoración */
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s ease;
+}
+
+a:hover,
+a:focus {
+  text-decoration: none;
+}
+
+/* Lista del widget "Más Experiencias": sin padding izquierdo */
+.recent-place-widget .recent-place-list {
+  padding-left: 0;
+}
+
+/* Imágenes del widget "Más Experiencias": tamaño fijo 100×74 */
+.recent-place-widget .recent-place-list .place-thumbnail-content img {
+  width: 100px;
+  height: 74px;
+  object-fit: cover;
+}
+
+/* Título del widget "Otros lugares para visitar" (tour-details): verde, naranja en hover */
+.recent-place-widget .recent-place-title-link {
+  color: #63ab45; /* $primary-color - verde */
+  transition: color 0.3s ease;
+}
+.recent-place-widget .recent-place-title-link:hover {
+  color: #f7921e; /* $secondary-color - naranja */
+}
+
+/* Iconos de duración y precio en el widget: verde */
+.recent-place-widget .recent-place-meta i {
+  color: #63ab45; /* $primary-color */
+}
+
+a:focus,
+input:focus,
+textarea:focus,
+button:focus {
+  text-decoration: none;
+  outline: none;
+}
+
+/* Enlaces de Next.js Link también heredan color */
+a[href] {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Excepciones: sub-menu no debe heredar color */
+.main-menu .sub-menu li a[href] {
+  color: #1c231f; /* title-color - %heading */
+}
+
+/* .text-white funcione correctamente */
+.text-white {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: #fff;
+  }
+
+  p {
+    color: #fff;
+  }
+}
+
+/* Texto blanco en secciones con fondo negro */
+.black-bg {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: #fff;
+  }
+
+  p {
+    color: #fff;
+  }
+
+  .hero-content {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      color: #fff;
+    }
+
+    p {
+      color: #fff;
+    }
+  }
+}
+
+/* Estilos de botones - usar especificidad */
+.main-btn {
+  font-family: "Prompt", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  text-transform: capitalize;
+  line-height: 20px;
+}
+
+button,
+.main-btn,
+.btn-link {
+  font-weight: 600;
+}
+
+/* Primary button */
+.main-btn.primary-btn {
+  background-color: #63ab45; /* primary-color */
+  color: #fff; /* white-color */
+}
+
+.main-btn.primary-btn:hover {
+  background-color: #f7921e; /* secondary-color */
+  color: #fff;
+}
+
+/* Botón en estado "enviando" (contacto) */
+.main-btn.primary-btn.is-sending,
+.main-btn.primary-btn.is-sending:hover {
+  cursor: wait;
+  opacity: 0.9;
+  background-color: #63ab45;
+}
+
+/* Icono de carga visible sobre el círculo blanco del botón */
+.main-btn.primary-btn.is-sending i {
+  color: #1c231f; /* mismo que el avión: visible sobre fondo blanco del círculo */
+}
+
+/* Secondary button */
+.main-btn.secondary-btn {
+  background-color: #f7921e; /* secondary-color */
+  color: #fff; /* white-color */
+}
+
+.main-btn.secondary-btn:hover {
+  background-color: #63ab45; /* primary-color */
+  color: #fff;
+}
+
+/* Filled button */
+.main-btn.filled-btn {
+  color: #1c231f; /* title-color - %heading */
+  background-color: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.main-btn.filled-btn i {
+  background-color: #63ab45; /* primary-bg */
+  color: #fff; /* white-color */
+}
+
+.main-btn.filled-btn:hover {
+  color: #fff; /* white-color */
+  background-color: #63ab45; /* primary-bg */
+}
+
+.main-btn.filled-btn:hover i {
+  background-color: #fff; /* white-bg */
+  color: #1c231f; /* title-color - %heading */
+}
+
+.main-btn.filled-btn.filled-white {
+  border-color: #fff;
+  color: #fff;
+}
+
+.main-btn.filled-btn.filled-white:hover {
+  background-color: #63ab45; /* primary-bg */
+  border-color: transparent;
+}
+
+/* Icono dentro de main-btn */
+.main-btn i {
+  color: #1c231f; /* title-color - %heading */
+  font-size: 18px;
+}
+
+.main-btn.primary-btn i,
+.main-btn.secondary-btn i {
+  color: #1c231f; /* title-color - %heading */
+}
+
+.main-btn.filled-btn:hover i {
+  color: #1c231f; /* title-color - %heading */
+}
+
+/* Estilos para el icono de WhatsApp SVG */
+.main-btn .whatsapp-icon {
+  flex: 0 0 auto;
+  margin-left: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  background-color: #fff; /* Círculo blanco de fondo */
+}
+
+.main-btn.primary-btn .whatsapp-icon,
+.main-btn.secondary-btn .whatsapp-icon {
+  background-color: #fff; /* Círculo blanco de fondo */
+}
+
+.main-btn .whatsapp-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* btn-link */
+.btn-link {
+  color: #1c231f; /* title-color - %heading */
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 22px;
+  text-decoration: underline;
+  text-transform: capitalize;
+}
+
+.btn-link:hover {
+  color: #63ab45; /* primary-color */
+  text-decoration: underline; /* Mantiene underline en hover */
+}
+
+/* breadcrumb-link active tiene underline */
+.breadcrumb-link li.active {
+  text-decoration: underline;
+}
+
+/* prev-price (precio anterior) tiene line-through */
+.prev-price {
+  text-decoration: line-through;
+}
+
+/* Colores de los botones slick-arrow (prev/next) */
+/* Hero Slider One y Two */
+.hero-slider-one .slick-arrow,
+.hero-slider-two .slick-arrow {
+  border: 1px solid transparent;
+  background-color: #f7921e; /* secondary-bg - naranja (mismo color que services-section) */
+  color: #fff; /* white-color */
+}
+
+.hero-slider-one .slick-arrow:hover,
+.hero-slider-one .slick-arrow:focus,
+.hero-slider-two .slick-arrow:hover,
+.hero-slider-two .slick-arrow:focus {
+  background-color: #b8b8b8; /* gris en hover (mismo color que services-section) */
+  color: #fff; /* white-color */
+  border-color: transparent;
+}
+
+.hero-slider-one .slick-arrow.prev,
+.hero-slider-two .slick-arrow.prev {
+  left: 70px;
+}
+
+@media only screen and (min-width: 1200px) and (max-width: 1600px) {
+  .hero-slider-one .slick-arrow.prev {
+    left: 30px;
+  }
+}
+
+.hero-slider-one .slick-arrow.next,
+.hero-slider-two .slick-arrow.next {
+  right: 70px;
+}
+
+@media only screen and (min-width: 1200px) and (max-width: 1600px) {
+  .hero-slider-one .slick-arrow.next {
+    right: 30px;
+  }
+}
+
+.hero-slider-two .slick-arrow.prev {
+  left: 40px;
+}
+
+.hero-slider-two .slick-arrow.next {
+  right: 40px;
+}
+
+/* Hero Slider Three (hero-wrapper-three) */
+.hero-wrapper-three .hero-arrows .slick-arrow {
+  border: 1px solid #fff;
+  color: #fff; /* white-color */
+  background-color: transparent;
+}
+
+.hero-wrapper-three .hero-arrows .slick-arrow:hover,
+.hero-wrapper-three .hero-arrows .slick-arrow:focus {
+  background-color: #fff; /* white-bg */
+  color: #63ab45; /* primary-color */
+}
+
+/* Hero Wrapper con bg-light - sobrescribir Bootstrap que usa !important */
+/* Usar especificidad máxima + !important solo para sobrescribir Bootstrap */
+.hero-section .hero-wrapper.bg-light,
+section.hero-section .hero-wrapper.bg-light,
+.hero-section > .hero-wrapper.bg-light {
+  background-color: $bg-light !important;
+}
+
+/* Textos oscuros en hero-wrapper con bg-light */
+.hero-wrapper.bg-light .hero-content h1,
+.hero-wrapper.bg-light .hero-content h2,
+.hero-wrapper.bg-light .hero-content h3,
+.hero-wrapper.bg-light .hero-content h4,
+.hero-wrapper.bg-light .hero-content h5,
+.hero-wrapper.bg-light .hero-content h6 {
+  color: #1c231f; /* title-color - texto oscuro */
+}
+
+.hero-wrapper.bg-light .hero-content p {
+  color: #484848; /* text-color - texto oscuro */
+}
+
+.hero-wrapper.bg-light .hero-content .sub-title {
+  color: #63ab45; /* primary-color */
+  background: rgba(99, 171, 69, 0.1);
+}
+
+/* Place Arrows (related-tour-place) */
+.related-tour-place .place-arrows .slick-arrow {
+  color: #b8b8b8;
+}
+
+.related-tour-place .place-arrows .slick-arrow:hover,
+.related-tour-place .place-arrows .slick-arrow:focus {
+  color: #1c231f; /* title-color - %heading */
+}
+
+.related-tour-place .place-arrows .slick-arrow.prev {
+  margin-right: 20px;
+}
+
+/* Services Slider Arrows (slider-active-3-item en services-section) */
+/* Estilos independientes con colores específicos */
+.services-seciton .slider-active-3-item {
+  position: relative;
+}
+
+.services-seciton .slider-active-3-item .slick-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  z-index: 1;
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  background-color: #f7921e; /* secondary-color - naranja por defecto */
+  color: #fff; /* white-color */
+  transition: all 0.3s ease;
+}
+
+.services-seciton .slider-active-3-item .slick-arrow.prev {
+  left: -100px;
+}
+
+@media only screen and (min-width: 1200px) and (max-width: 1600px) {
+  .services-seciton .slider-active-3-item .slick-arrow.prev {
+    left: -50px;
+  }
+}
+
+@media (max-width: 1199px) {
+  .services-seciton .slider-active-3-item .slick-arrow.prev {
+    left: -30px;
+  }
+}
+
+@media (max-width: 767px) {
+  .services-seciton .slider-active-3-item .slick-arrow.prev {
+    left: 10px; /* Posición positiva para estar dentro de la página */
+  }
+}
+
+.services-seciton .slider-active-3-item .slick-arrow.next {
+  right: -100px;
+}
+
+@media only screen and (min-width: 1200px) and (max-width: 1600px) {
+  .services-seciton .slider-active-3-item .slick-arrow.next {
+    right: -50px;
+  }
+}
+
+@media (max-width: 1199px) {
+  .services-seciton .slider-active-3-item .slick-arrow.next {
+    right: -30px;
+  }
+}
+
+@media (max-width: 767px) {
+  .services-seciton .slider-active-3-item .slick-arrow.next {
+    right: 10px; /* Posición positiva para estar dentro de la página */
+  }
+}
+
+.services-seciton .slider-active-3-item .slick-arrow:hover,
+.services-seciton .slider-active-3-item .slick-arrow:focus {
+  background-color: #b8b8b8; /* gris en hover */
+  color: #fff; /* white-color - mantiene texto blanco */
+  border-color: transparent;
+}
+
+/* slider-destinations-grid: misma composición que /tours, con slider */
+.services-seciton .slider-destinations-grid {
+  position: relative;
+  margin-left: -15px;
+  margin-right: -15px;
+}
+
+.services-seciton .slider-destinations-grid .slick-slide {
+  margin-left: 15px;
+  margin-right: 15px;
+}
+
+/* Cada item mantiene tamaño fijo (como places-section__item) para variableWidth */
+.services-seciton .slider-destinations-grid .places-section__item {
+  width: 412px;
+  min-width: 412px;
+  flex: 0 0 auto;
+}
+
+/* Imágenes 370x250 en home (igual que /tours) */
+.services-seciton .slider-destinations-grid .destination-img-wrapper {
+  width: 370px;
+  min-width: 370px;
+  max-width: 370px;
+  height: 250px;
+  min-height: 250px;
+  max-height: 250px;
+  overflow: hidden;
+
+  img {
+    width: 370px;
+    min-width: 370px;
+    max-width: 370px;
+    height: 250px;
+    min-height: 250px;
+    max-height: 250px;
+    object-fit: cover;
+  }
+}
+
+/* Flechas del slider en home (misma posición que slider-active-3-item) */
+.services-seciton .slider-destinations-grid .slick-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  z-index: 1;
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  background-color: #f7921e;
+  color: #fff;
+  transition: all 0.3s ease;
+}
+
+.services-seciton .slider-destinations-grid .slick-arrow.prev {
+  left: -100px;
+}
+
+@media only screen and (min-width: 1200px) and (max-width: 1600px) {
+  .services-seciton .slider-destinations-grid .slick-arrow.prev {
+    left: -50px;
+  }
+}
+
+@media (max-width: 1199px) {
+  .services-seciton .slider-destinations-grid .slick-arrow.prev {
+    left: -30px;
+  }
+}
+
+@media (max-width: 767px) {
+  .services-seciton .slider-destinations-grid .slick-arrow.prev {
+    left: 10px;
+  }
+}
+
+.services-seciton .slider-destinations-grid .slick-arrow.next {
+  right: -100px;
+}
+
+@media only screen and (min-width: 1200px) and (max-width: 1600px) {
+  .services-seciton .slider-destinations-grid .slick-arrow.next {
+    right: -50px;
+  }
+}
+
+@media (max-width: 1199px) {
+  .services-seciton .slider-destinations-grid .slick-arrow.next {
+    right: -30px;
+  }
+}
+
+@media (max-width: 767px) {
+  .services-seciton .slider-destinations-grid .slick-arrow.next {
+    right: 10px;
+  }
+}
+
+.services-seciton .slider-destinations-grid .slick-arrow:hover,
+.services-seciton .slider-destinations-grid .slick-arrow:focus {
+  background-color: #b8b8b8;
+  color: #fff;
+  border-color: transparent;
+}
+
+/* Responsive: items más pequeños en pantallas chicas para que quepan */
+@media (max-width: 480px) {
+  .services-seciton .slider-destinations-grid .places-section__item {
+    width: calc(100vw - 48px);
+    min-width: calc(100vw - 48px);
+  }
+
+  .services-seciton .slider-destinations-grid .destination-img-wrapper,
+  .services-seciton .slider-destinations-grid .destination-img-wrapper img {
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    height: 200px;
+    min-height: 200px;
+    max-height: 200px;
+  }
+}
+
+/* icon-btn */
+.icon-btn {
+  color: #1c231f; /* title-color - %heading */
+  background-color: #fff; /* white-bg */
+  font-size: 18px;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 10px 60px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.icon-btn:hover {
+  background-color: #f7921e; /* secondary-bg */
+  color: #fff; /* white-color */
+  text-decoration: none;
+}
+
+/* icon-btn dentro de single-service-item en hover */
+.single-service-item:hover .icon-btn {
+  background-color: #f7921e; /* secondary-bg */
+  color: #fff; /* white-color */
+}
+
+/* Botones genéricos */
+button {
+  font-family: "Prompt", sans-serif;
+  border: none;
+}
+
+/* Hovers del footer - usar especificidad */
+.footer-top .social-box ul.social-link li a:hover,
+.black-bg .footer-top .social-box ul.social-link li a:hover {
+  background-color: #63ab45; /* primary-color */
+  color: #fff;
+}
+
+/* Colores de iconos en el footer */
+.black-bg .footer-top .social-box ul.social-link li a {
+  color: #b1b6b3;
+}
+
+.footer-top .social-box ul.social-link li a {
+  color: #63ab45; /* primary-color */
+}
+
+@media (max-width: 767px) {
+  .footer-top .social-box ul.social-link {
+    padding-left: 0;
+  }
+}
+
+.black-bg .single-info-item .info p:hover a {
+  color: #63ab45; /* primary-color */
+}
+
+.service-nav-widget .footer-content .footer-widget-nav li a:hover {
+  color: #63ab45; /* primary-color */
+}
+
+.footer-copyright .footer-nav ul li a:hover {
+  color: #63ab45; /* primary-color */
+}
+
+/* Colores de Activity Nav Tab */
+.activity-nav-tab .nav-tabs li a {
+  color: #1c231f; /* title-color - %heading */
+  background-color: #f9f9f7; /* gray-color - %gray-bg */
+}
+
+.activity-nav-tab .nav-tabs li a.active {
+  color: #fff; /* white-color */
+  background-color: #f7921e; /* secondary-color - %secondary-bg */
+}
+
+.activity-content-box .icon i {
+  color: #63ab45; /* primary-color */
+}
+
+.activity-content-box ul.check-list li {
+  color: #fff; /* white-color */
+}
+
+/* Iconos de reloj del itinerario - verde primary del proyecto */
+.days-area .check-list li i {
+  color: #63ab45; /* primary-color */
+}
+
+/* Main menu ul - quitar padding-left */
+.main-menu ul {
+  padding-left: 0;
+}
+
+/* info-list - quitar padding-left */
+ul.info-list {
+  padding-left: 0;
+}
+
+/* Ruta como lista vertical dentro de info-list */
+ul.info-list ul.route-list {
+  list-style: disc;
+  padding-left: 1.25rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+}
+ul.info-list ul.route-list li {
+  margin-bottom: 0.25rem;
+}
+ul.info-list ul.route-list li:last-child {
+  margin-bottom: 0;
+}
+
+/* tour-title-wrapper - border-bottom solo en desktop */
+.tour-title-wrapper {
+  border-bottom: none;
+}
+@media (min-width: 1200px) {
+  .tour-title-wrapper {
+    border-bottom: 1px solid rgba(29, 35, 31, 0.1);
+  }
+}
+
+/* tour-widget-info - en mobile los info-box apilan verticalmente como los otros */
+@media (max-width: 767px) {
+  .tour-title-wrapper .tour-widget-info {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .tour-title-wrapper .tour-widget-info .info-box:not(:last-child) {
+    margin-right: 0;
+    margin-bottom: 15px;
+  }
+}
+
+/* Colores del Main Menu */
+/* Menú principal por defecto - verde (usar especificidad alta para sobrescribir template) */
+.header-navigation .primary-menu .main-menu ul > li > a,
+.header-navigation .main-menu ul > li > a,
+.main-menu ul > li > a {
+  color: #63ab45; /* primary-color - verde */
+  font-weight: 500;
+  font-size: 18px;
+}
+
+/* Menú verde cuando navigation-white está en sticky - mismo color que cuando no está sticky */
+.header-navigation.navigation-white.sticky .primary-menu .main-menu ul > li > a,
+.header-navigation.navigation-white.sticky .main-menu ul > li > a {
+  color: #63ab45; /* primary-color - verde, mismo que cuando no está sticky */
+}
+
+.header-navigation.navigation-white.sticky
+  .primary-menu
+  .main-menu
+  ul
+  > li:hover
+  > a,
+.header-navigation.navigation-white.sticky .main-menu ul > li:hover > a {
+  color: #1c231f; /* title-color - oscuro en hover, mismo que cuando no está sticky */
+}
+
+/* Sub-menu siempre oscuro (incluso en sticky) - usar especificidad alta */
+.header-navigation.navigation-white.sticky
+  .primary-menu
+  .main-menu
+  .sub-menu
+  li
+  a,
+.header-navigation.navigation-white.sticky
+  .primary-menu
+  .main-menu
+  .sub-menu
+  li
+  a[href],
+.header-navigation.navigation-white.sticky .main-menu .sub-menu li a,
+.header-navigation.navigation-white.sticky .main-menu .sub-menu li a[href] {
+  color: #1c231f; /* title-color - oscuro */
+}
+
+.header-navigation.navigation-white.sticky
+  .primary-menu
+  .main-menu
+  .sub-menu
+  li
+  a:hover,
+.header-navigation.navigation-white.sticky
+  .primary-menu
+  .main-menu
+  .sub-menu
+  li:hover
+  > a,
+.header-navigation.navigation-white.sticky .main-menu .sub-menu li a:hover,
+.header-navigation.navigation-white.sticky .main-menu .sub-menu li:hover > a {
+  color: #63ab45; /* primary-color en hover */
+}
+
+/* Colores del Main Menu en móvil - fondo bg-light */
+@media (max-width: 1199px) {
+  .header-navigation .nav-menu {
+    background-color: #fffbf2;
+  }
+}
+.header-navigation.breakpoint-on .nav-menu {
+  background-color: #fffbf2;
+}
+
+.header-navigation.breakpoint-on .nav-menu .main-menu ul li {
+  border-bottom: 1px solid #ececec;
+}
+
+.header-navigation.breakpoint-on .nav-menu .main-menu ul li > a {
+  color: #000; /* negro como en el template original */
+  font-weight: 500;
+  font-size: 16px;
+  padding: 15px 0;
+}
+
+.header-navigation.breakpoint-on .nav-menu .main-menu ul li > a:hover {
+  color: #63ab45; /* primary-color */
+}
+
+/* Sub-menu en móvil */
+.header-navigation.breakpoint-on .nav-menu .main-menu ul li .sub-menu {
+  background-color: transparent;
+}
+
+.header-navigation.breakpoint-on .nav-menu .main-menu ul li .sub-menu > li > a {
+  color: #1c231f; /* title-color */
+  font-weight: 500;
+  font-size: 16px;
+  padding: 10px 20px;
+}
+
+.header-navigation.breakpoint-on
+  .nav-menu
+  .main-menu
+  ul
+  li
+  .sub-menu
+  > li
+  > a:hover {
+  color: #63ab45; /* primary-color */
+}
+
+/* Botón dd-trigger (expandir submenu) en móvil */
+.header-navigation.breakpoint-on .nav-menu .main-menu ul li .dd-trigger {
+  background-color: #63ab45; /* primary-bg */
+  color: #fff; /* white-color */
+  border-radius: 3px;
+}
+
+/* Hover del menú principal - oscuro - usar especificidad alta */
+.header-navigation .primary-menu .main-menu ul > li:hover > a,
+.header-navigation .main-menu ul > li:hover > a,
+.main-menu ul > li:hover > a {
+  color: #1c231f; /* title-color - oscuro */
+}
+
+/* Menú en navigation-white (header transparente) */
+.navigation-white .main-menu ul > li > a {
+  color: #fff; /* white-color */
+}
+
+.navigation-white .main-menu ul > li:hover > a {
+  color: #63ab45; /* primary-color */
+}
+
+/* Sub-menu items */
+.main-menu .sub-menu {
+  background-color: #fff; /* white-bg */
+}
+
+/* Enlaces del sub-menu (incluyendo Next.js Link que se renderiza como <a>) */
+.main-menu .sub-menu li a,
+.main-menu .sub-menu li a[href] {
+  color: #1c231f; /* title-color - %heading */
+  font-weight: 500;
+  font-size: 16px;
+  font-family: "Prompt", sans-serif;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  padding: 0 5px 10px;
+  line-height: 1.5;
+  transition: all 0.3s ease;
+}
+
+/* Hover de enlaces del sub-menu */
+.main-menu .sub-menu li a:hover,
+.main-menu .sub-menu li:hover > a {
+  color: #63ab45; /* primary-color */
+  text-decoration: none;
+}
+
+/* Bordes del sub-menu */
+.main-menu .sub-menu li {
+  border-bottom: 1px solid #ececec;
+  margin: 0 20px 10px;
+}
+
+.main-menu .sub-menu li:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.main-menu .sub-menu li:last-child a {
+  padding-bottom: 0;
+}
+
+/* Search button en el menú - verde - usar especificidad alta */
+.header-navigation .main-menu .search-item .search-btn,
+.header-navigation .main-menu .search-item .search-btn i,
+.main-menu .search-item .search-btn,
+.main-menu .search-item .search-btn i {
+  color: #63ab45; /* primary-color - verde */
+}
+
+.header-navigation .main-menu .search-item .search-btn:hover,
+.header-navigation .main-menu .search-item .search-btn:hover i,
+.main-menu .search-item .search-btn:hover,
+.main-menu .search-item .search-btn:hover i {
+  color: #1c231f; /* title-color - oscuro en hover */
+}
+
+.header-navigation.navigation-white .main-menu .search-item .search-btn,
+.header-navigation.navigation-white .main-menu .search-item .search-btn i,
+.navigation-white .main-menu .search-item .search-btn,
+.navigation-white .main-menu .search-item .search-btn i {
+  color: #63ab45; /* primary-color - verde */
+}
+
+.header-navigation.navigation-white .main-menu .search-item .search-btn:hover,
+.header-navigation.navigation-white .main-menu .search-item .search-btn:hover i,
+.navigation-white .main-menu .search-item .search-btn:hover,
+.navigation-white .main-menu .search-item .search-btn:hover i {
+  color: #1c231f; /* title-color - oscuro en hover */
+}
+
+/* Asegurar que search-btn mantenga color verde cuando está en sticky - mismo que cuando no está sticky */
+.header-navigation.navigation-white.sticky .main-menu .search-item .search-btn,
+.header-navigation.navigation-white.sticky
+  .main-menu
+  .search-item
+  .search-btn
+  i {
+  color: #63ab45; /* primary-color - verde, mismo que cuando no está sticky */
+}
+
+.header-navigation.navigation-white.sticky
+  .main-menu
+  .search-item
+  .search-btn:hover,
+.header-navigation.navigation-white.sticky
+  .main-menu
+  .search-item
+  .search-btn:hover
+  i {
+  color: #1c231f; /* title-color - oscuro en hover, mismo que cuando no está sticky */
+}
+
+/* Nav-right-item - verde con especificidad alta */
+/* EXCEPTO el botón main-btn que mantiene sus estilos originales */
+.header-navigation .primary-menu .nav-right-item,
+.header-navigation .nav-right-item {
+  color: #63ab45; /* primary-color - verde */
+}
+
+.header-navigation
+  .primary-menu
+  .nav-right-item
+  *:not(.main-btn):not(.main-btn *),
+.header-navigation .nav-right-item *:not(.main-btn):not(.main-btn *) {
+  color: #63ab45; /* primary-color - verde */
+}
+
+.header-navigation .primary-menu .nav-right-item .lang-dropdown .nice-select,
+.header-navigation .nav-right-item .lang-dropdown .nice-select {
+  color: #63ab45; /* primary-color - verde */
+}
+
+.header-navigation .primary-menu .nav-right-item .search-btn,
+.header-navigation .primary-menu .nav-right-item .search-btn i,
+.header-navigation .nav-right-item .search-btn,
+.header-navigation .nav-right-item .search-btn i {
+  color: #63ab45; /* primary-color - verde */
+}
+
+.header-navigation .primary-menu .nav-right-item .search-btn:hover,
+.header-navigation .primary-menu .nav-right-item .search-btn:hover i,
+.header-navigation .nav-right-item .search-btn:hover,
+.header-navigation .nav-right-item .search-btn:hover i {
+  color: #1c231f; /* title-color - oscuro en hover */
+}
+
+/* Asegurar que el botón primary-btn mantenga sus colores originales - usar especificidad alta */
+.header-navigation .primary-menu .nav-right-item .main-btn.primary-btn,
+.header-navigation .nav-right-item .main-btn.primary-btn {
+  background-color: #63ab45; /* primary-color - verde */
+  color: #fff; /* white-color */
+}
+
+.header-navigation .primary-menu .nav-right-item .main-btn.primary-btn:hover,
+.header-navigation .nav-right-item .main-btn.primary-btn:hover {
+  background-color: #f7921e; /* secondary-color - naranja */
+  color: #fff; /* white-color */
+}
+
+.header-navigation .primary-menu .nav-right-item .main-btn.primary-btn i,
+.header-navigation .nav-right-item .main-btn.primary-btn i {
+  color: #1c231f; /* title-color para el icono */
+}
+
+/* Navbar-toggler (botón hamburguesa) - fondo transparente, borde y líneas verdes - usar especificidad alta */
+.header-navigation .primary-menu .nav-right-item .navbar-toggler,
+.header-navigation .nav-right-item .navbar-toggler,
+.header-navigation .navbar-toggler {
+  background-color: transparent; /* fondo transparente */
+  border-color: #63ab45 !important; /* primary-color - verde */
+}
+
+.header-navigation .primary-menu .nav-right-item .navbar-toggler span,
+.header-navigation .nav-right-item .navbar-toggler span,
+.header-navigation .navbar-toggler span {
+  background-color: #63ab45 !important; /* primary-color - verde */
+}
+
+.header-navigation .primary-menu .nav-right-item .navbar-toggler:hover,
+.header-navigation .nav-right-item .navbar-toggler:hover,
+.header-navigation .navbar-toggler:hover {
+  background-color: transparent; /* mantiene fondo transparente */
+  border-color: #63ab45 !important; /* mantiene verde en hover */
+}
+
+.header-navigation .primary-menu .nav-right-item .navbar-toggler:hover span,
+.header-navigation .nav-right-item .navbar-toggler:hover span,
+.header-navigation .navbar-toggler:hover span {
+  background-color: #1c231f !important; /* oscuro en hover */
+}
+
+/* Asegurar que navbar-toggler mantenga los mismos colores cuando está en sticky - verde como cuando no está sticky */
+.header-navigation.navigation-white.sticky
+  .primary-menu
+  .nav-right-item
+  .navbar-toggler,
+.header-navigation.navigation-white.sticky .nav-right-item .navbar-toggler,
+.header-navigation.navigation-white.sticky .navbar-toggler {
+  background-color: transparent !important; /* transparente, mismo que cuando no está sticky */
+  border-color: #63ab45 !important; /* primary-color - verde, mismo que cuando no está sticky */
+}
+
+.header-navigation.navigation-white.sticky
+  .primary-menu
+  .nav-right-item
+  .navbar-toggler
+  span,
+.header-navigation.navigation-white.sticky .nav-right-item .navbar-toggler span,
+.header-navigation.navigation-white.sticky .navbar-toggler span {
+  background-color: #63ab45 !important; /* primary-color - verde, mismo que cuando no está sticky */
+}
+
+.header-navigation.navigation-white.sticky
+  .primary-menu
+  .nav-right-item
+  .navbar-toggler:hover,
+.header-navigation.navigation-white.sticky
+  .nav-right-item
+  .navbar-toggler:hover,
+.header-navigation.navigation-white.sticky .navbar-toggler:hover {
+  background-color: transparent !important; /* mantiene transparente */
+  border-color: #63ab45 !important; /* mantiene verde */
+}
+
+.header-navigation.navigation-white.sticky
+  .primary-menu
+  .nav-right-item
+  .navbar-toggler:hover
+  span,
+.header-navigation.navigation-white.sticky
+  .nav-right-item
+  .navbar-toggler:hover
+  span,
+.header-navigation.navigation-white.sticky .navbar-toggler:hover span {
+  background-color: #1c231f !important; /* oscuro en hover, mismo que cuando no está sticky */
+}
+
+/* Asegurar que nav-right-item mantenga los mismos colores cuando está en sticky - mismo que cuando no está sticky */
+.header-navigation.navigation-white.sticky .nav-right-item,
+.header-navigation.navigation-white.sticky
+  .nav-right-item
+  *:not(.main-btn):not(.main-btn *) {
+  color: #63ab45; /* primary-color - verde, mismo que cuando no está sticky */
+}
+
+.header-navigation.navigation-white.sticky .nav-right-item .search-btn,
+.header-navigation.navigation-white.sticky .nav-right-item .search-btn i {
+  color: #63ab45; /* primary-color - verde, mismo que cuando no está sticky */
+}
+
+.header-navigation.navigation-white.sticky .nav-right-item .search-btn:hover,
+.header-navigation.navigation-white.sticky .nav-right-item .search-btn:hover i {
+  color: #1c231f; /* title-color - oscuro en hover, mismo que cuando no está sticky */
+}
+
+/* cat-btn (category button en blog) */
+.cat-btn,
+.cat-btn[href] {
+  font-family: "Prompt", sans-serif;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 28px;
+  padding: 6px 20px;
+  background-color: #f7921e; /* secondary-bg - naranja */
+  color: #fff; /* white-color - blanco */
+  text-decoration: none;
+  display: inline-block;
+  border-radius: 0;
+  transition: all 0.3s ease;
+}
+
+.cat-btn:hover,
+.cat-btn[href]:hover {
+  background-color: #63ab45; /* primary-bg - verde en hover */
+  color: #fff; /* Mantiene color blanco */
+  text-decoration: none;
+}
+
+/* Tarjetas de paquetes más altas */
+.features-section .single-features-item-two {
+  min-width: 0; /* evita overflow en grid */
+}
+.features-section .single-features-item-two .img-holder {
+  aspect-ratio: 3 / 4;
+  min-height: 160px; /* móvil: 2 por fila sin overlap */
+  @media (min-width: 768px) {
+    min-height: 280px;
+  }
+}
+.features-section .single-features-item-two .img-holder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Contenido de tarjetas de paquetes - layout y espaciado */
+.single-features-item-two .item-overlay .content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  gap: 6px;
+}
+.single-features-item-two .item-overlay .content h3.title {
+  margin-bottom: 0;
+  font-size: clamp(16px, 2.2vw, 20px);
+  line-height: 1.3;
+  max-width: 100%;
+}
+
+/* Ruta en tarjetas de paquetes */
+.single-features-item-two .item-overlay .content .package-route {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.single-features-item-two .item-overlay .content .package-route i {
+  opacity: 0.9;
+  margin-right: 4px;
+}
+
+/* Precio llamativo en tarjetas de paquetes (features) */
+.single-features-item-two .item-overlay .content .package-price {
+  display: inline-block;
+  margin: 4px 0 0;
+  padding: 6px 14px;
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  background-color: #f7921e;
+  border-radius: 4px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  line-height: 1.2;
+}
+
+/* Etiqueta "Paquete" en tarjetas de features */
+.single-features-item-two .img-holder .package-badge {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  z-index: 2;
+  font-family: "Prompt", sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1;
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 20px;
+  backdrop-filter: blur(6px);
+  display: inline-block;
+}
+
+/* Estilos del slider horizontal en Popular Services */
+.slider-active-3-item {
+  margin-left: -15px;
+  margin-right: -15px;
+  position: relative;
+  display: block;
+}
+
+.slider-active-3-item .slick-list {
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+.slider-active-3-item .slick-track {
+  display: flex;
+  align-items: stretch;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.slider-active-3-item .slick-slide {
+  margin-left: 15px;
+  margin-right: 15px;
+  height: auto;
+  float: left;
+  position: relative;
+}
+
+.slider-active-3-item .slick-slide > div {
+  height: 100%;
+}
+
+/* Asegurar que los items del slider se muestren correctamente */
+.slider-active-3-item .single-service-item {
+  width: 100%;
+  opacity: 1;
+  display: block;
+  height: 100%;
+}
+
+/* Asegurar que el slider tenga la estructura correcta para Slick */
+.slider-active-3-item > * {
+  min-width: 0;
+}
+
+/* Estilos del botón back-to-top */
+.back-to-top {
+  background-color: #63ab45; /* primary-color - verde */
+  color: #fff; /* white-color - blanco */
+  border-radius: 50%;
+  bottom: 30px;
+  cursor: pointer;
+  display: none; /* Sin !important para que JavaScript pueda controlarlo con fadeIn/fadeOut */
+  font-size: 20px;
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  position: fixed;
+  right: 30px;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  z-index: 337;
+}
+
+.back-to-top i,
+.back-to-top .fa,
+.back-to-top .far {
+  color: #fff; /* white-color - blanco para el icono */
+}
+
+.back-to-top:hover,
+.back-to-top:focus {
+  background-color: #f7921e; /* secondary-color - naranja */
+  color: #fff; /* white-color - blanco */
+  text-decoration: none;
+}
+
+.back-to-top:hover i,
+.back-to-top:hover .fa,
+.back-to-top:hover .far,
+.back-to-top:focus i,
+.back-to-top:focus .fa,
+.back-to-top:focus .far {
+  color: #fff; /* white-color - blanco para el icono en hover/focus */
+}
+
+/* Imagen de paquetes de temporada: ocupa todo el ancho del componente */
+.single-seasonal-package .post-thumbnail {
+  overflow: hidden;
+  width: 100%;
+  height: 290px;
+  border-radius: 15px;
+  & img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+/* Márgenes de .entry-content - usar especificidad */
+.single-blog-post .entry-content,
+.single-seasonal-package .entry-content {
+  padding: 0 15px 0;
+}
+
+.single-blog-post .entry-content .post-meta span,
+.single-seasonal-package .entry-content .post-meta span {
+  margin-bottom: 7px;
+}
+
+.single-blog-post .entry-content h3.title,
+.single-seasonal-package .entry-content h3.title {
+  margin-bottom: 30px;
+}
+
+.single-blog-post-two .entry-content h3.title {
+  margin-bottom: 30px;
+}
+
+.single-blog-post-two .post-thumbnail {
+  margin-right: 30px;
+}
+
+@media (max-width: 767px) {
+  .single-blog-post-two .post-thumbnail {
+    margin-right: 0;
+    margin-bottom: 30px;
+  }
+}
+
+.single-blog-post-three .entry-content {
+  padding: 30px 15px 0;
+}
+
+.single-blog-post-three .entry-content h3.title {
+  margin-bottom: 23px;
+}
+
+.single-blog-post-four .entry-content {
+  padding-left: 50px;
+}
+
+@media (max-width: 767px) {
+  .single-blog-post-four .entry-content {
+    padding-left: 0;
+    padding: 15px;
+  }
+}
+
+.single-blog-post-four .entry-content h3.title {
+  margin-bottom: 19px;
+}
+
+.single-blog-post-four .entry-content h6.author {
+  margin-bottom: 33px;
+}
+
+.single-blog-post-four .entry-content h6.author i {
+  margin-right: 10px;
+}
+
+@media (max-width: 767px) {
+  .single-blog-post-four .post-thumbnail {
+    margin-bottom: 30px;
+  }
+}
+
+.blog-post .entry-content h3.title {
+  margin-bottom: 20px;
+}
+
+.blog-post .entry-content p {
+  margin-bottom: 30px;
+}
+
+.blog-post .entry-content h4 {
+  margin-bottom: 12px;
+}
+
+.blog-post .entry-content .block-quote h3 {
+  margin-bottom: 10px;
+}
+
+@media (max-width: 767px) {
+  .blog-post .entry-content .block-quote img {
+    margin-bottom: 20px;
+  }
+}
+
+.post-meta span {
+  margin-bottom: 10px;
+}
+
+.post-meta span i {
+  margin-right: 10px;
+}
+
+.blog-post .post-meta span {
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+@media (max-width: 767px) {
+  .blog-post .post-meta span {
+    margin-left: 0;
+  }
+}
+
+/* Márgenes de .cta-content-box */
+.cta-content-box {
+  text-align: center;
+}
+
+@media (max-width: 991px) {
+  .cta-content-box {
+    margin-bottom: 80px;
+  }
+}
+
+.cta-content-box h2 {
+  margin-bottom: 35px;
+  font-size: 48px; /* Tamaño estándar de h2 */
+  font-weight: 700;
+  line-height: 1.2;
+  color: #fff; /* text-white */
+}
+
+@media only screen and (min-width: 1200px) and (max-width: 1600px) {
+  .cta-content-box h2 {
+    font-size: 42px;
+  }
+}
+
+@media (max-width: 1199px) {
+  .cta-content-box h2 {
+    font-size: 36px;
+  }
+}
+
+@media (max-width: 767px) {
+  .cta-content-box h2 {
+    font-size: 24px;
+  }
+}
+
+.cta-content-box h3 {
+  margin-bottom: 35px;
+  font-size: 24px; /* Tamaño estándar de h3 */
+  font-weight: 600;
+  line-height: 1.3;
+  color: #fff; /* text-white */
+}
+
+.cta-content-box p {
+  margin-bottom: 30px;
+  font-size: 16px; /* Tamaño estándar de p/body */
+  font-weight: 300;
+  line-height: 29.6px;
+  color: #fff; /* text-white */
+}
+
+.cta-content-box .main-btn {
+  margin-top: 0;
+  font-size: 16px; /* Tamaño estándar del botón */
+  font-weight: 600;
+}
+
+/* Badge píldora en TourItem e InternationalItem */
+.single-service-item .destination-img-wrapper,
+.single-service-item .international-img-wrapper {
+  position: relative;
+}
+
+/* Imágenes fijas 370x250 solo en destinations e international */
+.places-section .destination-img-wrapper,
+.places-section .international-img-wrapper {
+  width: 370px;
+  min-width: 370px;
+  max-width: 370px;
+  height: 250px;
+  min-height: 250px;
+  max-height: 250px;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+/* Tablet: imagen al 100% del item para que no se desborde */
+@media (max-width: 991px) {
+  .places-section .destination-img-wrapper,
+  .places-section .international-img-wrapper {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    height: 220px;
+    min-height: 220px;
+  }
+}
+
+/* Mobile: imagen al 100% del contenedor */
+@media (max-width: 480px) {
+  .places-section .destination-img-wrapper,
+  .places-section .international-img-wrapper {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    height: 200px;
+    min-height: 200px;
+  }
+}
+
+.single-service-item .destination-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  z-index: 2;
+}
+
+.single-service-item .destination-badge--new {
+  background-color: #bbdefb; /* azul claro */
+  color: #0d47a1; /* azul oscuro - buen contraste */
+}
+
+.single-service-item .destination-badge--few_left {
+  background-color: #ffe0b2; /* naranja claro */
+  color: #bf360c; /* naranja oscuro - buen contraste */
+}
+
+.single-service-item .destination-badge--sold_out {
+  background-color: #e9ecef; /* gris claro */
+  color: #6c757d; /* gris */
+}
+
+/* Botón "Más información" debajo de la imagen del tour (independiente) */
+.single-service-item .tour-item-more-info-btn {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background-color: #63ab45;
+  color: #fff;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  text-transform: none;
+  letter-spacing: 0.3px;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+.single-service-item .tour-item-more-info-btn:hover {
+  background-color: #4d8a36;
+  color: #fff;
+}
+
+/* Card completa en gris y no clickeable cuando está agotado */
+.single-service-item:has(.destination-badge--sold_out) {
+  filter: grayscale(0.9);
+  pointer-events: none;
+  cursor: default;
+  transition: filter 0.3s ease;
+}
+
+.single-service-item:has(.destination-badge--sold_out) .content,
+.single-service-item:has(.destination-badge--sold_out) .destination-img-wrapper,
+.single-service-item:has(.destination-badge--sold_out)
+  .international-img-wrapper {
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+
+/* Paquete de temporada (SeasonPackageItem variant=card): layout horizontal */
+.single-service-item--seasonal.seasonal-card-horizontal {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  height: 150px;
+  min-height: 150px;
+  border: 1px solid #e9ecef;
+  border-left: 3px solid #63ab45;
+  border-radius: 12px;
+  overflow: hidden;
+  padding: 0;
+  margin-left: 0;
+  background: #fff;
+}
+.seasonal-card-horizontal__image {
+  flex: 0 0 200px;
+  width: 200px;
+  height: 150px;
+  min-height: 150px;
+  max-height: 150px;
+  overflow: hidden;
+  background: #f1f3f4;
+}
+.seasonal-card-horizontal__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+.seasonal-card-horizontal__body {
+  flex: 1;
+  min-width: 0;
+  height: 150px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+.seasonal-card-horizontal__body .seasonal-meta {
+  margin-bottom: 6px;
+}
+.seasonal-card-horizontal__body h3.title {
+  font-size: 1.15rem;
+  line-height: 1.3;
+  margin: 0 0 6px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.seasonal-card-horizontal .tour-item-more-info-btn {
+  display: inline-block;
+  margin-top: auto;
+  align-self: flex-start;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  min-height: 32px;
+  line-height: 1;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+.single-service-item--seasonal .seasonal-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.single-service-item--seasonal .seasonal-pill {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #63ab45;
+  background: rgba(99, 171, 69, 0.12);
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+.single-service-item--seasonal .seasonal-date {
+  font-size: 11px;
+  color: #6c757d;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.single-service-item--seasonal .seasonal-date i {
+  color: #63ab45;
+  font-size: 10px;
+}
+
+/* Grid de paquetes de temporada: una card horizontal por fila, ancho limitado */
+/* Paquetes de temporada: misma cuadrícula horizontal que el resto (items 412px, wrap) */
+.places-section__grid--seasonal {
+  /* usa los mismos estilos que .places-section__grid (flex, wrap, gap) */
+}
+
+@media (max-width: 767px) {
+  .single-service-item--seasonal.seasonal-card-horizontal {
+    flex-direction: column;
+    height: auto;
+    min-height: 0;
+  }
+  .seasonal-card-horizontal__body {
+    height: auto;
+  }
+  .seasonal-card-horizontal__image {
+    flex: 0 0 auto;
+    width: 100%;
+    height: 150px;
+    min-height: 150px;
+    max-height: 150px;
+  }
+}
+
+/* Título con wrap para que no empuje la imagen cuando es largo */
+.single-service-item .content h3.title {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+
+.single-service-item .content {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+/* Hover del título en TourItem (single-service-item) */
+.single-service-item:hover .content h3.title {
+  color: #63ab45; /* primary-color - verde */
+  transition: color 0.3s ease;
+}
+
+/* Estilos para información de fecha y precio en TourItem e InternationalItem */
+.single-service-item .content .destination-info,
+.single-service-item .content .international-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 15px;
+  padding: 0;
+}
+
+.single-service-item .content .destination-info .departure-date,
+.single-service-item .content .international-info .departure-date {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 15px;
+  background-color: #f9f9f7; /* gray-color */
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.single-service-item .content .destination-info .departure-date .label,
+.single-service-item .content .international-info .departure-date .label {
+  color: #484848; /* text-color */
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.single-service-item .content .destination-info .departure-date .value-wrapper,
+.single-service-item
+  .content
+  .international-info
+  .departure-date
+  .value-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.single-service-item
+  .content
+  .destination-info
+  .departure-date
+  .value-wrapper
+  i,
+.single-service-item
+  .content
+  .international-info
+  .departure-date
+  .value-wrapper
+  i {
+  color: #63ab45; /* primary-color */
+  font-size: 16px;
+}
+
+.single-service-item
+  .content
+  .destination-info
+  .departure-date
+  .value-wrapper
+  .value,
+.single-service-item
+  .content
+  .international-info
+  .departure-date
+  .value-wrapper
+  .value {
+  color: #1c231f; /* title-color */
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.single-service-item .content .destination-info .price,
+.single-service-item .content .international-info .price {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 15px;
+  background-color: #f9f9f7; /* gray-color */
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.single-service-item .content .destination-info .price .label,
+.single-service-item .content .international-info .price .label {
+  color: #484848; /* text-color */
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.single-service-item .content .destination-info .price .price-amount,
+.single-service-item .content .international-info .price .price-amount {
+  color: #63ab45; /* primary-color */
+  font-weight: 600;
+  font-size: 18px;
+}
+
+/* Precio destacado - estilo outline suave (Internacional y Destinos) */
+.single-service-item .content .international-info .price.price--highlight,
+.single-service-item .content .destination-info .price.price--highlight {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+  background: rgba(99, 171, 69, 0.06);
+  border: 2px dashed rgba(99, 171, 69, 0.35);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-top: 0;
+  box-shadow: none;
+}
+
+.single-service-item
+  .content
+  .international-info
+  .price.price--highlight
+  .label,
+.single-service-item .content .destination-info .price.price--highlight .label {
+  color: #5a6b54;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.single-service-item
+  .content
+  .international-info
+  .price.price--highlight
+  .price-amount,
+.single-service-item
+  .content
+  .destination-info
+  .price.price--highlight
+  .price-amount {
+  font-size: 26px;
+  font-weight: 800;
+  color: #3d7a2e;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+  margin-top: 0;
+  padding: 0;
+  background: none;
+  border-radius: 0;
+  display: inline;
+}
+
+.single-service-item .content .destination-info .accommodation,
+.single-service-item .content .international-info .accommodation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 15px;
+  background-color: #f9f9f7; /* gray-color */
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.single-service-item .content .destination-info .accommodation .label,
+.single-service-item .content .international-info .accommodation .label {
+  color: #484848; /* text-color */
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.single-service-item .content .destination-info .accommodation .value,
+.single-service-item .content .international-info .accommodation .value {
+  color: #1c231f; /* title-color */
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.single-service-item .content .destination-info .duration,
+.single-service-item .content .international-info .duration {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 15px;
+  background-color: #f9f9f7; /* gray-color */
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.single-service-item .content .destination-info .duration .label,
+.single-service-item .content .international-info .duration .label {
+  color: #484848; /* text-color */
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.single-service-item .content .destination-info .duration .value,
+.single-service-item .content .international-info .duration .value {
+  color: #1c231f; /* title-color */
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* International: nuevos campos Strapi (departure, route, transport, includes) */
+.single-service-item .content .international-info .departure,
+.single-service-item .content .international-info .route,
+.single-service-item .content .international-info .transport,
+.single-service-item .content .international-info .includes {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 15px;
+  background-color: #f9f9f7; /* gray-color */
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.single-service-item .content .international-info .departure .label,
+.single-service-item .content .international-info .route .label,
+.single-service-item .content .international-info .transport .label,
+.single-service-item .content .international-info .includes .label {
+  color: #484848; /* text-color */
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.single-service-item .content .international-info .departure .value,
+.single-service-item .content .international-info .route .value,
+.single-service-item .content .international-info .transport .value {
+  color: #1c231f; /* title-color */
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Destination (TourItem): mismo diseño que international para departure y transport */
+.single-service-item .content .destination-info .departure,
+.single-service-item .content .destination-info .transport {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 15px;
+  background-color: #f9f9f7; /* gray-color */
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.single-service-item .content .destination-info .departure .label,
+.single-service-item .content .destination-info .transport .label {
+  color: #484848; /* text-color */
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.single-service-item .content .destination-info .departure .value,
+.single-service-item .content .destination-info .transport .value {
+  color: #1c231f; /* title-color */
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Calendario: fecha(s) de tour marcadas desde Strapi (calendarStart / calendarEnd) */
+/* Fecha de hoy: fondo verde claro y palabra "HOY" en verde */
+.calendar-container .day.today span {
+  background: rgba(25, 135, 84, 0.2);
+  color: #198754;
+  padding: 0;
+  border-radius: 4px;
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  font-size: 0.8em;
+  box-sizing: border-box;
+}
+
+/* Fondo angosto, mismo estilo que fecha predeterminada: naranja y número blanco */
+.calendar-container .day.calendar-date-marked {
+  background: none;
+  font-weight: 600;
+}
+.calendar-container .day.calendar-date-marked span {
+  background: #f7921e;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-block;
+}
+.calendar-container .day.calendar-date-marked.disabled span {
+  color: white;
+  opacity: 0.85;
+}
+
+/* Incluye: lista vertical */
+.single-service-item .content .international-info .includes {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.single-service-item .content .international-info .includes .includes-list {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+  width: 100%;
+}
+
+.single-service-item
+  .content
+  .international-info
+  .includes
+  .includes-list__item {
+  color: #1c231f; /* title-color */
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  padding-left: 24px;
+  position: relative;
+}
+
+.single-service-item
+  .content
+  .international-info
+  .includes
+  .includes-list__item::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #63ab45;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.single-service-item
+  .content
+  .international-info
+  .includes
+  .includes-list__item:last-child {
+  margin-bottom: 0;
+}
+
+/* Incluye en destination-info (mismo estilo que international) */
+.single-service-item .content .destination-info .includes {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 15px;
+  background-color: #f9f9f7;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.single-service-item .content .destination-info .includes .label {
+  color: #484848;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.single-service-item .content .destination-info .includes .includes-list {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+  width: 100%;
+}
+
+.single-service-item .content .destination-info .includes .includes-list__item {
+  color: #1c231f;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  padding-left: 24px;
+  position: relative;
+}
+
+.single-service-item
+  .content
+  .destination-info
+  .includes
+  .includes-list__item::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #63ab45;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.single-service-item
+  .content
+  .destination-info
+  .includes
+  .includes-list__item:last-child {
+  margin-bottom: 0;
+}
+
+/* Places section - título con wrap para que no empuje la imagen */
+.places-section .single-service-item .content {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.places-section .single-service-item .content h3.title {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  min-width: 0;
+}
+
+/* Places section - grid layout con anchura mínima */
+.places-section__container {
+  max-width: 100%;
+  margin: 0 auto;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* Grupos en página Paquetes: temporada vs todos */
+.packages-group {
+  margin-bottom: 3.5rem;
+}
+.packages-group:last-of-type {
+  margin-bottom: 0;
+}
+.packages-group__title {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: rgba(247, 146, 30, 0.85);
+  margin-bottom: 0.35rem;
+  text-align: center;
+  line-height: 1.25;
+  @media (min-width: 768px) {
+    font-size: 1.85rem;
+  }
+  @media (min-width: 992px) {
+    font-size: 2.15rem;
+  }
+}
+.packages-group__subtitle {
+  font-size: 1.05rem;
+  color: #6c757d;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.45;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  @media (min-width: 768px) {
+    font-size: 1.05rem;
+    max-width: 520px;
+  }
+  @media (min-width: 992px) {
+    font-size: 1.15rem;
+    max-width: 560px;
+  }
+}
+
+.places-section__grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+}
+
+.places-section__item {
+  min-width: 412px;
+  max-width: 412px;
+  flex: 0 0 412px;
+}
+
+.places-section__item .single-service-item {
+  width: 100%;
+  max-width: 100%;
+}
+
+@media (max-width: 480px) {
+  .places-section__container {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .places-section__item {
+    min-width: 100%;
+    max-width: 100%;
+    flex: 0 0 100%;
+  }
+}
+
+/* Política de Privacidad */
+.privacy-content .privacy-block h3.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1c231f;
+}
+.privacy-content .privacy-block ul li {
+  list-style: disc;
+}
+.privacy-content a:hover {
+  text-decoration: underline;
+}
+
+/* FAQ Accordion */
+.faq-accordion .accordion-item {
+  border: 1px solid #e9ecef;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.faq-accordion .accordion-button {
+  font-weight: 500;
+  color: #1c231f;
+  background-color: #f8f9fa;
+}
+.faq-accordion .accordion-button:not(.collapsed) {
+  background-color: rgba(99, 171, 69, 0.1);
+  color: #63ab45;
+  box-shadow: none;
+}
+.faq-accordion .accordion-button:focus {
+  box-shadow: none;
+  border-color: transparent;
+}
+.faq-accordion .accordion-body {
+  color: #484848;
+  line-height: 1.6;
+}
+
+/* About: imagen "Quiénes somos" en mobile (461×576) */
+@media (max-width: 767px) {
+  .who-we-are-img {
+    width: 461px;
+    height: 576px;
+    max-width: 100%;
+    object-fit: cover;
+  }
+}

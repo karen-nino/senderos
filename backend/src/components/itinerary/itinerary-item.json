@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_itinerary_itinerary_items",
+  "info": {
+    "displayName": "itineraryItem"
+  },
+  "options": {},
+  "attributes": {
+    "dayTitle": {
+      "type": "string"
+    },
+    "time": {
+      "type": "string"
+    },
+    "activity": {
+      "type": "string"
+    },
+    "accommodation": {
+      "type": "string"
+    },
+    "routeItinerary": {
+      "type": "blocks"
+    }
+  },
+  "config": {}
+}

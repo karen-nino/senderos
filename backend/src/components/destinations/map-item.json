@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_destinations_map_items",
+  "info": {
+    "displayName": "mapItem"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "map": {
+      "type": "text"
+    }
+  },
+  "config": {}
+}

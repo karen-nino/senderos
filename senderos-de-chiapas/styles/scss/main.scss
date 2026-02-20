@@ -1,0 +1,36 @@
+/*-----------------------------------------------------------------------------------
+    Main SCSS File for Next.js
+    This file imports all SCSS modules
+-----------------------------------------------------------------------------------*/
+
+// Global variables
+@import 'variables';
+
+// Global Mixins
+@import 'mixin';
+
+// Global Extend
+@import 'extend';
+
+// Common styles
+@import 'common';
+
+// Sections
+@import 'sections/header';
+@import 'sections/hero';
+@import 'sections/about';
+@import 'sections/elements';
+@import 'sections/features';
+@import 'sections/services';
+@import 'sections/activity';
+@import 'sections/we';
+@import 'sections/gallery';
+@import 'sections/booking';
+@import 'sections/places';
+@import 'sections/testimonials';
+@import 'sections/shop';
+@import 'sections/blog';
+@import 'sections/contact';
+@import 'sections/footer';
+@import 'sections/sliders';
+@import 'sections/wrapper';

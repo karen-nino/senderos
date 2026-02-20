@@ -1,0 +1,77 @@
+{
+  "collectionName": "components_international_internationals",
+  "info": {
+    "displayName": "International"
+  },
+  "options": {},
+  "attributes": {
+    "home": {
+      "type": "boolean"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "route": {
+      "type": "string"
+    },
+    "transport": {
+      "type": "string"
+    },
+    "departure": {
+      "type": "string"
+    },
+    "includes": {
+      "type": "blocks"
+    },
+    "duration": {
+      "type": "string"
+    },
+    "accommodation": {
+      "type": "string"
+    },
+    "price": {
+      "type": "string"
+    },
+    "departureDate": {
+      "type": "string"
+    },
+    "link": {
+      "type": "string"
+    },
+    "map": {
+      "type": "string"
+    },
+    "icons": {
+      "type": "json"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "imagesDetails": {
+      "type": "media",
+      "multiple": true,
+      "required": true,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "badge": {
+      "type": "enumeration",
+      "enum": [
+        "new",
+        "few_left",
+        "sold_out",
+        "hide"
+      ]
+    }
+  },
+  "config": {}
+}

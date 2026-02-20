@@ -1,0 +1,33 @@
+{
+  "kind": "singleType",
+  "collectionName": "packages",
+  "info": {
+    "singularName": "package",
+    "pluralName": "packages",
+    "displayName": "Paquetes"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Banner": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "Paquete": {
+      "type": "component",
+      "component": "package.package",
+      "repeatable": true
+    },
+    "Temporada": {
+      "type": "component",
+      "component": "package.season",
+      "repeatable": true
+    }
+  }
+}
