@@ -1,17 +1,41 @@
 const { STRAPI_URL, STRAPI_TOKEN } = process.env;
 
+/** Revalidación ISR: regenerar datos de Strapi como máximo cada 60 segundos */
+export const STRAPI_REVALIDATE_SECONDS = 60;
+
+/**
+ * Obtiene datos de Strapi (usa la misma configuración ISR que fetchStrapi).
+ * Preferir fetchStrapi para respuestas tipadas y manejo de errores.
+ * Single type "Tours" en Strapi v5 expone GET /api/tour (singular).
+ */
 export function query(url: string) {
-  return fetch(`${STRAPI_URL}/api/${url}?populate=*`, {
-    headers: {
-      Authorization: `Bearer ${STRAPI_TOKEN}`,
-    },
+  const baseUrl = getStrapiBaseUrl();
+  const resource = url === "tours" ? "tour" : url;
+  const fullUrl = `${baseUrl}/api/${resource}?populate=*`;
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+  if (STRAPI_TOKEN) {
+    headers.Authorization = `Bearer ${STRAPI_TOKEN}`;
+  }
+  return fetch(fullUrl, {
+    headers,
+    next: { revalidate: STRAPI_REVALIDATE_SECONDS },
   }).then((res) => res.json());
 }
 
-export async function fetchStrapi(url: string) {
-  const baseUrl =
+/** URL base del backend Strapi (server). En Vercel configurar STRAPI_URL o NEXT_PUBLIC_STRAPI_URL. */
+function getStrapiBaseUrl(): string {
+  const url =
     STRAPI_URL || process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337";
-  const fullUrl = `${baseUrl}${url.startsWith("/") ? url : `/${url}`}`;
+  return url.replace(/\/$/, "");
+}
+
+export async function fetchStrapi(url: string) {
+  const baseUrl = getStrapiBaseUrl();
+  const path = url.startsWith("/") ? url : `/${url}`;
+  const pathFixed = path.replace(/^\/api\/tours(\?|$)/, "/api/tour$1");
+  const fullUrl = `${baseUrl}${pathFixed}`;
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -22,8 +46,7 @@ export async function fetchStrapi(url: string) {
 
   const response = await fetch(fullUrl, {
     headers,
-    cache: "no-store",
-    next: { revalidate: 0 },
+    next: { revalidate: STRAPI_REVALIDATE_SECONDS },
   });
 
   const json = await response.json();
@@ -138,12 +161,9 @@ export interface AdaptedDestination {
 function getImageUrl(image: StrapiDestinationItem["image"]): string {
   if (!image) return "";
   if (typeof image === "string") return image;
-  // Strapi v4: image.data.attributes.url
-  // Strapi v5: image.url (formato aplanado)
   const url =
-    image.data?.attributes?.url ??
-    image.data?.url ??
     image.url ??
+    image.data?.url ??
     (image.formats && Object.values(image.formats)[0]?.url) ??
     "";
   return url || "";
@@ -158,11 +178,7 @@ function buildFullImageUrl(imageUrl: string): string {
   if (cleanUrl.startsWith("/uploads/")) {
     return `/strapi-uploads${cleanUrl.replace("/uploads", "")}`;
   }
-  const strapiUrl =
-    process.env.NEXT_PUBLIC_STRAPI_URL ||
-    process.env.STRAPI_URL ||
-    "http://localhost:1337";
-  return `${strapiUrl}${cleanUrl}`;
+  return `${getStrapiBaseUrl()}${cleanUrl}`;
 }
 
 const FALLBACK_IMAGE = "/assets/images/place/place-1.jpg";
@@ -273,11 +289,10 @@ export interface AdaptedHeroSlide {
   ctaLink?: string;
 }
 
-/** Parsea heroSlides desde home y resuelve URLs de imagen con proxy */
+/** Parsea heroSlides desde home (Strapi v5: data es el documento). */
 export function parseHomeHeroSlides(homeData: unknown): AdaptedHeroSlide[] {
-  const home = homeData as Record<string, unknown>;
-  const attrs = home?.attributes ?? home;
-  const raw = (attrs as Record<string, unknown>)?.heroSlides;
+  const doc = (homeData as Record<string, unknown>) ?? {};
+  const raw = doc?.heroSlides;
   if (!Array.isArray(raw) || raw.length === 0) return [];
   return raw.map((s: Record<string, unknown>, i: number) => {
     const imageUrl = getImageUrl(s.image as StrapiDestinationItem["image"]);
@@ -298,11 +313,10 @@ export function parseHomeHeroSlides(homeData: unknown): AdaptedHeroSlide[] {
   });
 }
 
-/** Parsea gallery (múltiple media) desde home - Página Principal gallery */
+/** Parsea gallery (múltiple media) desde home (Strapi v5). */
 export function parseHomeGallery(homeData: unknown): string[] {
-  const home = homeData as Record<string, unknown>;
-  const attrs = home?.attributes ?? home;
-  const galleryMedia = (attrs as Record<string, unknown>)?.gallery;
+  const doc = (homeData as Record<string, unknown>) ?? {};
+  const galleryMedia = doc?.gallery;
   const urls = getMultipleMediaUrls(galleryMedia);
   return urls;
 }
@@ -317,13 +331,12 @@ export const GALLERY_FALLBACK_IMAGES = [
   "/assets/images/gallery/gl-1.jpg",
 ];
 
-/** Parsea el testimonial desde la respuesta de home (Strapi) */
+/** Parsea el testimonial desde la respuesta de home (Strapi v5). */
 export function parseHomeTestimonial(
   homeData: unknown,
 ): AdaptedTestimonial | null {
-  const home = homeData as Record<string, unknown>;
-  const attrs = home?.attributes ?? home;
-  const raw = (attrs as Record<string, unknown>)?.testimonial;
+  const doc = (homeData as Record<string, unknown>) ?? {};
+  const raw = doc?.testimonial;
   if (!raw || typeof raw !== "object") return null;
   const t = raw as Record<string, unknown>;
   const profileUrl = getImageUrl(
@@ -342,11 +355,10 @@ export function parseHomeTestimonial(
   };
 }
 
-/** Parsea servicios desde la respuesta de home (Strapi) */
+/** Parsea servicios desde la respuesta de home (Strapi v5). */
 export function parseHomeServices(homeData: unknown): AdaptedHomeService[] {
-  const home = homeData as Record<string, unknown>;
-  const attrs = home?.attributes ?? home;
-  const rawServices = (attrs as Record<string, unknown>)?.services;
+  const doc = (homeData as Record<string, unknown>) ?? {};
+  const rawServices = doc?.services;
   if (!Array.isArray(rawServices) || rawServices.length === 0) return [];
 
   return rawServices.map((s: Record<string, unknown>) => {
@@ -404,41 +416,24 @@ export async function fetchDestinations(): Promise<AdaptedDestination[]> {
   return result.destinations;
 }
 
-/** Obtiene tours + banner para la página de Tours. Soporta backend con atributos "info"+"imageBanner" o "Tours"+"Banner". */
+/** Obtiene tours + banner desde single type /api/tour (Strapi v5: data.Tours, data.Banner). */
 export async function fetchTourPageData(): Promise<{
   destinations: AdaptedDestination[];
   imageBannerUrl: string | null;
 }> {
   try {
-    const urls = [
-      "/api/tour?populate[0]=Tours&populate[1]=Tours.image&populate[2]=Banner",
-      "/api/tour?populate[0]=info&populate[1]=info.image&populate[2]=imageBanner",
-      "/api/tour?populate=*",
-    ];
-    let attributes: Record<string, unknown> = {};
-    for (const url of urls) {
-      const response = await fetchStrapi(url);
-      if (response?.error) continue;
-      const data = response?.data;
-      attributes = data?.attributes ?? data ?? {};
-      const items =
-        (Array.isArray(attributes?.Tours) ? attributes.Tours : null) ??
-        (Array.isArray(attributes?.info) ? attributes.info : null);
-      if (Array.isArray(items) && items.length > 0) break;
-    }
-    const items: StrapiDestinationItem[] = Array.isArray(attributes?.Tours)
-      ? attributes.Tours
-      : Array.isArray(attributes?.info)
-        ? attributes.info
-        : [];
+    const response = await fetchStrapi("/api/tour?populate=*");
+    if (response?.error) return { destinations: [], imageBannerUrl: null };
+    const doc = (response?.data ?? {}) as Record<string, unknown>;
+    const items: StrapiDestinationItem[] = Array.isArray(doc.Tours)
+      ? (doc.Tours as StrapiDestinationItem[])
+      : [];
     const destinations = items.map(adaptStrapiDestination);
-
-    const imageBanner = attributes?.Banner ?? attributes?.imageBanner;
+    const imageBanner = doc.Banner;
     const bannerUrl = getImageUrl(
       imageBanner as StrapiDestinationItem["image"],
     );
     const imageBannerUrl = bannerUrl ? buildFullImageUrl(bannerUrl) : null;
-
     return { destinations, imageBannerUrl };
   } catch (error) {
     console.error("Error fetching tours from Strapi:", error);
@@ -449,38 +444,24 @@ export async function fetchTourPageData(): Promise<{
 /** @deprecated Usar fetchTourPageData */
 export const fetchDestinationPageData = fetchTourPageData;
 
-/** Obtiene destinos internacionales + imageBanner para la página Internacional */
+/** Obtiene destinos internacionales + imageBanner (Strapi v5: data.info, data.imageBanner). */
 export async function fetchInternationalPageData(): Promise<{
   destinations: AdaptedDestination[];
   imageBannerUrl: string | null;
 }> {
   try {
-    const urls = [
-      "/api/international?populate[0]=info&populate[1]=info.image&populate[2]=imageBanner",
-      "/api/international?populate=*",
-      "/api/internacional?populate[0]=info&populate[1]=info.image&populate[2]=imageBanner",
-      "/api/internacional?populate=*",
-    ];
-    let attributes: Record<string, unknown> = {};
-    for (const url of urls) {
-      const response = await fetchStrapi(url);
-      if (response?.error) continue;
-      const data = response?.data;
-      attributes = data?.attributes ?? data ?? {};
-      const items = attributes?.info;
-      if (Array.isArray(items) && items.length > 0) break;
-    }
-    const items: StrapiDestinationItem[] = Array.isArray(attributes?.info)
-      ? attributes.info
+    const response = await fetchStrapi("/api/international?populate=*");
+    if (response?.error) return { destinations: [], imageBannerUrl: null };
+    const doc = (response?.data ?? {}) as Record<string, unknown>;
+    const items: StrapiDestinationItem[] = Array.isArray(doc.info)
+      ? (doc.info as StrapiDestinationItem[])
       : [];
     const destinations = items.map(adaptStrapiDestination);
-
-    const imageBanner = attributes?.imageBanner;
+    const imageBanner = doc.imageBanner;
     const bannerUrl = getImageUrl(
       imageBanner as StrapiDestinationItem["image"],
     );
     const imageBannerUrl = bannerUrl ? buildFullImageUrl(bannerUrl) : null;
-
     return { destinations, imageBannerUrl };
   } catch (error) {
     console.error("Error fetching international from Strapi:", error);
@@ -650,32 +631,17 @@ function adaptStrapiSeasonItem(
   };
 }
 
-/** Obtiene las temporadas desde Strapi (sin filtrar por home). Usado por fetchSeasonsForHome y fetchSeasonsForPackagesPage. */
+/** Obtiene las temporadas desde Strapi single type /api/package (Strapi v5: data.Temporada o data.season). */
 async function fetchRawSeasonsFromStrapi(): Promise<StrapiSeasonItem[]> {
-  const urls = [
-    "/api/package?populate[0]=Temporada&populate[1]=Temporada.image&populate[2]=Paquete&populate[3]=Paquete.image&populate[4]=Banner",
-    "/api/package?populate[0]=season&populate[1]=season.image&populate[2]=package&populate[3]=package.image&populate[4]=imageBanner",
-    "/api/package?populate[season][populate]=image",
-    "/api/package?populate=*",
-  ];
-  let attributes: Record<string, unknown> = {};
-  for (const url of urls) {
-    const response = await fetchStrapi(url);
-    if (response?.error) continue;
-    const data = response?.data;
-    attributes = data?.attributes ?? data ?? {};
-    const seasons = Array.isArray(attributes?.Temporada)
-      ? attributes.Temporada
-      : Array.isArray(attributes?.season)
-        ? attributes.season
-        : [];
-    if (seasons.length > 0) break;
-  }
-  return (Array.isArray(attributes?.Temporada)
-    ? attributes.Temporada
-    : Array.isArray(attributes?.season)
-      ? attributes.season
-      : []) as StrapiSeasonItem[];
+  const response = await fetchStrapi("/api/package?populate=*");
+  if (response?.error) return [];
+  const doc = (response?.data ?? {}) as Record<string, unknown>;
+  const seasons = Array.isArray(doc.Temporada)
+    ? (doc.Temporada as StrapiSeasonItem[])
+    : Array.isArray(doc.season)
+      ? (doc.season as StrapiSeasonItem[])
+      : [];
+  return seasons;
 }
 
 /** Obtiene los paquetes de temporada para el home (Temporada con home: true). Soporta "Temporada" o "season". */
@@ -710,46 +676,29 @@ export async function fetchPackages(): Promise<AdaptedDestination[]> {
   return result.packages;
 }
 
-/** Obtiene paquetes + banner para la página de Paquetes. Soporta "Paquete"+"Banner" o "package"+"imageBanner". */
+/** Obtiene paquetes + banner desde single type /api/package (Strapi v5: data.Paquete, data.Banner). */
 export async function fetchPackagesPageData(): Promise<{
   packages: AdaptedDestination[];
   imageBannerUrl: string | null;
 }> {
   try {
-    const urls = [
-      "/api/package?populate[0]=Paquete&populate[1]=Paquete.image&populate[2]=Banner",
-      "/api/package?populate[0]=package&populate[1]=package.image&populate[2]=imageBanner",
-      "/api/package?populate[package][populate]=image",
-      "/api/package?populate=*",
-    ];
-    let attributes: Record<string, unknown> = {};
-    for (const url of urls) {
-      const response = await fetchStrapi(url);
-      if (response?.error) continue;
-      const data = response?.data;
-      attributes = data?.attributes ?? data ?? {};
-      const items = Array.isArray(attributes?.Paquete)
-        ? attributes.Paquete
-        : Array.isArray(attributes?.package)
-          ? attributes.package
-          : null;
-      if (Array.isArray(items) && items.length > 0) break;
-    }
-    const items: StrapiPackageItem[] = Array.isArray(attributes?.Paquete)
-      ? attributes.Paquete
-      : Array.isArray(attributes?.package)
-        ? attributes.package
+    const response = await fetchStrapi("/api/package?populate=*");
+    if (response?.error) return { packages: [], imageBannerUrl: null };
+    const doc = (response?.data ?? {}) as Record<string, unknown>;
+    const rawItems = Array.isArray(doc.Paquete)
+      ? doc.Paquete
+      : Array.isArray(doc.package)
+        ? doc.package
         : [];
+    const items = rawItems as StrapiPackageItem[];
     const packages = items.map((p: StrapiPackageItem) =>
       adaptStrapiPackageItem(p),
     );
-
-    const imageBanner = attributes?.Banner ?? attributes?.imageBanner;
+    const imageBanner = doc.Banner ?? doc.imageBanner;
     const bannerUrl = getImageUrl(
       imageBanner as StrapiDestinationItem["image"],
     );
     const imageBannerUrl = bannerUrl ? buildFullImageUrl(bannerUrl) : null;
-
     return { packages, imageBannerUrl };
   } catch (error) {
     console.error("Error fetching packages from Strapi:", error);
@@ -789,31 +738,19 @@ export interface AdaptedPackageDetail {
   transport?: string;
 }
 
-/** Obtiene un paquete por slug desde Strapi. Soporta atributos "Paquete" o "package". */
+/** Obtiene un paquete por slug desde Strapi single type (Strapi v5: data.Paquete). */
 export async function fetchPackageBySlug(
   slug: string,
 ): Promise<AdaptedPackageDetail | null> {
   try {
-    const urls = [
-      "/api/package?populate[0]=Paquete&populate[1]=Paquete.image&populate[2]=Paquete.imagesDetails&populate[3]=Paquete.itineraryItem&populate[4]=Paquete.mapItem",
-      "/api/package?populate[package][populate][0]=image&populate[package][populate][1]=imagesDetails&populate[package][populate][2]=itineraryItem&populate[package][populate][3]=mapItem",
-      "/api/package?populate[0]=Paquete&populate[1]=Paquete.image&populate[2]=Paquete.itineraryItem&populate[3]=Paquete.mapItem",
-      "/api/package?populate[package][populate]=image",
-      "/api/package?populate=*",
-    ];
-    let items: StrapiPackageItem[] = [];
-    for (const url of urls) {
-      const response = await fetchStrapi(url);
-      if (response?.error) continue;
-      const data = response?.data;
-      const attributes = data?.attributes ?? data ?? {};
-      items = Array.isArray(attributes?.Paquete)
-        ? attributes.Paquete
-        : Array.isArray(attributes?.package)
-          ? attributes.package
-          : [];
-      if (items.length > 0) break;
-    }
+    const response = await fetchStrapi("/api/package?populate=*");
+    if (response?.error) return null;
+    const doc = (response?.data ?? {}) as Record<string, unknown>;
+    const items: StrapiPackageItem[] = Array.isArray(doc.Paquete)
+      ? (doc.Paquete as StrapiPackageItem[])
+      : Array.isArray(doc.package)
+        ? (doc.package as StrapiPackageItem[])
+        : [];
     const normalizedSlug = slug.toLowerCase().replace(/\s+/g, "-");
     const item = items.find((p) => {
       const itemSlug = p.title ? slugify(p.title) : "";
@@ -871,29 +808,17 @@ export async function fetchPackageBySlug(
   }
 }
 
-/** Obtiene los tours con home: true para mostrar en la página de inicio */
+/** Obtiene los tours con home: true desde single type /api/tour (Strapi v5: data.Tours). */
 export async function fetchDestinationsForHome(): Promise<
   AdaptedDestination[]
 > {
   try {
-    const urls = [
-      "/api/tour?populate[0]=Tours&populate[1]=Tours.image",
-      "/api/tour?populate[0]=info&populate[1]=info.image",
-      "/api/tour?populate=*",
-    ];
-    let items: StrapiDestinationItem[] = [];
-    for (const url of urls) {
-      const response = await fetchStrapi(url);
-      if (response?.error) continue;
-      const data = response?.data;
-      const attributes = data?.attributes ?? data ?? {};
-      items = Array.isArray(attributes?.Tours)
-        ? attributes.Tours
-        : Array.isArray(attributes?.info)
-          ? attributes.info
-          : [];
-      if (items.length > 0) break;
-    }
+    const response = await fetchStrapi("/api/tour?populate=*");
+    if (response?.error) return [];
+    const doc = (response?.data ?? {}) as Record<string, unknown>;
+    const items: StrapiDestinationItem[] = Array.isArray(doc.Tours)
+      ? (doc.Tours as StrapiDestinationItem[])
+      : [];
     const homeItems = items.filter((d) => d.home === true);
     return homeItems.map(adaptStrapiDestination);
   } catch (error) {
@@ -961,16 +886,11 @@ function getImagesDetailsUrls(
   const arr = Array.isArray(imagesDetails)
     ? imagesDetails
     : ((
-        imagesDetails as {
-          data?: Array<{ attributes?: { url?: string }; url?: string }>;
-        }
+        imagesDetails as { data?: Array<{ url?: string }> }
       )?.data ?? []);
   return arr
     .map((img) => {
-      const url =
-        (img as { attributes?: { url?: string } })?.attributes?.url ??
-        (img as { url?: string })?.url ??
-        "";
+      const url = (img as { url?: string })?.url ?? "";
       return buildFullImageUrl(url);
     })
     .filter(Boolean);
@@ -1073,22 +993,15 @@ function slugify(title: string): string {
     .replace(/^-|-$/g, "");
 }
 
-/** Extrae URLs de un campo Multiple media de Strapi (gallery, images, etc.) */
+/** Extrae URLs de un campo Multiple media (Strapi v5: items con .url). */
 function getMultipleMediaUrls(media: unknown): string[] {
   if (!media) return [];
   const arr = Array.isArray(media)
     ? media
-    : ((
-        media as {
-          data?: Array<{ attributes?: { url?: string }; url?: string }>;
-        }
-      )?.data ?? []);
+    : ((media as { data?: Array<{ url?: string }> })?.data ?? []);
   return arr
     .map((img) => {
-      const url =
-        (img as { attributes?: { url?: string } })?.attributes?.url ??
-        (img as { url?: string })?.url ??
-        "";
+      const url = (img as { url?: string })?.url ?? "";
       return buildFullImageUrl(url);
     })
     .filter(Boolean);
@@ -1100,215 +1013,175 @@ export interface GalleryGroup {
   images: string[];
 }
 
-/** Obtiene datos de la página Galería/Gallery desde Strapi (imageBanner + galleryGroup con título e imágenes) */
+/** Obtiene datos de la página Galería desde Strapi (Strapi v5: data.imageBanner, data.galleryGroup). */
 export async function fetchGalleryPageData(): Promise<{
   imageBannerUrl: string | null;
   galleryGroups: GalleryGroup[];
-  /** @deprecated Use galleryGroups. Lista plana para compatibilidad (todas las imágenes de todos los grupos) */
   galleryImages: string[];
 }> {
   try {
-    const urls = [
-      "/api/galeria?populate[0]=imageBanner&populate[1]=galleryGroup&populate[2]=galleryGroup.gallery",
-      "/api/gallery?populate[0]=imageBanner&populate[1]=galleryGroup&populate[2]=galleryGroup.gallery",
-      "/api/galeria?populate=*",
-      "/api/gallery?populate=*",
-    ];
-    for (const url of urls) {
-      const response = await fetchStrapi(url);
-      if (response?.error) continue;
-      const data = response?.data;
-      const attributes = data?.attributes ?? data ?? {};
-      const imageBanner = attributes?.imageBanner;
-      const bannerUrl = getImageUrl(
-        imageBanner as StrapiDestinationItem["image"],
-      );
-
-      const rawGroups = attributes?.galleryGroup ?? [];
-      const groupsArr = Array.isArray(rawGroups) ? rawGroups : [rawGroups];
-      const galleryGroups: GalleryGroup[] = groupsArr
-        .filter((g: unknown) => g && typeof g === "object")
-        .map((g: { title?: string; gallery?: unknown }) => ({
-          title: g.title ?? "Galería",
-          images: getMultipleMediaUrls(g.gallery),
-        }))
-        .filter((g) => g.images.length > 0);
-
-      const galleryImages = galleryGroups.flatMap((g) => g.images);
-
-      return {
-        imageBannerUrl: bannerUrl ? buildFullImageUrl(bannerUrl) : null,
-        galleryGroups,
-        galleryImages,
-      };
-    }
-    return { imageBannerUrl: null, galleryGroups: [], galleryImages: [] };
+    const response = await fetchStrapi("/api/gallery?populate=*");
+    if (response?.error)
+      return { imageBannerUrl: null, galleryGroups: [], galleryImages: [] };
+    const doc = (response?.data ?? {}) as Record<string, unknown>;
+    const imageBanner = doc.imageBanner;
+    const bannerUrl = getImageUrl(
+      imageBanner as StrapiDestinationItem["image"],
+    );
+    const rawGroups = doc.galleryGroup ?? [];
+    const groupsArr = Array.isArray(rawGroups) ? rawGroups : [rawGroups];
+    const galleryGroups: GalleryGroup[] = groupsArr
+      .filter((g: unknown) => g && typeof g === "object")
+      .map((g: { title?: string; gallery?: unknown }) => ({
+        title: (g.title as string) ?? "Galería",
+        images: getMultipleMediaUrls(g.gallery),
+      }))
+      .filter((g) => g.images.length > 0);
+    const galleryImages = galleryGroups.flatMap((g) => g.images);
+    return {
+      imageBannerUrl: bannerUrl ? buildFullImageUrl(bannerUrl) : null,
+      galleryGroups,
+      galleryImages,
+    };
   } catch (error) {
     console.error("Error fetching gallery from Strapi:", error);
     return { imageBannerUrl: null, galleryGroups: [], galleryImages: [] };
   }
 }
 
-/** Tipo para datos de la página About (single type) */
+/** Tipo para datos de la página About (Strapi v5 single type: data es el documento). */
 export interface AboutPageData {
-  /** Atributos crudos de Strapi para flexibilidad */
-  attributes: Record<string, unknown>;
-  /** Imagen de banner/hero si existe */
   imageBannerUrl: string | null;
-  /** Título principal */
   title?: string;
-  /** Subtítulo */
   subtitle?: string;
-  /** Descripción/lead */
   description?: string;
-  /** Contenido rich text si existe */
   content?: unknown;
-  /** Features/items con icono, título, descripción */
+  featuresSubTitle?: string;
+  featuresTitle?: string;
+  featuresDescription?: string;
   features?: Array<{ icon?: string; title?: string; description?: string }>;
-  /** Sección "Who We Are" */
   whoWeAre?: {
     title?: string;
     subtitle?: string;
     description?: string;
     imageUrl?: string | null;
   };
-  /** Galería de imágenes (What We section) */
+  whoWeAreTitle?: string;
+  whoWeAreDescription?: string;
+  whatWeSubTitle?: string;
+  whatWeTitle?: string;
   galleryImages?: string[];
-  /** CTA final */
   cta?: { title?: string; buttonText?: string; buttonLink?: string };
+  ctaTitle?: string;
+  ctaButtonText?: string;
+  ctaButtonLink?: string;
 }
 
-/** Extrae URL de imagen desde cualquier estructura común de Strapi (media) */
 function getMediaUrl(media: unknown): string {
   if (!media) return "";
   if (typeof media === "string") return media;
   const m = media as Record<string, unknown>;
-  // Strapi v4: data.attributes.url
-  const v4 = (m?.data as Record<string, unknown>)?.attributes as
-    | Record<string, unknown>
-    | undefined;
-  if (v4?.url && typeof v4.url === "string") return v4.url;
-  // Strapi v4/v5: data.url
   const dataUrl = (m?.data as Record<string, unknown>)?.url;
   if (typeof dataUrl === "string") return dataUrl;
-  // Direct url
   if (typeof m?.url === "string") return m.url;
   return "";
 }
 
-/** Obtiene datos de la página About (single type) desde Strapi */
+/** Obtiene datos de la página About (Strapi v5: data es el documento). */
 export async function fetchAboutPageData(): Promise<AboutPageData> {
-  const empty: AboutPageData = {
-    attributes: {},
-    imageBannerUrl: null,
-  };
+  const empty: AboutPageData = { imageBannerUrl: null };
   try {
-    const urls = [
-      "/api/about?populate[imageAbout][fields][0]=url&populate[imageBannerAbout][fields][0]=url&populate[imageAboutGallery][fields][0]=url&populate[features][populate]=*",
-      "/api/about?populate[imageAbout]=*&populate[imageBannerAbout]=*&populate[imageAboutGallery]=*",
-      "/api/about?populate=*",
-    ];
-    for (const url of urls) {
-      const response = await fetchStrapi(url);
-      if (response?.error) continue;
-      const data = response?.data;
-      const attrs = (data?.attributes ?? data ?? {}) as Record<string, unknown>;
+    const response = await fetchStrapi("/api/about?populate=*");
+    if (response?.error) return empty;
+    const doc = (response?.data ?? {}) as Record<string, unknown>;
 
-      const imageBannerAbout = attrs?.imageBannerAbout ?? attrs?.imageBanner;
-      const bannerUrl =
-        getMediaUrl(imageBannerAbout) ||
-        getImageUrl(imageBannerAbout as StrapiDestinationItem["image"]);
-      const imageBannerUrl = bannerUrl ? buildFullImageUrl(bannerUrl) : null;
+    const imageBannerAbout = doc.imageBannerAbout ?? doc.imageBanner;
+    const bannerUrl =
+      getMediaUrl(imageBannerAbout) ||
+      getImageUrl(imageBannerAbout as StrapiDestinationItem["image"]);
+    const imageBannerUrl = bannerUrl ? buildFullImageUrl(bannerUrl) : null;
 
-      const features = Array.isArray(attrs?.features)
-        ? (attrs.features as Array<Record<string, unknown>>).map((f) => ({
-            icon: String(f?.icon ?? f?.flaticon ?? ""),
-            title: String(f?.title ?? f?.name ?? ""),
-            description: String(f?.description ?? f?.text ?? ""),
-          }))
-        : undefined;
+    const features = Array.isArray(doc.features)
+      ? (doc.features as Array<Record<string, unknown>>).map((f) => ({
+          icon: String(f?.icon ?? f?.flaticon ?? ""),
+          title: String(f?.title ?? f?.name ?? ""),
+          description: String(f?.description ?? f?.text ?? ""),
+        }))
+      : undefined;
 
-      const imageAbout = attrs?.imageAbout ?? attrs?.whoWeAreImage;
-      const rawWhoWeUrl =
-        getMediaUrl(imageAbout) ||
-        getImageUrl(imageAbout as StrapiDestinationItem["image"]);
-      const whoWeImgUrl = rawWhoWeUrl ? buildFullImageUrl(rawWhoWeUrl) : null;
+    const imageAbout = doc.imageAbout ?? doc.whoWeAreImage;
+    const rawWhoWeUrl =
+      getMediaUrl(imageAbout) ||
+      getImageUrl(imageAbout as StrapiDestinationItem["image"]);
+    const whoWeImgUrl = rawWhoWeUrl ? buildFullImageUrl(rawWhoWeUrl) : null;
 
-      const imageAboutGallery = attrs?.imageAboutGallery;
-      const galleryImages = getMultipleMediaUrls(imageAboutGallery);
+    const galleryImages = getMultipleMediaUrls(doc.imageAboutGallery);
 
-      const whoWe = attrs?.whoWeAre as Record<string, unknown> | undefined;
-      return {
-        attributes: attrs,
-        imageBannerUrl,
-        galleryImages: galleryImages.length > 0 ? galleryImages : undefined,
-        title: attrs?.title ? String(attrs.title) : undefined,
-        subtitle:
-          (attrs?.subtitle ?? attrs?.subTitle)
-            ? String(attrs.subtitle ?? attrs.subTitle)
-            : undefined,
-        description: attrs?.description ? String(attrs.description) : undefined,
-        content: attrs?.content,
-        features,
-        whoWeAre: whoWe
+    const whoWe = doc.whoWeAre as Record<string, unknown> | undefined;
+    return {
+      imageBannerUrl,
+      galleryImages: galleryImages.length > 0 ? galleryImages : undefined,
+      title: doc.title ? String(doc.title) : undefined,
+      subtitle: (doc.subtitle ?? doc.subTitle)
+        ? String(doc.subtitle ?? doc.subTitle)
+        : undefined,
+      description: doc.description ? String(doc.description) : undefined,
+      content: doc.content,
+      featuresSubTitle: doc.featuresSubTitle ? String(doc.featuresSubTitle) : undefined,
+      featuresTitle: doc.featuresTitle ? String(doc.featuresTitle) : undefined,
+      featuresDescription: doc.featuresDescription ? String(doc.featuresDescription) : undefined,
+      features,
+      whoWeAre: whoWe
+        ? {
+            title: whoWe.title ? String(whoWe.title) : undefined,
+            subtitle: (whoWe.subtitle ?? whoWe.subTitle)
+              ? String(whoWe.subtitle ?? whoWe.subTitle)
+              : undefined,
+            description: whoWe.description
+              ? String(whoWe.description)
+              : undefined,
+            imageUrl: whoWeImgUrl,
+          }
+        : doc.imageAbout || doc.whoWeAreImage || doc.whoWeAre
+          ? { imageUrl: whoWeImgUrl }
+          : undefined,
+      whoWeAreTitle: doc.whoWeAreTitle ? String(doc.whoWeAreTitle) : undefined,
+      whoWeAreDescription: doc.whoWeAreDescription ? String(doc.whoWeAreDescription) : undefined,
+      whatWeSubTitle: doc.whatWeSubTitle ? String(doc.whatWeSubTitle) : undefined,
+      whatWeTitle: doc.whatWeTitle ? String(doc.whatWeTitle) : undefined,
+      cta:
+        doc.ctaTitle || doc.ctaButtonText
           ? {
-              title: whoWe.title ? String(whoWe.title) : undefined,
-              subtitle:
-                (whoWe.subtitle ?? whoWe.subTitle)
-                  ? String(whoWe.subtitle ?? whoWe.subTitle)
-                  : undefined,
-              description: whoWe.description
-                ? String(whoWe.description)
+              title: doc.ctaTitle ? String(doc.ctaTitle) : undefined,
+              buttonText: doc.ctaButtonText
+                ? String(doc.ctaButtonText)
                 : undefined,
-              imageUrl: whoWeImgUrl,
+              buttonLink: doc.ctaButtonLink
+                ? String(doc.ctaButtonLink)
+                : undefined,
             }
-          : attrs?.imageAbout || attrs?.whoWeAreImage || attrs?.whoWeAre
-            ? { imageUrl: whoWeImgUrl }
-            : undefined,
-        cta:
-          attrs?.ctaTitle || attrs?.ctaButtonText
-            ? {
-                title: attrs.ctaTitle ? String(attrs.ctaTitle) : undefined,
-                buttonText: attrs.ctaButtonText
-                  ? String(attrs.ctaButtonText)
-                  : undefined,
-                buttonLink: attrs.ctaButtonLink
-                  ? String(attrs.ctaButtonLink)
-                  : undefined,
-              }
-            : undefined,
-      };
-    }
-    return empty;
+          : undefined,
+      ctaTitle: doc.ctaTitle ? String(doc.ctaTitle) : undefined,
+      ctaButtonText: doc.ctaButtonText ? String(doc.ctaButtonText) : undefined,
+      ctaButtonLink: doc.ctaButtonLink ? String(doc.ctaButtonLink) : undefined,
+    };
   } catch (error) {
     console.error("Error fetching about from Strapi:", error);
     return empty;
   }
 }
 
-/** Obtiene un tour por slug desde Strapi. Soporta atributos "info" o "Tours". */
+/** Obtiene un tour por slug desde Strapi single type (Strapi v5: data.Tours). */
 export async function fetchTourBySlug(
   slug: string,
 ): Promise<AdaptedDestinationDetail | null> {
   try {
-    const urls = [
-      "/api/tour?populate[0]=Tours&populate[1]=Tours.image&populate[2]=Tours.imagesDetails&populate[3]=Tours.itineraryItem&populate[4]=Tours.mapItem",
-      "/api/tour?populate[0]=info&populate[1]=info.image&populate[2]=info.imagesDetails&populate[3]=info.itineraryItem&populate[4]=info.mapItem",
-      "/api/tour?populate=*",
-    ];
-    let items: StrapiDestinationItem[] = [];
-    for (const url of urls) {
-      const response = await fetchStrapi(url);
-      if (response?.error) continue;
-      const data = response?.data;
-      const attributes = data?.attributes ?? data ?? {};
-      items = Array.isArray(attributes?.Tours)
-        ? attributes.Tours
-        : Array.isArray(attributes?.info)
-          ? attributes.info
-          : [];
-      if (items.length > 0) break;
-    }
+    const response = await fetchStrapi("/api/tour?populate=*");
+    if (response?.error) return null;
+    const doc = (response?.data ?? {}) as Record<string, unknown>;
+    const items: StrapiDestinationItem[] = Array.isArray(doc.Tours)
+      ? (doc.Tours as StrapiDestinationItem[])
+      : [];
 
     const normalizedSlug = slug.toLowerCase().replace(/\s+/g, "-");
     const item = items.find((d) => {
@@ -1332,28 +1205,17 @@ export async function fetchTourBySlug(
 /** @deprecated Usar fetchTourBySlug */
 export const fetchDestinationBySlug = fetchTourBySlug;
 
-/** Obtiene un destino internacional por slug desde Strapi */
+/** Obtiene un destino internacional por slug (Strapi v5: data.info). */
 export async function fetchInternationalBySlug(
   slug: string,
 ): Promise<AdaptedInternationalDetail | null> {
   try {
-    const urls = [
-      "/api/international?populate[0]=info&populate[1]=info.image&populate[2]=info.imagesDetails&populate[3]=info.includes",
-      "/api/international?populate=*",
-      "/api/internacional?populate=*",
-    ];
-    let items: StrapiDestinationItem[] = [];
-    for (const url of urls) {
-      const response = await fetchStrapi(url);
-      if (response?.error) continue;
-      const data = response?.data;
-      const attributes = data?.attributes ?? data ?? {};
-      const list = attributes?.info;
-      if (Array.isArray(list) && list.length > 0) {
-        items = list;
-        break;
-      }
-    }
+    const response = await fetchStrapi("/api/international?populate=*");
+    if (response?.error) return null;
+    const doc = (response?.data ?? {}) as Record<string, unknown>;
+    const items: StrapiDestinationItem[] = Array.isArray(doc.info)
+      ? (doc.info as StrapiDestinationItem[])
+      : [];
     const normalizedSlug = slug.toLowerCase().replace(/\s+/g, "-");
     const item = items.find((d) => {
       const fromLink = getSlugFromLink(d.link);

@@ -3,9 +3,9 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import TourItem from '@/components/TourItem'
 import Link from 'next/link'
-import { fetchTourPageData, type AdaptedDestination } from '@/lib/strapi'
+import { fetchTourPageData, STRAPI_REVALIDATE_SECONDS, type AdaptedDestination } from '@/lib/strapi'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = STRAPI_REVALIDATE_SECONDS
 
 export default async function ToursPage() {
   let destinations: AdaptedDestination[] = []

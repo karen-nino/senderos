@@ -4,9 +4,9 @@ import Footer from '@/components/Footer'
 import PackageItem from '@/components/PackageItem'
 import SeasonPackageItem from '@/components/SeasonPackageItem'
 import Link from 'next/link'
-import { fetchPackagesPageData, fetchSeasonsForPackagesPage, type AdaptedDestination, type AdaptedSeason } from '@/lib/strapi'
+import { fetchPackagesPageData, fetchSeasonsForPackagesPage, STRAPI_REVALIDATE_SECONDS, type AdaptedDestination, type AdaptedSeason } from '@/lib/strapi'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = STRAPI_REVALIDATE_SECONDS
 
 const DEFAULT_IMAGE = '/assets/images/place/single-place-1.jpg'
 

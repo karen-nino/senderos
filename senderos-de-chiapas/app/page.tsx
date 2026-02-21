@@ -4,9 +4,9 @@ import TourItem from '@/components/TourItem'
 import SeasonPackageItem from '@/components/SeasonPackageItem'
 import HeroSlider from '@/components/HeroSlider'
 import Link from 'next/link'
-import { fetchStrapi, fetchDestinationsForHome, fetchPackages, fetchSeasonsForHome, parseHomeServices, parseHomeTestimonial, parseHomeHeroSlides, parseHomeGallery, GALLERY_FALLBACK_IMAGES, type AdaptedDestination, type AdaptedHomeService, type AdaptedSeason } from '@/lib/strapi'
+import { fetchStrapi, fetchDestinationsForHome, fetchPackages, fetchSeasonsForHome, parseHomeServices, parseHomeTestimonial, parseHomeHeroSlides, parseHomeGallery, GALLERY_FALLBACK_IMAGES, STRAPI_REVALIDATE_SECONDS, type AdaptedDestination, type AdaptedHomeService, type AdaptedSeason } from '@/lib/strapi'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = STRAPI_REVALIDATE_SECONDS
 
 export default async function Home() {
   let heroSlides: Awaited<ReturnType<typeof parseHomeHeroSlides>> = []
@@ -28,7 +28,7 @@ export default async function Home() {
       response = await fetchStrapi('/api/home?populate[0]=heroSlides&populate[1]=heroSlides.image&populate[2]=services&populate[3]=testimonial&populate[4]=gallery')
     }
     const home = response?.data || {}
-    // Strapi v4: single type usa data.attributes para los campos. HeroSlides con URLs resueltas vía proxy.
+    // Strapi v5: single type devuelve data con heroSlides, services, testimonial, gallery. URLs resueltas vía proxy.
     heroSlides = parseHomeHeroSlides(home)
     // Fallback: si no hay slides en Strapi, usar imagen del HTML Template (hero-one_img-1.jpg)
     if (heroSlides.length === 0) {

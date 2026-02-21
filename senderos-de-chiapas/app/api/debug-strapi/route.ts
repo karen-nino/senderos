@@ -8,16 +8,16 @@ export async function GET() {
     const url =
       "/api/tour?populate[0]=info&populate[1]=info.image&populate[2]=imageBanner";
     const response = await fetchStrapi(url);
+    const doc = response?.data ?? {};
+    const tours = Array.isArray((doc as Record<string, unknown>).Tours)
+      ? (doc as Record<string, unknown>).Tours
+      : [];
     return NextResponse.json(
       {
         raw: response,
         hasData: !!response?.data,
-        hasInfo: !!response?.data?.info || !!response?.data?.attributes?.info,
-        infoLength: Array.isArray(response?.data?.info)
-          ? response.data.info.length
-          : Array.isArray(response?.data?.attributes?.info)
-            ? response.data.attributes.info.length
-            : 0,
+        hasTours: Array.isArray(tours),
+        toursLength: tours.length,
       },
       { status: 200 }
     );

@@ -3,7 +3,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
 import { WhatsAppIcon } from '@/components/WhatsAppIcon'
-import { fetchTourBySlug, fetchTourPageData } from '@/lib/strapi'
+import { fetchTourBySlug, fetchTourPageData, STRAPI_REVALIDATE_SECONDS } from '@/lib/strapi'
 
 /** Extrae la URL del src de un iframe o devuelve la URL apropiada para el mapa */
 function getMapUrl(
@@ -49,7 +49,7 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-export const dynamic = 'force-dynamic'
+export const revalidate = STRAPI_REVALIDATE_SECONDS
 
 export default async function TourDetailPage({ params }: PageProps) {
   const { slug } = await params

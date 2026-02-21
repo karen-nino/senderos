@@ -1,9 +1,9 @@
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
-import { fetchAboutPageData } from '@/lib/strapi'
+import { fetchAboutPageData, STRAPI_REVALIDATE_SECONDS } from '@/lib/strapi'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = STRAPI_REVALIDATE_SECONDS
 
 const DEFAULT_FEATURES = [
   { icon: 'flaticon-gps', title: 'Experiencias y Tours', description: 'En zonas naturales y culturales.' },
@@ -89,9 +89,9 @@ export default async function About() {
   }
 
   const data = aboutData!
-  const featuresSubTitle = (data.attributes?.featuresSubTitle as string) ?? 'Únete a nuestra comunidad'
-  const featuresTitle = (data.attributes?.featuresTitle as string) ?? data.title ?? 'Explora con nosotros y disfruta de las mejores experiencias'
-  const featuresDescription = data.description ?? (data.attributes?.featuresDescription as string) ?? 'Descubre viajes únicos dentro y fuera de Chiapas con nosotros. Experiencias diseñadas a tu medida, atención personalizada y destinos inolvidables que se adaptan a tus intereses y presupuesto.'
+  const featuresSubTitle = data.featuresSubTitle ?? 'Únete a nuestra comunidad'
+  const featuresTitle = data.featuresTitle ?? data.title ?? 'Explora con nosotros y disfruta de las mejores experiencias'
+  const featuresDescription = data.description ?? data.featuresDescription ?? 'Descubre viajes únicos dentro y fuera de Chiapas con nosotros. Experiencias diseñadas a tu medida, atención personalizada y destinos inolvidables que se adaptan a tus intereses y presupuesto.'
 
   const features = (data.features && data.features.length > 0)
     ? data.features.map((f) => ({
@@ -102,16 +102,16 @@ export default async function About() {
     : DEFAULT_FEATURES
 
   const whoWeSubTitle = data.whoWeAre?.subtitle ?? 'Quiénes Somos'
-  const whoWeTitle = data.whoWeAre?.title ?? (data.attributes?.whoWeAreTitle as string) ?? 'Somos un equipo de expertos en turismo que te ofrece las mejores experiencias'
-  const whoWeDescription = data.whoWeAre?.description ?? (data.attributes?.whoWeAreDescription as string) ?? 'Con más de 10 años de experiencia en el sector turístico, en Senderos de Chiapas nos especializamos en diseñar viajes únicos y personalizados que se adaptan a tus intereses, estilo de viaje y presupuesto. Gracias a nuestro conocimiento profundo de los destinos y al trato cercano con cada viajero, transformamos cada itinerario en una experiencia inolvidable, ya sea explorando la belleza natural y cultural de Chiapas o descubriendo destinos fuera del estado.'
+  const whoWeTitle = data.whoWeAre?.title ?? data.whoWeAreTitle ?? 'Somos un equipo de expertos en turismo que te ofrece las mejores experiencias'
+  const whoWeDescription = data.whoWeAre?.description ?? data.whoWeAreDescription ?? 'Con más de 10 años de experiencia en el sector turístico, en Senderos de Chiapas nos especializamos en diseñar viajes únicos y personalizados que se adaptan a tus intereses, estilo de viaje y presupuesto. Gracias a nuestro conocimiento profundo de los destinos y al trato cercano con cada viajero, transformamos cada itinerario en una experiencia inolvidable, ya sea explorando la belleza natural y cultural de Chiapas o descubriendo destinos fuera del estado.'
   const whoWeImage = data.whoWeAre?.imageUrl || '/assets/images/gallery/we-1.jpg'
 
-  const whatWeSubTitle = (data.attributes?.whatWeSubTitle as string) ?? 'Beneficios'
-  const whatWeTitle = (data.attributes?.whatWeTitle as string) ?? 'Razones para viajar con nosotros'
+  const whatWeSubTitle = data.whatWeSubTitle ?? 'Beneficios'
+  const whatWeTitle = data.whatWeTitle ?? 'Razones para viajar con nosotros'
 
-  const ctaTitle = data.cta?.title ?? (data.attributes?.ctaTitle as string) ?? 'Listo para una auténtica aventura en cualquier rincón del mundo'
-  const ctaButtonText = data.cta?.buttonText ?? (data.attributes?.ctaButtonText as string) ?? 'Explora Destinos'
-  const ctaButtonLink = data.cta?.buttonLink ?? (data.attributes?.ctaButtonLink as string) ?? '/tours'
+  const ctaTitle = data.cta?.title ?? data.ctaTitle ?? 'Listo para una auténtica aventura en cualquier rincón del mundo'
+  const ctaButtonText = data.cta?.buttonText ?? data.ctaButtonText ?? 'Explora Destinos'
+  const ctaButtonLink = data.cta?.buttonLink ?? data.ctaButtonLink ?? '/tours'
 
   const ctaBg = data.imageBannerUrl || '/assets/images/bg/cta-bg.jpg'
 

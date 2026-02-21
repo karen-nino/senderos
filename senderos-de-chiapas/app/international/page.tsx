@@ -3,9 +3,9 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import InternationalItem from '@/components/InternationalItem'
 import Link from 'next/link'
-import { fetchInternationalPageData, type AdaptedDestination } from '@/lib/strapi'
+import { fetchInternationalPageData, STRAPI_REVALIDATE_SECONDS, type AdaptedDestination } from '@/lib/strapi'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = STRAPI_REVALIDATE_SECONDS
 
 export default async function InternationalPage() {
   let destinations: AdaptedDestination[] = []

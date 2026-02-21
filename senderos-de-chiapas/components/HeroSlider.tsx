@@ -31,11 +31,9 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
   // Las URLs de imagen vienen pre-resueltas desde el servidor (con proxy /strapi-uploads)
   const getImageUrl = (image: HeroSlide['image']): string => {
     if (typeof image === 'string') return image
-    // Fallback para estructura raw de Strapi (por compatibilidad)
     const url =
-      (image as { data?: { attributes?: { url?: string }; url?: string } })?.data?.attributes?.url ??
-      (image as { data?: { url?: string } })?.data?.url ??
       (image as { url?: string })?.url ??
+      (image as { data?: { url?: string } })?.data?.url ??
       ''
     if (!url) return ''
     if (url.startsWith('http')) return url
@@ -45,10 +43,8 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
   }
 
   const getImageAlt = (image: HeroSlide['image'], title: string): string => {
-    if (typeof image === 'string') {
-      return title
-    }
-    return image?.data?.attributes?.alternativeText || title
+    if (typeof image === 'string') return title
+    return (image as { alternativeText?: string })?.alternativeText || title
   }
 
   useEffect(() => {
