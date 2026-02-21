@@ -5,8 +5,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const url =
-      "/api/tour?populate[0]=info&populate[1]=info.image&populate[2]=imageBanner";
+    const url = "/api/tour";
     const response = await fetchStrapi(url);
     const doc = (response?.data ?? {}) as Record<string, unknown>;
     const rawTours = doc.Tours;

@@ -20,13 +20,7 @@ export default async function Home() {
   try {
     // Obtener heroSlides (Página Principal - Carrusel), services y testimonial desde home
     // Sintaxis Strapi v5: heroSlides, services, testimonial, gallery (Página Principal)
-    let response = await fetchStrapi(
-      '/api/home?populate[0]=heroSlides&populate[1]=heroSlides.image&populate[2]=services&populate[3]=services.image&populate[4]=testimonial&populate[5]=testimonial.profilePhoto&populate[6]=testimonial.photo&populate[7]=gallery'
-    )
-    if (response?.error) {
-      // Fallback: populate=* o populate explícito de heroSlides
-      response = await fetchStrapi('/api/home?populate[0]=heroSlides&populate[1]=heroSlides.image&populate[2]=services&populate[3]=testimonial&populate[4]=gallery')
-    }
+    const response = await fetchStrapi('/api/home')
     const home = response?.data || {}
     // Strapi v5: single type devuelve data con heroSlides, services, testimonial, gallery. URLs resueltas vía proxy.
     heroSlides = parseHomeHeroSlides(home)

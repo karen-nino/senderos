@@ -11,7 +11,7 @@ export const STRAPI_REVALIDATE_SECONDS = 60;
 export function query(url: string) {
   const baseUrl = getStrapiBaseUrl();
   const resource = url === "tours" ? "tour" : url;
-  const fullUrl = `${baseUrl}/api/${resource}?populate=*`;
+  const fullUrl = `${baseUrl}/api/${resource}`;
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
@@ -430,7 +430,7 @@ export async function fetchTourPageData(): Promise<{
   imageBannerUrl: string | null;
 }> {
   try {
-    const response = await fetchStrapi("/api/tour?populate=*");
+    const response = await fetchStrapi("/api/tour");
     if (response?.error) return { destinations: [], imageBannerUrl: null };
     const doc = (response?.data ?? {}) as Record<string, unknown>;
     const items: StrapiDestinationItem[] = Array.isArray(doc.Tours)
@@ -458,7 +458,7 @@ export async function fetchInternationalPageData(): Promise<{
   imageBannerUrl: string | null;
 }> {
   try {
-    const response = await fetchStrapi("/api/international?populate=*");
+    const response = await fetchStrapi("/api/international");
     if (response?.error) return { destinations: [], imageBannerUrl: null };
     const doc = (response?.data ?? {}) as Record<string, unknown>;
     const items: StrapiDestinationItem[] = Array.isArray(doc.info)
@@ -641,7 +641,7 @@ function adaptStrapiSeasonItem(
 
 /** Obtiene las temporadas desde Strapi single type /api/package (Strapi v5: data.Temporada o data.season). */
 async function fetchRawSeasonsFromStrapi(): Promise<StrapiSeasonItem[]> {
-  const response = await fetchStrapi("/api/package?populate=*");
+  const response = await fetchStrapi("/api/package");
   if (response?.error) return [];
   const doc = (response?.data ?? {}) as Record<string, unknown>;
   const seasons = Array.isArray(doc.Temporada)
@@ -690,7 +690,7 @@ export async function fetchPackagesPageData(): Promise<{
   imageBannerUrl: string | null;
 }> {
   try {
-    const response = await fetchStrapi("/api/package?populate=*");
+    const response = await fetchStrapi("/api/package");
     if (response?.error) return { packages: [], imageBannerUrl: null };
     const doc = (response?.data ?? {}) as Record<string, unknown>;
     const rawItems = Array.isArray(doc.Paquete)
@@ -751,7 +751,7 @@ export async function fetchPackageBySlug(
   slug: string,
 ): Promise<AdaptedPackageDetail | null> {
   try {
-    const response = await fetchStrapi("/api/package?populate=*");
+    const response = await fetchStrapi("/api/package");
     if (response?.error) return null;
     const doc = (response?.data ?? {}) as Record<string, unknown>;
     const items: StrapiPackageItem[] = Array.isArray(doc.Paquete)
@@ -821,7 +821,7 @@ export async function fetchDestinationsForHome(): Promise<
   AdaptedDestination[]
 > {
   try {
-    const response = await fetchStrapi("/api/tour?populate=*");
+    const response = await fetchStrapi("/api/tour");
     if (response?.error) return [];
     const doc = (response?.data ?? {}) as Record<string, unknown>;
     const items: StrapiDestinationItem[] = Array.isArray(doc.Tours)
@@ -1028,7 +1028,7 @@ export async function fetchGalleryPageData(): Promise<{
   galleryImages: string[];
 }> {
   try {
-    const response = await fetchStrapi("/api/gallery?populate=*");
+    const response = await fetchStrapi("/api/gallery");
     if (response?.error)
       return { imageBannerUrl: null, galleryGroups: [], galleryImages: [] };
     const doc = (response?.data ?? {}) as Record<string, unknown>;
@@ -1099,7 +1099,7 @@ function getMediaUrl(media: unknown): string {
 export async function fetchAboutPageData(): Promise<AboutPageData> {
   const empty: AboutPageData = { imageBannerUrl: null };
   try {
-    const response = await fetchStrapi("/api/about?populate=*");
+    const response = await fetchStrapi("/api/about");
     if (response?.error) return empty;
     const doc = (response?.data ?? {}) as Record<string, unknown>;
 
@@ -1184,7 +1184,7 @@ export async function fetchTourBySlug(
   slug: string,
 ): Promise<AdaptedDestinationDetail | null> {
   try {
-    const response = await fetchStrapi("/api/tour?populate=*");
+    const response = await fetchStrapi("/api/tour");
     if (response?.error) return null;
     const doc = (response?.data ?? {}) as Record<string, unknown>;
     const items: StrapiDestinationItem[] = Array.isArray(doc.Tours)
@@ -1218,7 +1218,7 @@ export async function fetchInternationalBySlug(
   slug: string,
 ): Promise<AdaptedInternationalDetail | null> {
   try {
-    const response = await fetchStrapi("/api/international?populate=*");
+    const response = await fetchStrapi("/api/international");
     if (response?.error) return null;
     const doc = (response?.data ?? {}) as Record<string, unknown>;
     const items: StrapiDestinationItem[] = Array.isArray(doc.info)
