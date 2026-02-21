@@ -15,8 +15,12 @@ export function query(url: string) {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
-  if (STRAPI_TOKEN) {
-    headers.Authorization = `Bearer ${STRAPI_TOKEN}`;
+  const token =
+    typeof STRAPI_TOKEN === "string" && STRAPI_TOKEN.trim().length > 0
+      ? STRAPI_TOKEN.trim()
+      : null;
+  if (token !== null) {
+    headers.Authorization = `Bearer ${token}`;
   }
   return fetch(fullUrl, {
     headers,
@@ -40,8 +44,12 @@ export async function fetchStrapi(url: string) {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
-  if (STRAPI_TOKEN) {
-    headers.Authorization = `Bearer ${STRAPI_TOKEN}`;
+  const token =
+    typeof STRAPI_TOKEN === "string" && STRAPI_TOKEN.trim().length > 0
+      ? STRAPI_TOKEN.trim()
+      : null;
+  if (token !== null) {
+    headers.Authorization = `Bearer ${token}`;
   }
 
   const response = await fetch(fullUrl, {
