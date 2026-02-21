@@ -3,6 +3,10 @@ const { STRAPI_URL, STRAPI_TOKEN } = process.env;
 /** Revalidación ISR: regenerar datos de Strapi como máximo cada 60 segundos */
 export const STRAPI_REVALIDATE_SECONDS = 60;
 
+/** URL para single type tour con populate estructurado (Strapi v5: Banner y Tours). */
+const STRAPI_TOUR_URL =
+  "/api/tour?populate[Banner]=*&populate[Tours]=*";
+
 /**
  * Obtiene datos de Strapi (usa la misma configuración ISR que fetchStrapi).
  * Preferir fetchStrapi para respuestas tipadas y manejo de errores.
@@ -430,7 +434,7 @@ export async function fetchTourPageData(): Promise<{
   imageBannerUrl: string | null;
 }> {
   try {
-    const response = await fetchStrapi("/api/tour");
+    const response = await fetchStrapi(STRAPI_TOUR_URL);
     if (response?.error) return { destinations: [], imageBannerUrl: null };
     const doc = (response?.data ?? {}) as Record<string, unknown>;
     const items: StrapiDestinationItem[] = Array.isArray(doc.Tours)
@@ -821,7 +825,7 @@ export async function fetchDestinationsForHome(): Promise<
   AdaptedDestination[]
 > {
   try {
-    const response = await fetchStrapi("/api/tour");
+    const response = await fetchStrapi(STRAPI_TOUR_URL);
     if (response?.error) return [];
     const doc = (response?.data ?? {}) as Record<string, unknown>;
     const items: StrapiDestinationItem[] = Array.isArray(doc.Tours)
@@ -1184,7 +1188,7 @@ export async function fetchTourBySlug(
   slug: string,
 ): Promise<AdaptedDestinationDetail | null> {
   try {
-    const response = await fetchStrapi("/api/tour");
+    const response = await fetchStrapi(STRAPI_TOUR_URL);
     if (response?.error) return null;
     const doc = (response?.data ?? {}) as Record<string, unknown>;
     const items: StrapiDestinationItem[] = Array.isArray(doc.Tours)
