@@ -619,7 +619,7 @@ export interface ApiToursTour extends Struct.SingleTypeSchema {
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::tours.tour'> &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
-    Tours: Schema.Attribute.Component<'destinations.destinations', true>;
+    tour: Schema.Attribute.Component<'tour.tour', true>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

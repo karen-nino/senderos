@@ -71,6 +71,11 @@
         "sold_out",
         "hide"
       ]
+    },
+    "mapItem": {
+      "type": "component",
+      "component": "map.map-item",
+      "repeatable": true
     }
   },
   "config": {}

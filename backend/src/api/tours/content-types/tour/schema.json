@@ -19,9 +19,9 @@
         "images"
       ]
     },
-    "Tours": {
+    "tour": {
       "type": "component",
-      "component": "destinations.destinations",
+      "component": "tour.tour",
       "repeatable": true
     }
   }

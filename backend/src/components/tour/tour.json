@@ -4,6 +4,91 @@
     "displayName": "tour"
   },
   "options": {},
-  "attributes": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "departure": {
+      "type": "string"
+    },
+    "departureDate": {
+      "type": "string"
+    },
+    "accommodation": {
+      "type": "string"
+    },
+    "transport": {
+      "type": "string"
+    },
+    "duration": {
+      "type": "string"
+    },
+    "price": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "icons": {
+      "type": "json"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "home": {
+      "type": "boolean"
+    },
+    "imagesDetails": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "badge": {
+      "type": "enumeration",
+      "enum": [
+        "new",
+        "few_left",
+        "sold_out",
+        "hide"
+      ]
+    },
+    "includes": {
+      "type": "blocks"
+    },
+    "route": {
+      "type": "blocks"
+    },
+    "calendarStart": {
+      "type": "date"
+    },
+    "calendarEnd": {
+      "type": "date"
+    },
+    "itineraryItem": {
+      "type": "component",
+      "component": "itinerary.itinerary-item",
+      "repeatable": true
+    },
+    "mapItem": {
+      "type": "component",
+      "component": "map.map-item",
+      "repeatable": true
+    }
+  },
   "config": {}
 }

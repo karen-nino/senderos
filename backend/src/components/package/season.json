@@ -79,7 +79,7 @@
     },
     "mapItem": {
       "type": "component",
-      "component": "destinations.map-item",
+      "component": "map.map-item",
       "repeatable": true
     }
   },

@@ -79,11 +79,6 @@
       "type": "component",
       "component": "itinerary.itinerary-item",
       "repeatable": true
-    },
-    "mapItem": {
-      "type": "component",
-      "component": "destinations.map-item",
-      "repeatable": true
     }
   },
   "config": {}
