@@ -201,6 +201,14 @@ export interface PackageSeason extends Struct.ComponentSchema {
   };
 }
 
+export interface TourTour extends Struct.ComponentSchema {
+  collectionName: 'components_tour_tours';
+  info: {
+    displayName: 'tour';
+  };
+  attributes: {};
+}
+
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
@@ -214,6 +222,7 @@ declare module '@strapi/strapi' {
       'itinerary.itinerary-item': ItineraryItineraryItem;
       'package.package': PackagePackage;
       'package.season': PackageSeason;
+      'tour.tour': TourTour;
     }
   }
 }

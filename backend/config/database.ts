@@ -1,34 +1,30 @@
-import path from 'path';
+interface StrapiEnv {
+  (key: string, defaultValue?: unknown): string | number | boolean | undefined;
+  int: (key: string, defaultValue?: number) => number;
+}
 
-export default ({ env }) => {
-  const client = env('DATABASE_CLIENT', 'postgres');
+export default ({ env }: { env: StrapiEnv }) => {
+  const connectionString = env('DATABASE_URL');
 
-  const connections = {
-    postgres: {
+  if (!connectionString || typeof connectionString !== 'string') {
+    throw new Error(
+      'DATABASE_URL is required. Set DATABASE_URL in your environment (e.g. Neon connection string).'
+    );
+  }
+
+  return {
+    connection: {
+      client: 'postgres',
       connection: {
-        connectionString: env('DATABASE_URL'),
+        connectionString,
         ssl: {
           rejectUnauthorized: false,
         },
       },
       pool: {
         min: 0,
-        max: 5,
+        max: 10,
       },
-    },
-
-    sqlite: {
-      connection: {
-        filename: path.join(__dirname, '..', '..', env('DATABASE_FILENAME', '.tmp/data.db')),
-      },
-      useNullAsDefault: true,
-    },
-  };
-
-  return {
-    connection: {
-      client,
-      ...connections[client],
       acquireConnectionTimeout: env.int('DATABASE_CONNECTION_TIMEOUT', 60000),
     },
   };
