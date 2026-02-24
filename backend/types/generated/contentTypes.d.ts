@@ -444,11 +444,9 @@ export interface ApiAboutAbout extends Struct.SingleTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    imageAbout: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
-    imageAboutGallery: Schema.Attribute.Media<'images', true> &
-      Schema.Attribute.Required;
-    imageBannerAbout: Schema.Attribute.Media<'images'> &
-      Schema.Attribute.Required;
+    imageAbout: Schema.Attribute.Media<'images'>;
+    imageAboutGallery: Schema.Attribute.Media<'images', true>;
+    imageBannerAbout: Schema.Attribute.Media<'images'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::about.about'> &
       Schema.Attribute.Private;
@@ -474,7 +472,7 @@ export interface ApiGalleryGallery extends Struct.SingleTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     galleryGroup: Schema.Attribute.Component<'gallery.gallery', true>;
-    imageBanner: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
+    imageBanner: Schema.Attribute.Media<'images'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -508,7 +506,6 @@ export interface ApiHomeHome extends Struct.SingleTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     gallery: Schema.Attribute.Media<'images', true> &
-      Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
@@ -555,7 +552,7 @@ export interface ApiInternationalInternational extends Struct.SingleTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    imageBanner: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
+    imageBanner: Schema.Attribute.Media<'images'>;
     info: Schema.Attribute.Component<'international.international', true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -581,7 +578,7 @@ export interface ApiPackagePackage extends Struct.SingleTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    Banner: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
+    Banner: Schema.Attribute.Media<'images'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -600,7 +597,7 @@ export interface ApiPackagePackage extends Struct.SingleTypeSchema {
   };
 }
 
-export interface ApiToursTour extends Struct.SingleTypeSchema {
+export interface ApiTourTour extends Struct.CollectionTypeSchema {
   collectionName: 'tours';
   info: {
     displayName: 'Tours';
@@ -611,15 +608,67 @@ export interface ApiToursTour extends Struct.SingleTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    Banner: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
+    accommodation: Schema.Attribute.String;
+    badge: Schema.Attribute.Enumeration<
+      ['new', 'few_left', 'sold_out', 'hide']
+    >;
+    calendarEnd: Schema.Attribute.Date;
+    calendarStart: Schema.Attribute.Date;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    departure: Schema.Attribute.String;
+    departureDate: Schema.Attribute.String;
+    description: Schema.Attribute.String;
+    duration: Schema.Attribute.Integer;
+    home: Schema.Attribute.Boolean;
+    icons: Schema.Attribute.JSON;
+    image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    imagesDetails: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
+    includes: Schema.Attribute.Blocks;
+    itineraryItem: Schema.Attribute.Component<'itinerary.itinerary-item', true>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::tour.tour'> &
+      Schema.Attribute.Private;
+    location: Schema.Attribute.String;
+    mapItem: Schema.Attribute.Component<'map.map-item', true>;
+    price: Schema.Attribute.Decimal;
+    publishedAt: Schema.Attribute.DateTime;
+    route: Schema.Attribute.Blocks;
+    slug: Schema.Attribute.UID<'title'>;
+    title: Schema.Attribute.String;
+    transport: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiToursPaginaToursPagina extends Struct.SingleTypeSchema {
+  collectionName: 'tours_paginas';
+  info: {
+    displayName: 'Tours - P\u00E1gina';
+    pluralName: 'tours-paginas';
+    singularName: 'tours-pagina';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    banner: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<'oneToMany', 'api::tours.tour'> &
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::tours-pagina.tours-pagina'
+    > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
-    tour: Schema.Attribute.Component<'tour.tour', true>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1141,7 +1190,8 @@ declare module '@strapi/strapi' {
       'api::home.home': ApiHomeHome;
       'api::international.international': ApiInternationalInternational;
       'api::package.package': ApiPackagePackage;
-      'api::tours.tour': ApiToursTour;
+      'api::tour.tour': ApiTourTour;
+      'api::tours-pagina.tours-pagina': ApiToursPaginaToursPagina;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

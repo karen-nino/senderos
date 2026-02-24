@@ -37,7 +37,7 @@ export interface GalleryGallery extends Struct.ComponentSchema {
     displayName: 'Gallery';
   };
   attributes: {
-    gallery: Schema.Attribute.Media<'images', true> & Schema.Attribute.Required;
+    gallery: Schema.Attribute.Media<'images', true>;
     title: Schema.Attribute.String;
   };
 }
@@ -50,7 +50,7 @@ export interface HomeHeroSlide extends Struct.ComponentSchema {
   attributes: {
     ctaLink: Schema.Attribute.String;
     ctaText: Schema.Attribute.String;
-    image: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
+    image: Schema.Attribute.Media<'images'>;
     subtitle: Schema.Attribute.String;
     title: Schema.Attribute.String;
   };
@@ -64,7 +64,7 @@ export interface HomeServices extends Struct.ComponentSchema {
   attributes: {
     description: Schema.Attribute.Text;
     icon: Schema.Attribute.String;
-    image: Schema.Attribute.Media<'images', true> & Schema.Attribute.Required;
+    image: Schema.Attribute.Media<'images', true>;
     list: Schema.Attribute.Blocks;
     subtitle: Schema.Attribute.String;
     title: Schema.Attribute.String;
@@ -79,8 +79,8 @@ export interface HomeTestimonial extends Struct.ComponentSchema {
   attributes: {
     name: Schema.Attribute.String;
     ocupation: Schema.Attribute.String;
-    photo: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
-    profilePhoto: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
+    photo: Schema.Attribute.Media<'images'>;
+    profilePhoto: Schema.Attribute.Media<'images'>;
     testimonial: Schema.Attribute.Text;
   };
 }
@@ -101,9 +101,8 @@ export interface InternationalInternational extends Struct.ComponentSchema {
     duration: Schema.Attribute.String;
     home: Schema.Attribute.Boolean;
     icons: Schema.Attribute.JSON;
-    image: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
-    imagesDetails: Schema.Attribute.Media<'images', true> &
-      Schema.Attribute.Required;
+    image: Schema.Attribute.Media<'images'>;
+    imagesDetails: Schema.Attribute.Media<'images', true>;
     includes: Schema.Attribute.Blocks;
     link: Schema.Attribute.String;
     map: Schema.Attribute.String;
@@ -157,9 +156,8 @@ export interface PackagePackage extends Struct.ComponentSchema {
     description: Schema.Attribute.String;
     duration: Schema.Attribute.String;
     home: Schema.Attribute.Boolean;
-    image: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
-    imagesDetails: Schema.Attribute.Media<'images', true> &
-      Schema.Attribute.Required;
+    image: Schema.Attribute.Media<'images'>;
+    imagesDetails: Schema.Attribute.Media<'images', true>;
     includes: Schema.Attribute.Blocks;
     itineraryItem: Schema.Attribute.Component<'itinerary.itinerary-item', true>;
     mapItem: Schema.Attribute.Component<'map.map-item', true>;
@@ -186,9 +184,8 @@ export interface PackageSeason extends Struct.ComponentSchema {
     description: Schema.Attribute.String;
     duration: Schema.Attribute.String;
     home: Schema.Attribute.Boolean;
-    image: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
-    imagesDetails: Schema.Attribute.Media<'images', true> &
-      Schema.Attribute.Required;
+    image: Schema.Attribute.Media<'images'>;
+    imagesDetails: Schema.Attribute.Media<'images', true>;
     includes: Schema.Attribute.Blocks;
     itineraryItem: Schema.Attribute.Component<'itinerary.itinerary-item', true>;
     link: Schema.Attribute.String;
@@ -196,40 +193,6 @@ export interface PackageSeason extends Struct.ComponentSchema {
     price: Schema.Attribute.String;
     route: Schema.Attribute.Blocks;
     subtitle: Schema.Attribute.String;
-    title: Schema.Attribute.String;
-    transport: Schema.Attribute.String;
-  };
-}
-
-export interface TourTour extends Struct.ComponentSchema {
-  collectionName: 'components_tour_tours';
-  info: {
-    displayName: 'tour';
-  };
-  attributes: {
-    accommodation: Schema.Attribute.String;
-    badge: Schema.Attribute.Enumeration<
-      ['new', 'few_left', 'sold_out', 'hide']
-    >;
-    calendarEnd: Schema.Attribute.Date;
-    calendarStart: Schema.Attribute.Date;
-    departure: Schema.Attribute.String;
-    departureDate: Schema.Attribute.String;
-    description: Schema.Attribute.String;
-    duration: Schema.Attribute.String;
-    home: Schema.Attribute.Boolean;
-    icons: Schema.Attribute.JSON;
-    image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
-    imagesDetails: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios',
-      true
-    >;
-    includes: Schema.Attribute.Blocks;
-    itineraryItem: Schema.Attribute.Component<'itinerary.itinerary-item', true>;
-    location: Schema.Attribute.String;
-    mapItem: Schema.Attribute.Component<'map.map-item', true>;
-    price: Schema.Attribute.String;
-    route: Schema.Attribute.Blocks;
     title: Schema.Attribute.String;
     transport: Schema.Attribute.String;
   };
@@ -248,7 +211,6 @@ declare module '@strapi/strapi' {
       'map.map-item': MapMapItem;
       'package.package': PackagePackage;
       'package.season': PackageSeason;
-      'tour.tour': TourTour;
     }
   }
 }

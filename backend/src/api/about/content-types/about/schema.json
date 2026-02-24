@@ -14,7 +14,7 @@
     "imageAbout": {
       "type": "media",
       "multiple": false,
-      "required": true,
+      "required": false,
       "allowedTypes": [
         "images"
       ]
@@ -22,7 +22,7 @@
     "imageAboutGallery": {
       "type": "media",
       "multiple": true,
-      "required": true,
+      "required": false,
       "allowedTypes": [
         "images"
       ]
@@ -30,7 +30,7 @@
     "imageBannerAbout": {
       "type": "media",
       "multiple": false,
-      "required": true,
+      "required": false,
       "allowedTypes": [
         "images"
       ]

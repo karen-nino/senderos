@@ -1,10 +1,23 @@
 {
-  "collectionName": "components_tour_tours",
+  "kind": "collectionType",
+  "collectionName": "tours",
   "info": {
-    "displayName": "tour"
+    "singularName": "tour",
+    "pluralName": "tours",
+    "displayName": "Tours"
   },
-  "options": {},
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
   "attributes": {
+    "slug": {
+      "type": "uid",
+      "targetField": "title"
+    },
+    "home": {
+      "type": "boolean"
+    },
     "title": {
       "type": "string"
     },
@@ -24,10 +37,10 @@
       "type": "string"
     },
     "duration": {
-      "type": "string"
+      "type": "integer"
     },
     "price": {
-      "type": "string"
+      "type": "decimal"
     },
     "location": {
       "type": "string"
@@ -44,9 +57,6 @@
         "videos",
         "audios"
       ]
-    },
-    "home": {
-      "type": "boolean"
     },
     "imagesDetails": {
       "type": "media",
@@ -89,6 +99,5 @@
       "component": "map.map-item",
       "repeatable": true
     }
-  },
-  "config": {}
+  }
 }

@@ -53,7 +53,7 @@
         }
       },
       "multiple": true,
-      "required": true,
+      "required": false,
       "allowedTypes": [
         "images"
       ]

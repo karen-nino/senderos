@@ -1,0 +1,25 @@
+{
+  "kind": "singleType",
+  "collectionName": "tours_paginas",
+  "info": {
+    "singularName": "tours-pagina",
+    "pluralName": "tours-paginas",
+    "displayName": "Tours - Página"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "banner": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    }
+  }
+}
