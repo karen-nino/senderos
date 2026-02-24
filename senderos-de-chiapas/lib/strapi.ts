@@ -7,6 +7,10 @@ export const STRAPI_REVALIDATE_SECONDS = 60;
 const STRAPI_TOUR_URL =
   "/api/tour?populate[Banner]=*&populate[Tours]=*";
 
+/** URL para single type home con populate (Strapi v5 no devuelve componentes ni media por defecto). */
+export const STRAPI_HOME_URL =
+  "/api/home?populate[heroSlides][populate][image]=*&populate[services][populate][image]=*&populate[testimonial][populate][0]=profilePhoto&populate[testimonial][populate][1]=photo&populate[gallery]=*";
+
 /**
  * Obtiene datos de Strapi (usa la misma configuración ISR que fetchStrapi).
  * Preferir fetchStrapi para respuestas tipadas y manejo de errores.
@@ -173,9 +177,11 @@ export interface AdaptedDestination {
 function getImageUrl(image: StrapiDestinationItem["image"]): string {
   if (!image) return "";
   if (typeof image === "string") return image;
+  const data = image && typeof image === "object" && "data" in image ? (image as { data?: { url?: string; attributes?: { url?: string } } }).data : null;
   const url =
-    image.url ??
-    image.data?.url ??
+    (image as { url?: string }).url ??
+    data?.url ??
+    data?.attributes?.url ??
     (image.formats && Object.values(image.formats)[0]?.url) ??
     "";
   return url || "";
@@ -301,10 +307,13 @@ export interface AdaptedHeroSlide {
   ctaLink?: string;
 }
 
-/** Parsea heroSlides desde home (Strapi v5: data es el documento). */
+/** Parsea heroSlides desde home (Strapi v5: data es el documento; v4 puede usar data.attributes). */
 export function parseHomeHeroSlides(homeData: unknown): AdaptedHeroSlide[] {
   const doc = (homeData as Record<string, unknown>) ?? {};
-  const raw = doc?.heroSlides;
+  const attrs = (doc as { attributes?: Record<string, unknown> }).attributes;
+  const raw =
+    (Array.isArray(doc.heroSlides) ? doc.heroSlides : null) ??
+    (Array.isArray(attrs?.heroSlides) ? attrs.heroSlides : null);
   if (!Array.isArray(raw) || raw.length === 0) return [];
   return raw.map((s: Record<string, unknown>, i: number) => {
     const imageUrl = getImageUrl(s.image as StrapiDestinationItem["image"]);
