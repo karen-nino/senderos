@@ -3,9 +3,11 @@ const { STRAPI_URL, STRAPI_TOKEN } = process.env;
 /** Revalidación ISR: regenerar datos de Strapi como máximo cada 60 segundos */
 export const STRAPI_REVALIDATE_SECONDS = 60;
 
-/** URL para single type tour con populate estructurado (Strapi v5: Banner y Tours). */
-const STRAPI_TOUR_URL =
-  "/api/tour?populate[Banner]=*&populate[Tours]=*";
+/** Collection Type Tour (Strapi v5: GET /api/tours devuelve { data: [...] }). */
+const STRAPI_TOURS_POPULATE = "populate[image]=*&populate[imagesDetails]=*&populate[itineraryItem]=*&populate[mapItem]=*";
+const STRAPI_TOURS_URL = `/api/tours?${STRAPI_TOURS_POPULATE}`;
+/** Single type Tours - Página: banner para la lista de tours. */
+const STRAPI_TOURS_PAGINA_URL = "/api/tours-pagina?populate[banner]=*";
 
 const HOME_QUERY = "populate=*&status=published";
 const HOME_QUERY_ES = `${HOME_QUERY}&locale=es`;
@@ -34,11 +36,11 @@ export async function fetchHome(): Promise<{ data: Record<string, unknown> | nul
 /**
  * Obtiene datos de Strapi (usa la misma configuración ISR que fetchStrapi).
  * Preferir fetchStrapi para respuestas tipadas y manejo de errores.
- * Single type "Tours" en Strapi v5 expone GET /api/tour (singular).
+ * Collection Type "Tour" en Strapi v5 expone GET /api/tours (plural).
  */
 export function query(url: string) {
   const baseUrl = getStrapiBaseUrl();
-  const resource = url === "tours" ? "tour" : url;
+  const resource = url === "tour" ? "tours" : url;
   const fullUrl = `${baseUrl}/api/${resource}`;
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -68,8 +70,7 @@ export type FetchStrapiOptions = { useToken?: boolean };
 export async function fetchStrapi(url: string, options?: FetchStrapiOptions) {
   const baseUrl = getStrapiBaseUrl();
   const path = url.startsWith("/") ? url : `/${url}`;
-  const pathFixed = path.replace(/^\/api\/tours(\?|$)/, "/api/tour$1");
-  const fullUrl = `${baseUrl}${pathFixed}`;
+  const fullUrl = `${baseUrl}${path}`;
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -120,7 +121,7 @@ export interface StrapiItineraryItem {
   accommodation?: string | StrapiBlock | StrapiBlock[];
 }
 
-/** Formato de destino desde Strapi API /api/tour y /api/international */
+/** Formato de destino desde Strapi API /api/tours (Collection Type) y /api/international */
 export interface StrapiDestinationItem {
   id?: number;
   documentId?: string;
@@ -131,6 +132,8 @@ export interface StrapiDestinationItem {
   duration?: string;
   price?: string;
   link?: string;
+  /** Slug del tour (Collection Type tour tiene uid slug). */
+  slug?: string;
   location?: string;
   home?: boolean;
   icons?: string[];
@@ -519,30 +522,33 @@ export function adaptStrapiDestination(
     transport: d.transport,
     departure: d.departure,
     includes: blocksToList(d.includes),
-    slug: getSlugFromLink(d.link) || (d.title ? slugify(d.title) : undefined),
+    slug: d.slug ?? getSlugFromLink(d.link) ?? (d.title ? slugify(d.title) : undefined),
   };
 }
 
-/** Obtiene los destinos desde Strapi /api/tour */
+/** Obtiene los destinos (tours) desde Strapi Collection Type /api/tours */
 export async function fetchDestinations(): Promise<AdaptedDestination[]> {
   const result = await fetchTourPageData();
   return result.destinations;
 }
 
-/** Obtiene tours + banner desde single type /api/tour (Strapi v5: data.Tours, data.Banner). */
+/** Obtiene tours desde Collection Type /api/tours y banner desde single type /api/tours-pagina. */
 export async function fetchTourPageData(): Promise<{
   destinations: AdaptedDestination[];
   imageBannerUrl: string | null;
 }> {
   try {
-    const response = await fetchStrapi(STRAPI_TOUR_URL);
+    const response = await fetchStrapi(STRAPI_TOURS_URL);
     if (response?.error) return { destinations: [], imageBannerUrl: null };
-    const doc = (response?.data ?? {}) as Record<string, unknown>;
-    const items: StrapiDestinationItem[] = Array.isArray(doc.Tours)
-      ? (doc.Tours as StrapiDestinationItem[])
+    const rawData = response?.data;
+    const items: StrapiDestinationItem[] = Array.isArray(rawData)
+      ? (rawData as StrapiDestinationItem[])
       : [];
     const destinations = items.map(adaptStrapiDestination);
-    const imageBanner = doc.Banner;
+
+    const paginaRes = await fetchStrapi(STRAPI_TOURS_PAGINA_URL);
+    const paginaDoc = (paginaRes?.data ?? {}) as Record<string, unknown>;
+    const imageBanner = paginaDoc.banner;
     const bannerUrl = getImageUrl(
       imageBanner as StrapiDestinationItem["image"],
     );
@@ -921,19 +927,20 @@ export async function fetchPackageBySlug(
   }
 }
 
-/** Obtiene los tours con home: true desde single type /api/tour (Strapi v5: data.Tours). */
+/** Obtiene los tours con home: true desde Collection Type /api/tours. */
 export async function fetchDestinationsForHome(): Promise<
   AdaptedDestination[]
 > {
   try {
-    const response = await fetchStrapi(STRAPI_TOUR_URL);
+    const response = await fetchStrapi(
+      `/api/tours?filters[home][$eq]=true&${STRAPI_TOURS_POPULATE}`,
+    );
     if (response?.error) return [];
-    const doc = (response?.data ?? {}) as Record<string, unknown>;
-    const items: StrapiDestinationItem[] = Array.isArray(doc.Tours)
-      ? (doc.Tours as StrapiDestinationItem[])
+    const rawData = response?.data;
+    const items: StrapiDestinationItem[] = Array.isArray(rawData)
+      ? (rawData as StrapiDestinationItem[])
       : [];
-    const homeItems = items.filter((d) => d.home === true);
-    return homeItems.map(adaptStrapiDestination);
+    return items.map(adaptStrapiDestination);
   } catch (error) {
     console.error("Error fetching tours for home from Strapi:", error);
     return [];
@@ -1284,29 +1291,21 @@ export async function fetchAboutPageData(): Promise<AboutPageData> {
   }
 }
 
-/** Obtiene un tour por slug desde Strapi single type (Strapi v5: data.Tours). */
+/** Obtiene un tour por slug desde Collection Type /api/tours (filtro por slug). */
 export async function fetchTourBySlug(
   slug: string,
 ): Promise<AdaptedDestinationDetail | null> {
   try {
-    const response = await fetchStrapi(STRAPI_TOUR_URL);
+    const encodedSlug = encodeURIComponent(slug);
+    const response = await fetchStrapi(
+      `/api/tours?filters[slug][$eq]=${encodedSlug}&${STRAPI_TOURS_POPULATE}`,
+    );
     if (response?.error) return null;
-    const doc = (response?.data ?? {}) as Record<string, unknown>;
-    const items: StrapiDestinationItem[] = Array.isArray(doc.Tours)
-      ? (doc.Tours as StrapiDestinationItem[])
+    const rawData = response?.data;
+    const items: StrapiDestinationItem[] = Array.isArray(rawData)
+      ? (rawData as StrapiDestinationItem[])
       : [];
-
-    const normalizedSlug = slug.toLowerCase().replace(/\s+/g, "-");
-    const item = items.find((d) => {
-      const itemSlug = getSlugFromLink(d.link);
-      const titleSlug = d.title ? slugify(d.title) : "";
-      return (
-        itemSlug.toLowerCase() === normalizedSlug ||
-        itemSlug.toLowerCase().replace(/\s+/g, "-") === normalizedSlug ||
-        titleSlug === normalizedSlug
-      );
-    });
-
+    const item = items[0] ?? null;
     if (item) return adaptToDestinationDetail(item);
     return null;
   } catch (error) {
