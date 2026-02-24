@@ -3,6 +3,7 @@ import Footer from '@/components/Footer'
 import TourItem from '@/components/TourItem'
 import SeasonPackageItem from '@/components/SeasonPackageItem'
 import HeroSlider from '@/components/HeroSlider'
+import GallerySlider from '@/components/GallerySlider'
 import Link from 'next/link'
 import { fetchHome, fetchHomeHeroSlides, fetchDestinationsForHome, fetchPackages, fetchSeasonsForHome, parseHomeServices, parseHomeTestimonial, parseHomeGallery, GALLERY_FALLBACK_IMAGES, STRAPI_REVALIDATE_SECONDS, type AdaptedDestination, type AdaptedHomeService, type AdaptedSeason } from '@/lib/strapi'
 
@@ -339,25 +340,8 @@ export default async function Home() {
         </section>
       )}
 
-      {/* Gallery Section - Imágenes desde Página Principal gallery (Strapi) */}
-      <section className="gallery-section pt-200 mbm-150">
-        <div className="container-fluid">
-          <div className="slider-active-5-item wow fadeInUp">
-            {(galleryImages.length > 0 ? galleryImages : GALLERY_FALLBACK_IMAGES).map((src, i) => (
-              <div key={i} className="single-gallery-item">
-                <div className="gallery-img">
-                  <img src={src} alt={`Gallery Image ${i + 1}`} />
-                  <div className="hover-overlay">
-                    <a href={src} className="icon-btn img-popup">
-                      <i className="far fa-plus"></i>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Gallery Section - slider inicializado en cliente (igual que hero en Vercel) */}
+      <GallerySlider images={galleryImages.length > 0 ? galleryImages : GALLERY_FALLBACK_IMAGES} />
 
       <Footer />
     </>
