@@ -3,8 +3,8 @@ const { STRAPI_URL, STRAPI_TOKEN } = process.env;
 /** Revalidación ISR: regenerar datos de Strapi como máximo cada 60 segundos */
 export const STRAPI_REVALIDATE_SECONDS = 60;
 
-/** Collection Type Tour (Strapi v5: GET /api/tours devuelve { data: [...] }). */
-const STRAPI_TOURS_POPULATE = "populate[image]=*&populate[imagesDetails]=*&populate[itineraryItem]=*&populate[mapItem]=*";
+/** Collection Type Tour (Strapi v5: GET /api/tours). Evitar populate[image]=* porque Strapi devuelve ValidationError "Invalid key related at image.related". */
+const STRAPI_TOURS_POPULATE = "populate=*";
 const STRAPI_TOURS_URL = `/api/tours?${STRAPI_TOURS_POPULATE}`;
 /** Single type Tours - Página: banner para la lista de tours. */
 const STRAPI_TOURS_PAGINA_URL = "/api/tours-pagina?populate[banner]=*";
@@ -927,13 +927,13 @@ export async function fetchPackageBySlug(
   }
 }
 
-/** Obtiene los tours con home: true desde Collection Type /api/tours. */
+/** Obtiene todos los tours publicados para la home (Collection Type /api/tours). Sin filtro home para que se vean todos; la home excluye solo badge "hide". */
 export async function fetchDestinationsForHome(): Promise<
   AdaptedDestination[]
 > {
   try {
     const response = await fetchStrapi(
-      `/api/tours?filters[home][$eq]=true&${STRAPI_TOURS_POPULATE}`,
+      `/api/tours?${STRAPI_TOURS_POPULATE}`,
     );
     if (response?.error) return [];
     const rawData = response?.data;
