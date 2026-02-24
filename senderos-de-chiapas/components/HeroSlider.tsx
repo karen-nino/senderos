@@ -51,55 +51,51 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
   }
 
   useEffect(() => {
-    // Reinicializar el slider después de que el componente se monte
-    if (typeof window !== 'undefined' && (window as any).jQuery) {
+    if (typeof window === 'undefined') return
+
+    const initSlider = () => {
       const $ = (window as any).jQuery
+      if (!$ || !$('.hero-slider-one').length || typeof $.fn.slick === 'undefined') return false
+      if ($('.hero-slider-one').hasClass('slick-initialized')) {
+        try { $('.hero-slider-one').slick('unslick') } catch (_) { /* ignore */ }
+      }
+      $('.hero-slider-one').slick({
+        dots: false,
+        arrows: true,
+        infinite: true,
+        speed: 800,
+        fade: true,
+        autoplay: true,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        prevArrow: '<div class="prev"><i class="fal fa-arrow-left"></i></div>',
+        nextArrow: '<div class="next"><i class="fal fa-arrow-right"></i></div>',
+        responsive: [{ breakpoint: 1200, settings: { arrows: false } }],
+      })
+      return true
+    }
 
-      // Esperar a que los scripts se carguen
-      const initSlider = () => {
-        if ($('.hero-slider-one').length && typeof $.fn.slick !== 'undefined') {
-          // Destruir el slider existente si ya está inicializado
-          if ($('.hero-slider-one').hasClass('slick-initialized')) {
-            $('.hero-slider-one').slick('unslick')
-          }
-
-          // Inicializar el slider
-          $('.hero-slider-one').slick({
-            dots: false,
-            arrows: true,
-            infinite: true,
-            speed: 800,
-            fade: true,
-            autoplay: true,
-            slidesToShow: 1,
-            slidesToScroll: 1,
-            prevArrow: '<div class="prev"><i class="fal fa-arrow-left"></i></div>',
-            nextArrow: '<div class="next"><i class="fal fa-arrow-right"></i></div>',
-            responsive: [
-              {
-                breakpoint: 1200,
-                settings: {
-                  arrows: false
-                }
-              },
-            ]
-          })
+    if (initSlider()) {
+      return () => {
+        const $ = (window as any).jQuery
+        if ($ && $('.hero-slider-one').hasClass('slick-initialized')) {
+          try { $('.hero-slider-one').slick('unslick') } catch (_) { /* ignore */ }
         }
       }
+    }
 
-      // Intentar inicializar inmediatamente
-      initSlider()
+    const maxAttempts = 25
+    let attempts = 0
+    const id = setInterval(() => {
+      attempts++
+      if (initSlider() || attempts >= maxAttempts) clearInterval(id)
+    }, 200)
 
-      // Si no está listo, esperar un poco más
-      const timer = setTimeout(() => {
-        initSlider()
-      }, 500)
-
-      return () => {
-        clearTimeout(timer)
-        if ($('.hero-slider-one').hasClass('slick-initialized')) {
-          $('.hero-slider-one').slick('unslick')
-        }
+    return () => {
+      clearInterval(id)
+      const $ = (window as any).jQuery
+      if ($ && $('.hero-slider-one').hasClass('slick-initialized')) {
+        try { $('.hero-slider-one').slick('unslick') } catch (_) { /* ignore */ }
       }
     }
   }, [slides])
