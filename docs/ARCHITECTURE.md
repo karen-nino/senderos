@@ -101,8 +101,11 @@
 
 ### Single type: Home (Página Principal)
 
-- **API:** `/api/homes` (Strapi v5 usa plural para single types). Parámetros: `populate=*`, `status=published`.
+- **API:** `/api/home` (singular; en esta instancia `/api/homes` devuelve 404). Parámetros: `populate=*`, `status=published`.
 - Incluye: heroSlides (repeatable), services, testimonial, gallery.
+- **Permisos:** En Strapi → **Settings → Users & Permissions → Roles → Public**:
+  - **Home (Página Principal):** activa **find**.
+  - Para que las imágenes del hero (y otras media) se devuelvan populadas, activa **find** en **Content Manager → Media Library** (o **Upload**, según versión). Sin esto, `heroSlides[].image` puede llegar vacío o solo con id.
 
 ### Otros single types
 

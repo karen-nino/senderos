@@ -27,19 +27,22 @@ interface HeroSliderProps {
   slides: HeroSlide[]
 }
 
+const HERO_FALLBACK_IMAGE = '/assets/images/hero/hero-one_img-1.jpg'
+
 export default function HeroSlider({ slides }: HeroSliderProps) {
-  // Las URLs de imagen vienen pre-resueltas desde el servidor (con proxy /strapi-uploads)
+  // Las URLs vienen del servidor como string (proxy /strapi-uploads o fallback)
   const getImageUrl = (image: HeroSlide['image']): string => {
-    if (typeof image === 'string') return image
+    if (typeof image === 'string') return image || HERO_FALLBACK_IMAGE
     const url =
       (image as { url?: string })?.url ??
       (image as { data?: { url?: string } })?.data?.url ??
       ''
-    if (!url) return ''
+    if (!url) return HERO_FALLBACK_IMAGE
+    if (url.startsWith('/api/strapi-uploads') || url.startsWith('/strapi-uploads')) return url
     if (url.startsWith('http')) return url
     const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337'
     const cleanUrl = url.startsWith('/') ? url : `/${url}`
-    return `${strapiUrl}${cleanUrl}`
+    return cleanUrl.startsWith('/uploads/') ? `/api/strapi-uploads/${cleanUrl.replace(/^\/uploads\//, '')}` : `${strapiUrl}${cleanUrl}`
   }
 
   const getImageAlt = (image: HeroSlide['image'], title: string): string => {
@@ -147,16 +150,10 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
                   </div>
                   <div className="col-xl-6">
                     <div className="hero-image" data-animation="fadeInRight">
-                      {slide.image ? (
-                        <img
-                          src={getImageUrl(slide.image)}
-                          alt={getImageAlt(slide.image, slide.title)}
-                        />
-                      ) : (
-                        <div style={{ padding: '20px', background: '#f0f0f0', textAlign: 'center' }}>
-                          <p>No hay imagen configurada para este slide</p>
-                        </div>
-                      )}
+                      <img
+                        src={getImageUrl(slide.image)}
+                        alt={getImageAlt(slide.image, slide.title)}
+                      />
                     </div>
                   </div>
                 </div>

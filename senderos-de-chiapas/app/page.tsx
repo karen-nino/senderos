@@ -4,12 +4,12 @@ import TourItem from '@/components/TourItem'
 import SeasonPackageItem from '@/components/SeasonPackageItem'
 import HeroSlider from '@/components/HeroSlider'
 import Link from 'next/link'
-import { fetchStrapi, STRAPI_HOME_URL, fetchDestinationsForHome, fetchPackages, fetchSeasonsForHome, parseHomeServices, parseHomeTestimonial, parseHomeHeroSlides, parseHomeGallery, GALLERY_FALLBACK_IMAGES, STRAPI_REVALIDATE_SECONDS, type AdaptedDestination, type AdaptedHomeService, type AdaptedSeason } from '@/lib/strapi'
+import { fetchHome, fetchHomeHeroSlides, fetchDestinationsForHome, fetchPackages, fetchSeasonsForHome, parseHomeServices, parseHomeTestimonial, parseHomeGallery, GALLERY_FALLBACK_IMAGES, STRAPI_REVALIDATE_SECONDS, type AdaptedDestination, type AdaptedHomeService, type AdaptedSeason } from '@/lib/strapi'
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
 
 export default async function Home() {
-  let heroSlides: Awaited<ReturnType<typeof parseHomeHeroSlides>> = []
+  let heroSlides: Awaited<ReturnType<typeof fetchHomeHeroSlides>> = []
   let destinations: AdaptedDestination[] = []
   let packages: AdaptedDestination[] = []
   let services: AdaptedHomeService[] = []
@@ -20,10 +20,9 @@ export default async function Home() {
   try {
     // Obtener heroSlides (Página Principal - Carrusel), services y testimonial desde home
     // Sintaxis Strapi v5: heroSlides, services, testimonial, gallery (Página Principal)
-    const response = await fetchStrapi(STRAPI_HOME_URL)
+    const response = await fetchHome()
     const home = response?.data || {}
-    // Strapi v5: single type devuelve data con heroSlides, services, testimonial, gallery. URLs resueltas vía proxy.
-    heroSlides = parseHomeHeroSlides(home)
+    heroSlides = await fetchHomeHeroSlides(home as Record<string, unknown>)
     // Fallback: si no hay slides en Strapi, usar imagen del HTML Template (hero-one_img-1.jpg)
     if (heroSlides.length === 0) {
       heroSlides = [

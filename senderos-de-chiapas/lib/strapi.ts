@@ -7,9 +7,29 @@ export const STRAPI_REVALIDATE_SECONDS = 60;
 const STRAPI_TOUR_URL =
   "/api/tour?populate[Banner]=*&populate[Tours]=*";
 
-/** URL para single type home (Strapi v5 usa plural API ID: /api/homes). populate=* = 1 nivel (componentes + media). status=published para Draft&Publish. */
-export const STRAPI_HOME_URL =
-  "/api/homes?populate=*&status=published";
+const HOME_QUERY = "populate=*&status=published";
+const HOME_QUERY_ES = `${HOME_QUERY}&locale=es`;
+const HOME_QUERY_DEEP =
+  "populate[heroSlides][populate]=*&populate[services][populate]=*&populate[testimonial][populate]=*&populate[gallery]=*&status=published";
+/** Single type puede ser /api/home o /api/homes. populate[X][populate]=* trae todos los campos del componente (incl. media). */
+const HOME_URLS = [
+  `/api/home?${HOME_QUERY_DEEP}`,
+  `/api/home?${HOME_QUERY}`,
+  `/api/homes?${HOME_QUERY}`,
+  `/api/home?${HOME_QUERY_ES}`,
+  `/api/homes?${HOME_QUERY_ES}`,
+] as const;
+export const STRAPI_HOME_URL = HOME_URLS[0];
+
+/** Obtiene Página Principal sin token para usar rol Public (find). Evita 401 si el API Token no tiene permiso en Home. */
+export async function fetchHome(): Promise<{ data: Record<string, unknown> | null; error?: unknown }> {
+  for (const url of HOME_URLS) {
+    const res = await fetchStrapi(url, { useToken: false });
+    if (res?.data != null && typeof res.data === "object") return { data: res.data as Record<string, unknown> };
+    if (res?.error) console.warn("[Strapi] home:", url, res.error);
+  }
+  return { data: null };
+}
 
 /**
  * Obtiene datos de Strapi (usa la misma configuración ISR que fetchStrapi).
@@ -43,7 +63,9 @@ function getStrapiBaseUrl(): string {
   return url.replace(/\/$/, "");
 }
 
-export async function fetchStrapi(url: string) {
+export type FetchStrapiOptions = { useToken?: boolean };
+
+export async function fetchStrapi(url: string, options?: FetchStrapiOptions) {
   const baseUrl = getStrapiBaseUrl();
   const path = url.startsWith("/") ? url : `/${url}`;
   const pathFixed = path.replace(/^\/api\/tours(\?|$)/, "/api/tour$1");
@@ -52,8 +74,11 @@ export async function fetchStrapi(url: string) {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
+  const useToken = options?.useToken !== false;
   const token =
-    typeof STRAPI_TOKEN === "string" && STRAPI_TOKEN.trim().length > 0
+    useToken &&
+    typeof STRAPI_TOKEN === "string" &&
+    STRAPI_TOKEN.trim().length > 0
       ? STRAPI_TOKEN.trim()
       : null;
   if (token !== null) {
@@ -174,28 +199,54 @@ export interface AdaptedDestination {
   slug?: string;
 }
 
+/** Busca la primera propiedad "url" en un objeto/array (Strapi puede anidar la media). */
+function findUrlInObject(value: unknown): string {
+  if (value == null) return "";
+  if (typeof value === "string") return value.trim();
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      const u = findUrlInObject(item);
+      if (u) return u;
+    }
+    return "";
+  }
+  if (typeof value === "object") {
+    const obj = value as Record<string, unknown>;
+    if (obj.url != null && typeof obj.url === "string") return obj.url.trim();
+    for (const v of Object.values(obj)) {
+      const u = findUrlInObject(v);
+      if (u) return u;
+    }
+  }
+  return "";
+}
+
 function getImageUrl(image: StrapiDestinationItem["image"]): string {
   if (!image) return "";
-  if (typeof image === "string") return image;
-  const data = image && typeof image === "object" && "data" in image ? (image as { data?: { url?: string; attributes?: { url?: string } } }).data : null;
+  if (typeof image === "string") return image.trim();
+  const obj = image as Record<string, unknown>;
+  const data = obj?.data as { url?: string; attributes?: { url?: string } } | undefined;
+  const attrs = obj?.attributes as { url?: string } | undefined;
   const url =
-    (image as { url?: string }).url ??
+    (obj?.url as string) ??
     data?.url ??
     data?.attributes?.url ??
-    (image.formats && Object.values(image.formats)[0]?.url) ??
+    attrs?.url ??
+    (obj.formats && Object.values(obj.formats as Record<string, { url?: string }>)[0]?.url) ??
+    findUrlInObject(image) ??
     "";
-  return url || "";
+  return (url && String(url).trim()) || "";
 }
 
 function buildFullImageUrl(imageUrl: string): string {
   if (!imageUrl) return "";
-  if (imageUrl.startsWith("http")) return imageUrl;
-  const cleanUrl = imageUrl.startsWith("/") ? imageUrl : `/${imageUrl}`;
-  // Usar proxy /strapi-uploads para que las imágenes carguen desde el mismo origen
-  // (evita CORS y permite acceso cuando Strapi está en localhost)
-  if (cleanUrl.startsWith("/uploads/")) {
-    return `/strapi-uploads${cleanUrl.replace("/uploads", "")}`;
+  const trimmed = imageUrl.trim();
+  const uploadsMatch = trimmed.match(/\/uploads\/(.+)$/) ?? trimmed.match(/^uploads\/(.+)$/);
+  if (uploadsMatch) {
+    return `/api/strapi-uploads/${uploadsMatch[1]}`;
   }
+  if (trimmed.startsWith("http")) return trimmed;
+  const cleanUrl = trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
   return `${getStrapiBaseUrl()}${cleanUrl}`;
 }
 
@@ -294,7 +345,7 @@ export interface AdaptedTestimonial {
   photoUrl: string;
 }
 
-/** Hero slide adaptado con URL de imagen resuelta (usa proxy /strapi-uploads) */
+/** Hero slide adaptado con URL de imagen resuelta (usa proxy /api/strapi-uploads) */
 export interface AdaptedHeroSlide {
   id?: number;
   title: string;
@@ -305,6 +356,15 @@ export interface AdaptedHeroSlide {
   buttonLink?: string;
   ctaText?: string;
   ctaLink?: string;
+}
+
+/** Extrae el id numérico de la media (cuando Strapi no popula y solo devuelve id). */
+function getMediaId(image: unknown): number | null {
+  if (image == null) return null;
+  if (typeof image === "number" && Number.isInteger(image)) return image;
+  const o = image as Record<string, unknown>;
+  if (typeof o?.id === "number") return o.id as number;
+  return null;
 }
 
 /** Parsea heroSlides desde home (Strapi v5: data es el documento; v4 puede usar data.attributes). */
@@ -323,6 +383,7 @@ export function parseHomeHeroSlides(homeData: unknown): AdaptedHeroSlide[] {
     const fullUrl = imageUrl
       ? buildFullImageUrl(imageUrl)
       : HERO_FALLBACK_IMAGE;
+    const mediaId = getMediaId(s.image);
     return {
       id: (s.id as number) ?? i,
       title: (s.title as string) ?? "",
@@ -333,8 +394,36 @@ export function parseHomeHeroSlides(homeData: unknown): AdaptedHeroSlide[] {
       buttonLink: (s.buttonLink as string) ?? undefined,
       ctaText: (s.ctaText as string) ?? undefined,
       ctaLink: (s.ctaLink as string) ?? undefined,
-    };
+      _mediaId: mediaId,
+    } as AdaptedHeroSlide & { _mediaId?: number | null };
   });
+}
+
+/** Resuelve imágenes de hero: si el slide tiene imagen fallback pero sí tiene mediaId, pide la URL a /api/upload/files/:id. */
+export async function fetchHomeHeroSlides(homeData: Record<string, unknown> | null): Promise<AdaptedHeroSlide[]> {
+  const slides = parseHomeHeroSlides(homeData) as (AdaptedHeroSlide & { _mediaId?: number | null })[];
+  const resolved = await Promise.all(
+    slides.map(async (slide) => {
+      const mediaId = slide._mediaId;
+      const isFallback = slide.image === HERO_FALLBACK_IMAGE;
+      if (mediaId == null || !isFallback) {
+        const { _mediaId: _, ...s } = slide;
+        return s as AdaptedHeroSlide;
+      }
+      try {
+        const res = await fetchStrapi(`/api/upload/files/${mediaId}`, { useToken: false });
+        const data = res?.data as { url?: string } | undefined;
+        const url = data?.url;
+        const fullUrl = url ? buildFullImageUrl(url) : HERO_FALLBACK_IMAGE;
+        const { _mediaId: _, ...rest } = slide;
+        return { ...rest, image: fullUrl } as AdaptedHeroSlide;
+      } catch {
+        const { _mediaId: _, ...rest } = slide;
+        return { ...rest, image: HERO_FALLBACK_IMAGE } as AdaptedHeroSlide;
+      }
+    })
+  );
+  return resolved;
 }
 
 /** Parsea gallery (múltiple media) desde home (Strapi v5). */

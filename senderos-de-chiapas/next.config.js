@@ -14,7 +14,8 @@ const nextConfig = {
     ]
   },
   async rewrites() {
-    const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL || process.env.STRAPI_URL || 'http://localhost:1337'
+    // Usar STRAPI_URL primero para que el proxy de imágenes apunte al mismo Strapi que la API (local vs Fly).
+    const strapiUrl = process.env.STRAPI_URL || process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337'
     return [
       { source: '/destinos', destination: '/tours' },
       { source: '/destino-detalles/:path*', destination: '/tour-details/:path*' },
