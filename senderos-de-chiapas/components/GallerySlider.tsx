@@ -33,6 +33,9 @@ export default function GallerySlider({ images }: GallerySliderProps) {
           { breakpoint: 575, settings: { slidesToShow: 1 } },
         ],
       })
+      if (typeof $.fn.magnificPopup !== 'undefined') {
+        $('.slider-active-5-item .img-popup').magnificPopup({ type: 'image', gallery: { enabled: true } })
+      }
       return true
     }
 
