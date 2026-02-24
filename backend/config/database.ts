@@ -4,22 +4,18 @@ interface StrapiEnv {
 }
 
 export default ({ env }: { env: StrapiEnv }) => {
-  const connectionString = env('DATABASE_URL');
-
-  if (!connectionString || typeof connectionString !== 'string') {
-    throw new Error(
-      'DATABASE_URL is required. Set DATABASE_URL in your environment (e.g. Neon connection string).'
-    );
-  }
+  // Empty fallback so Docker build succeeds; Fly provides DATABASE_URL only at runtime.
+  const connectionString = String(env('DATABASE_URL', ''));
+  const useSsl = connectionString.length > 0;
 
   return {
     connection: {
       client: 'postgres',
       connection: {
         connectionString,
-        ssl: {
-          rejectUnauthorized: false,
-        },
+        ...(useSsl && {
+          ssl: { rejectUnauthorized: false },
+        }),
       },
       pool: {
         min: 0,

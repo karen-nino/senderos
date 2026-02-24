@@ -7,9 +7,9 @@ export const STRAPI_REVALIDATE_SECONDS = 60;
 const STRAPI_TOUR_URL =
   "/api/tour?populate[Banner]=*&populate[Tours]=*";
 
-/** URL para single type home con populate (Strapi v5 no devuelve componentes ni media por defecto). */
+/** URL para single type home (Strapi v5 usa plural API ID: /api/homes). populate=* = 1 nivel (componentes + media). status=published para Draft&Publish. */
 export const STRAPI_HOME_URL =
-  "/api/home?populate[heroSlides][populate][image]=*&populate[services][populate][image]=*&populate[testimonial][populate][0]=profilePhoto&populate[testimonial][populate][1]=photo&populate[gallery]=*";
+  "/api/homes?populate=*&status=published";
 
 /**
  * Obtiene datos de Strapi (usa la misma configuración ISR que fetchStrapi).
@@ -311,9 +311,12 @@ export interface AdaptedHeroSlide {
 export function parseHomeHeroSlides(homeData: unknown): AdaptedHeroSlide[] {
   const doc = (homeData as Record<string, unknown>) ?? {};
   const attrs = (doc as { attributes?: Record<string, unknown> }).attributes;
-  const raw =
-    (Array.isArray(doc.heroSlides) ? doc.heroSlides : null) ??
-    (Array.isArray(attrs?.heroSlides) ? attrs.heroSlides : null);
+  const heroSlidesField = doc.heroSlides ?? attrs?.heroSlides;
+  const raw = Array.isArray(heroSlidesField)
+    ? heroSlidesField
+    : Array.isArray((heroSlidesField as { data?: unknown[] })?.data)
+      ? (heroSlidesField as { data: unknown[] }).data
+      : null;
   if (!Array.isArray(raw) || raw.length === 0) return [];
   return raw.map((s: Record<string, unknown>, i: number) => {
     const imageUrl = getImageUrl(s.image as StrapiDestinationItem["image"]);
