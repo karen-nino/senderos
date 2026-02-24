@@ -1,0 +1,14 @@
+---
+description: Cuando el usuario escribe "git" significa add, commit y push
+alwaysApply: true
+---
+
+# Comando "git" del usuario
+
+Cuando el usuario escriba solo **"git"** (o pida "git", "haz git", etc.), interpretar como:
+
+1. `git add .`
+2. `git commit` (usar un mensaje descriptivo según los cambios recientes, o preguntar si hace falta)
+3. `git push`
+
+Ejecutar los tres pasos en ese orden (con los permisos necesarios: `git_write` para add/commit, `network` y `git_write` para push).
