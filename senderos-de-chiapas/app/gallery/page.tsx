@@ -18,7 +18,9 @@ export default async function Gallery() {
   }
 
   const bannerBg = imageBannerUrl || '/assets/images/bg/page-bg.jpg'
-  const hasDataFromStrapi = galleryGroups.length > 0
+  const hasBannerFromStrapi = imageBannerUrl != null
+  const hasGalleryGroups = galleryGroups.length > 0
+  const hasDataFromStrapi = hasBannerFromStrapi || hasGalleryGroups
 
   return (
     <>
@@ -42,7 +44,7 @@ export default async function Gallery() {
         </section>
       )}
 
-      {hasDataFromStrapi ? (
+      {hasGalleryGroups ? (
         <section className="gallery-area pt-180 pb-350">
           <div className="container">
             {galleryGroups.map((group, groupIdx) => (
@@ -57,7 +59,12 @@ export default async function Gallery() {
                     <div key={`${groupIdx}-${idx}`} className="col-lg-4 col-md-6 col-sm-6 col-6">
                       <div className="single-gallery-item mb-30 wow fadeInUp">
                         <div className="gallery-img">
-                          <img src={imgUrl} alt={`${group.title} ${idx + 1}`} />
+                          <img
+                            src={imgUrl}
+                            alt={`${group.title} ${idx + 1}`}
+                            loading="lazy"
+                            decoding="async"
+                          />
                           <div className="hover-overlay">
                             <a href={imgUrl} className="icon-btn img-popup"><i className="far fa-plus"></i></a>
                           </div>

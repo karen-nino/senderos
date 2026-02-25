@@ -33,14 +33,6 @@ function resolveIcon(icon?: string): string {
   return ICON_MAP[key] ?? (icon.startsWith('flaticon-') ? icon : `flaticon-${icon}`)
 }
 
-const requiredImages = [
-  { get: (d: Awaited<ReturnType<typeof fetchAboutPageData>>) => d?.whoWeAre?.imageUrl },
-  { get: (d: Awaited<ReturnType<typeof fetchAboutPageData>>) => d?.galleryImages?.[0] },
-  { get: (d: Awaited<ReturnType<typeof fetchAboutPageData>>) => d?.galleryImages?.[1] },
-  { get: (d: Awaited<ReturnType<typeof fetchAboutPageData>>) => d?.galleryImages?.[2] },
-  { get: (d: Awaited<ReturnType<typeof fetchAboutPageData>>) => d?.imageBannerUrl },
-]
-
 export default async function About() {
   let aboutData: Awaited<ReturnType<typeof fetchAboutPageData>> | null = null
   try {
@@ -49,9 +41,7 @@ export default async function About() {
     console.error('Error fetching about from Strapi:', error)
   }
 
-  const hasAllImages = aboutData && requiredImages.every((r) => Boolean(r.get(aboutData!)))
-
-  if (!hasAllImages) {
+  if (aboutData == null) {
     return (
       <>
         <Header />

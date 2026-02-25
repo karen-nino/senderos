@@ -1,17 +1,17 @@
 {
   "kind": "singleType",
-  "collectionName": "tours_paginas",
+  "collectionName": "tours_pages",
   "info": {
-    "singularName": "tours-pagina",
-    "pluralName": "tours-paginas",
-    "displayName": "Tours - Página"
+    "singularName": "tours-page",
+    "pluralName": "tours-pages",
+    "displayName": "Tours-Page"
   },
   "options": {
     "draftAndPublish": true
   },
   "pluginOptions": {},
   "attributes": {
-    "banner": {
+    "imageBanner": {
       "type": "media",
       "multiple": false,
       "allowedTypes": [

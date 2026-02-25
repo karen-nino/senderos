@@ -1,0 +1,25 @@
+{
+  "kind": "singleType",
+  "collectionName": "international_pages",
+  "info": {
+    "singularName": "international-page",
+    "pluralName": "international-pages",
+    "displayName": "International-Page"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "imageBanner": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    }
+  }
+}

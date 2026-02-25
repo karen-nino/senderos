@@ -486,6 +486,57 @@ export interface ApiGalleryGallery extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiHolidayHoliday extends Struct.CollectionTypeSchema {
+  collectionName: 'holidays';
+  info: {
+    displayName: 'Holiday';
+    pluralName: 'holidays';
+    singularName: 'holiday';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    accommodation: Schema.Attribute.String;
+    badge: Schema.Attribute.Enumeration<
+      ['new', 'few_left', 'sold_out', 'hide']
+    >;
+    calendarEnd: Schema.Attribute.Date;
+    calendarStart: Schema.Attribute.Date;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    departure: Schema.Attribute.String;
+    departureDate: Schema.Attribute.String;
+    description: Schema.Attribute.String;
+    duration: Schema.Attribute.String;
+    home: Schema.Attribute.Boolean;
+    image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    imagesDetails: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
+    includes: Schema.Attribute.Blocks;
+    itineraryItem: Schema.Attribute.Component<'itinerary.itinerary-item', true>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::holiday.holiday'
+    > &
+      Schema.Attribute.Private;
+    mapItem: Schema.Attribute.Component<'map.map-item', true>;
+    price: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    route: Schema.Attribute.Blocks;
+    subtitle: Schema.Attribute.String;
+    title: Schema.Attribute.String;
+    transport: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiHomeHome extends Struct.SingleTypeSchema {
   collectionName: 'homes';
   info: {
@@ -538,12 +589,13 @@ export interface ApiHomeHome extends Struct.SingleTypeSchema {
   };
 }
 
-export interface ApiInternationalInternational extends Struct.SingleTypeSchema {
-  collectionName: 'internationals';
+export interface ApiInternationalPageInternationalPage
+  extends Struct.SingleTypeSchema {
+  collectionName: 'international_pages';
   info: {
-    displayName: 'Internacional';
-    pluralName: 'internationals';
-    singularName: 'international';
+    displayName: 'International-Page';
+    pluralName: 'international-pages';
+    singularName: 'international-page';
   };
   options: {
     draftAndPublish: true;
@@ -552,12 +604,13 @@ export interface ApiInternationalInternational extends Struct.SingleTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    imageBanner: Schema.Attribute.Media<'images'>;
-    info: Schema.Attribute.Component<'international.international', true>;
+    imageBanner: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
-      'api::international.international'
+      'api::international-page.international-page'
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
@@ -567,10 +620,58 @@ export interface ApiInternationalInternational extends Struct.SingleTypeSchema {
   };
 }
 
-export interface ApiPackagePackage extends Struct.SingleTypeSchema {
+export interface ApiInternationalInternational
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'internationals';
+  info: {
+    displayName: 'International';
+    pluralName: 'internationals';
+    singularName: 'international';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    accommodation: Schema.Attribute.String;
+    badge: Schema.Attribute.Enumeration<
+      ['new', 'few_left', 'sold_out', 'hide']
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    departure: Schema.Attribute.String;
+    departureDate: Schema.Attribute.String;
+    description: Schema.Attribute.String;
+    duration: Schema.Attribute.String;
+    home: Schema.Attribute.Boolean;
+    image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    imagesDetails: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
+    includes: Schema.Attribute.Blocks;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::international.international'
+    > &
+      Schema.Attribute.Private;
+    price: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    route: Schema.Attribute.Blocks;
+    subtitle: Schema.Attribute.String;
+    title: Schema.Attribute.String;
+    transport: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiPackagePackage extends Struct.CollectionTypeSchema {
   collectionName: 'packages';
   info: {
-    displayName: 'Paquetes';
+    displayName: 'Package';
     pluralName: 'packages';
     singularName: 'package';
   };
@@ -578,19 +679,70 @@ export interface ApiPackagePackage extends Struct.SingleTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    Banner: Schema.Attribute.Media<'images'>;
+    accommodation: Schema.Attribute.String;
+    badge: Schema.Attribute.Enumeration<
+      ['new', 'few_left', 'sold_out', 'hide']
+    >;
+    calendarEnd: Schema.Attribute.Date;
+    calendarStart: Schema.Attribute.Date;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    departure: Schema.Attribute.String;
+    departureDate: Schema.Attribute.String;
+    description: Schema.Attribute.String;
+    duration: Schema.Attribute.String;
+    home: Schema.Attribute.Boolean;
+    image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    imagesDetails: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
+    includes: Schema.Attribute.Blocks;
+    itineraryItem: Schema.Attribute.Component<'itinerary.itinerary-item', true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::package.package'
     > &
       Schema.Attribute.Private;
-    Paquete: Schema.Attribute.Component<'package.package', true>;
+    mapItem: Schema.Attribute.Component<'map.map-item', true>;
+    price: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
-    Temporada: Schema.Attribute.Component<'package.season', true>;
+    route: Schema.Attribute.Blocks;
+    subtitle: Schema.Attribute.String;
+    title: Schema.Attribute.String;
+    transport: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiPackagesPagePackagesPage extends Struct.SingleTypeSchema {
+  collectionName: 'packages_pages';
+  info: {
+    displayName: 'Packages-Page';
+    pluralName: 'packages-pages';
+    singularName: 'packages-page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    imageBanner: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::packages-page.packages-page'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -620,7 +772,7 @@ export interface ApiTourTour extends Struct.CollectionTypeSchema {
     departure: Schema.Attribute.String;
     departureDate: Schema.Attribute.String;
     description: Schema.Attribute.String;
-    duration: Schema.Attribute.Integer;
+    duration: Schema.Attribute.String;
     home: Schema.Attribute.Boolean;
     icons: Schema.Attribute.JSON;
     image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
@@ -635,7 +787,7 @@ export interface ApiTourTour extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     location: Schema.Attribute.String;
     mapItem: Schema.Attribute.Component<'map.map-item', true>;
-    price: Schema.Attribute.Decimal;
+    price: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     route: Schema.Attribute.Blocks;
     slug: Schema.Attribute.UID<'title'>;
@@ -647,25 +799,27 @@ export interface ApiTourTour extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface ApiToursPaginaToursPagina extends Struct.SingleTypeSchema {
-  collectionName: 'tours_paginas';
+export interface ApiToursPageToursPage extends Struct.SingleTypeSchema {
+  collectionName: 'tours_pages';
   info: {
-    displayName: 'Tours - P\u00E1gina';
-    pluralName: 'tours-paginas';
-    singularName: 'tours-pagina';
+    displayName: 'Tours-Page';
+    pluralName: 'tours-pages';
+    singularName: 'tours-page';
   };
   options: {
     draftAndPublish: true;
   };
   attributes: {
-    banner: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    imageBanner: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
-      'api::tours-pagina.tours-pagina'
+      'api::tours-page.tours-page'
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
@@ -1187,11 +1341,14 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::about.about': ApiAboutAbout;
       'api::gallery.gallery': ApiGalleryGallery;
+      'api::holiday.holiday': ApiHolidayHoliday;
       'api::home.home': ApiHomeHome;
+      'api::international-page.international-page': ApiInternationalPageInternationalPage;
       'api::international.international': ApiInternationalInternational;
       'api::package.package': ApiPackagePackage;
+      'api::packages-page.packages-page': ApiPackagesPagePackagesPage;
       'api::tour.tour': ApiTourTour;
-      'api::tours-pagina.tours-pagina': ApiToursPaginaToursPagina;
+      'api::tours-page.tours-page': ApiToursPageToursPage;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

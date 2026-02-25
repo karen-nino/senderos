@@ -1,28 +1,80 @@
 {
-  "kind": "singleType",
+  "kind": "collectionType",
   "collectionName": "internationals",
   "info": {
     "singularName": "international",
     "pluralName": "internationals",
-    "displayName": "Internacional"
+    "displayName": "International"
   },
   "options": {
     "draftAndPublish": true
   },
   "pluginOptions": {},
   "attributes": {
-    "imageBanner": {
+    "title": {
+      "type": "string"
+    },
+    "home": {
+      "type": "boolean"
+    },
+    "subtitle": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "route": {
+      "type": "blocks"
+    },
+    "transport": {
+      "type": "string"
+    },
+    "departure": {
+      "type": "string"
+    },
+    "includes": {
+      "type": "blocks"
+    },
+    "duration": {
+      "type": "string"
+    },
+    "accommodation": {
+      "type": "string"
+    },
+    "price": {
+      "type": "string"
+    },
+    "departureDate": {
+      "type": "string"
+    },
+    "image": {
       "type": "media",
       "multiple": false,
-      "required": false,
       "allowedTypes": [
-        "images"
+        "images",
+        "files",
+        "videos",
+        "audios"
       ]
     },
-    "info": {
-      "type": "component",
-      "component": "international.international",
-      "repeatable": true
+    "imagesDetails": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "badge": {
+      "type": "enumeration",
+      "enum": [
+        "new",
+        "few_left",
+        "sold_out",
+        "hide"
+      ]
     }
   }
 }

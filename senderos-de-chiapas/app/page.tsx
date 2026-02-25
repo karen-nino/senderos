@@ -51,7 +51,7 @@ export default async function Home() {
       (pkg) => (pkg.badge || '').toLowerCase() !== 'hide'
     )
 
-    // Obtener paquetes de temporada (seasons con home: true) desde /api/package (Strapi)
+    // Obtener paquetes de temporada (Holiday con home: true) desde /api/holidays (Strapi)
     seasons = await fetchSeasonsForHome()
   } catch (error) {
     console.error('Error fetching data from Strapi:', error)
@@ -312,7 +312,7 @@ export default async function Home() {
         </section>
       )}
 
-      {/* Seasonal Packages Section - Datos desde Strapi (Package → season), fallback como Testimonial */}
+      {/* Seasonal Packages Section - Datos desde Strapi (Holiday), fallback como Testimonial */}
       {seasons.length > 0 && (
         <section className="seasonal-packages-section pt-200">
           <div className="container">

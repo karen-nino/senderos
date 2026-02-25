@@ -19,7 +19,7 @@ export async function GET(
   const base = STRAPI_URL.replace(/\/$/, "");
   const url = `${base}/uploads/${pathStr}`;
   try {
-    const res = await fetch(url, { cache: "no-store" });
+    const res = await fetch(url, { next: { revalidate: 3600 } });
     if (!res.ok) {
       return NextResponse.json(
         { error: "Image not found", status: res.status },

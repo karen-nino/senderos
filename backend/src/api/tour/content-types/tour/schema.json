@@ -37,10 +37,10 @@
       "type": "string"
     },
     "duration": {
-      "type": "integer"
+      "type": "string"
     },
     "price": {
-      "type": "decimal"
+      "type": "string"
     },
     "location": {
       "type": "string"

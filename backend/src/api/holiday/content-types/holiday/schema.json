@@ -1,57 +1,70 @@
 {
-  "collectionName": "components_destinations_destinations",
+  "kind": "collectionType",
+  "collectionName": "holidays",
   "info": {
-    "displayName": "Destinations"
+    "singularName": "holiday",
+    "pluralName": "holidays",
+    "displayName": "Holiday"
   },
-  "options": {},
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
   "attributes": {
     "title": {
+      "type": "string"
+    },
+    "home": {
+      "type": "boolean"
+    },
+    "subtitle": {
       "type": "string"
     },
     "description": {
       "type": "string"
     },
+    "route": {
+      "type": "blocks"
+    },
+    "transport": {
+      "type": "string"
+    },
     "departure": {
       "type": "string"
     },
-    "departureDate": {
+    "includes": {
+      "type": "blocks"
+    },
+    "duration": {
       "type": "string"
     },
     "accommodation": {
       "type": "string"
     },
-    "transport": {
-      "type": "string"
-    },
-    "duration": {
-      "type": "string"
-    },
     "price": {
       "type": "string"
     },
-    "location": {
+    "departureDate": {
       "type": "string"
-    },
-    "icons": {
-      "type": "json"
     },
     "image": {
       "type": "media",
       "multiple": false,
-      "required": true,
       "allowedTypes": [
-        "images"
+        "images",
+        "files",
+        "videos",
+        "audios"
       ]
-    },
-    "home": {
-      "type": "boolean"
     },
     "imagesDetails": {
       "type": "media",
       "multiple": true,
-      "required": true,
       "allowedTypes": [
-        "images"
+        "images",
+        "files",
+        "videos",
+        "audios"
       ]
     },
     "badge": {
@@ -63,12 +76,6 @@
         "hide"
       ]
     },
-    "includes": {
-      "type": "blocks"
-    },
-    "route": {
-      "type": "blocks"
-    },
     "calendarStart": {
       "type": "date"
     },
@@ -79,7 +86,11 @@
       "type": "component",
       "component": "itinerary.itinerary-item",
       "repeatable": true
+    },
+    "mapItem": {
+      "type": "component",
+      "component": "map.map-item",
+      "repeatable": true
     }
-  },
-  "config": {}
+  }
 }
