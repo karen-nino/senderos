@@ -150,13 +150,18 @@ export default async function About() {
         </div>
       </section>
 
-      {/* Who We Are Section */}
+      {/* Who We Are Section - imagen con modal de plantilla (img-popup) */}
       <section className="who-we-section">
         <div className="container">
           <div className="row align-items-xl-center">
             <div className="col-lg-6 order-2 order-lg-1">
               <div className="we-image-box text-center text-lg-left wow fadeInDown">
-                <img src={whoWeImage} className="radius-top-left-right-288 who-we-are-img" alt="Who We Are" width={577} height={721} style={{ objectFit: 'cover' }} />
+                <div className="gallery-img">
+                  <img src={whoWeImage} className="radius-top-left-right-288 who-we-are-img" alt="Quiénes somos" width={577} height={721} style={{ objectFit: 'cover' }} />
+                  <div className="hover-overlay">
+                    <a href={whoWeImage} className="icon-btn img-popup" aria-label="Ver imagen ampliada"><i className="far fa-plus"></i></a>
+                  </div>
+                </div>
               </div>
             </div>
             <div className="col-lg-6 order-1 order-lg-2">
@@ -172,7 +177,7 @@ export default async function About() {
         </div>
       </section>
 
-      {/* What We Section */}
+      {/* What We Section - imágenes con modal de plantilla (img-popup) */}
       <section className="we-section pt-160 pb-160 gray-bg">
         <div className="container">
           <div className="row align-items-xl-center">
@@ -248,21 +253,36 @@ export default async function About() {
                   {galleryImages[0] && (
                     <div className="col-md-6">
                       <div className="we-image mb-30 wow fadeInLeft">
-                        <img src={galleryImages[0]} alt="Senderos de Chiapas" width={300} height={300} style={{ objectFit: 'cover' }} />
+                        <div className="gallery-img">
+                          <img src={galleryImages[0]} alt="Senderos de Chiapas" width={300} height={300} style={{ objectFit: 'cover' }} />
+                          <div className="hover-overlay">
+                            <a href={galleryImages[0]} className="icon-btn img-popup" aria-label="Ver imagen ampliada"><i className="far fa-plus"></i></a>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   )}
                   {galleryImages[1] && (
                     <div className="col-md-6">
                       <div className="we-image mb-30 wow fadeInRight">
-                        <img src={galleryImages[1]} alt="Senderos de Chiapas" width={300} height={355} style={{ objectFit: 'cover' }} />
+                        <div className="gallery-img">
+                          <img src={galleryImages[1]} alt="Senderos de Chiapas" width={300} height={355} style={{ objectFit: 'cover' }} />
+                          <div className="hover-overlay">
+                            <a href={galleryImages[1]} className="icon-btn img-popup" aria-label="Ver imagen ampliada"><i className="far fa-plus"></i></a>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   )}
                   {galleryImages[2] && (
                     <div className="col-md-12">
                       <div className="we-image mb-30 pr-lg-30 text-md-end wow fadeInDown">
-                        <img src={galleryImages[2]} alt="Senderos de Chiapas" width={520} height={255} style={{ objectFit: 'cover' }} />
+                        <div className="gallery-img">
+                          <img src={galleryImages[2]} alt="Senderos de Chiapas" width={520} height={255} style={{ objectFit: 'cover' }} />
+                          <div className="hover-overlay">
+                            <a href={galleryImages[2]} className="icon-btn img-popup" aria-label="Ver imagen ampliada"><i className="far fa-plus"></i></a>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   )}

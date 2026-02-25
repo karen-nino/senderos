@@ -1,5 +1,16 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface FaqFaq extends Struct.ComponentSchema {
+  collectionName: 'components_faq_faqs';
+  info: {
+    displayName: 'Faq';
+  };
+  attributes: {
+    answer: Schema.Attribute.Text;
+    question: Schema.Attribute.String;
+  };
+}
+
 export interface GalleryGallery extends Struct.ComponentSchema {
   collectionName: 'components_gallery_galleries';
   info: {
@@ -82,6 +93,7 @@ export interface MapMapItem extends Struct.ComponentSchema {
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
+      'faq.faq': FaqFaq;
       'gallery.gallery': GalleryGallery;
       'home.hero-slide': HomeHeroSlide;
       'home.services': HomeServices;

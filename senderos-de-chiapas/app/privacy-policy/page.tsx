@@ -91,7 +91,7 @@ export default function PrivacyPolicy() {
                     <li className="mb-10">Revocar tu consentimiento en cualquier momento.</li>
                   </ul>
                   <p className="mt-20">
-                    Para ejercer estos derechos, contáctanos a <a href="mailto:info@senderosdechiapas.com.mx" style={{ color: '#63ab45' }}>info@senderosdechiapas.com.mx</a> o al teléfono <a href="tel:+529613629724" style={{ color: '#63ab45' }}>961 362 9724</a>.
+                    Para ejercer estos derechos, contáctanos a <a href="mailto:reservas@senderosdechiapas.com.mx" style={{ color: '#63ab45' }}>reservas@senderosdechiapas.com.mx</a> o al teléfono <a href="tel:+529613629724" style={{ color: '#63ab45' }}>961 362 9724</a>.
                   </p>
                 </div>
 
@@ -125,7 +125,7 @@ export default function PrivacyPolicy() {
                     <strong>Senderos de Chiapas</strong><br />
                     Calle 2a. Ote. Sur 182, San Marcos.<br />
                     Tuxtla Gutiérrez, Chiapas.<br />
-                    Email: <a href="mailto:info@senderosdechiapas.com.mx" style={{ color: '#63ab45' }}>info@senderosdechiapas.com.mx</a><br />
+                    Email: <a href="mailto:reservas@senderosdechiapas.com.mx" style={{ color: '#63ab45' }}>reservas@senderosdechiapas.com.mx</a><br />
                     Teléfono: <a href="tel:+529613629724" style={{ color: '#63ab45' }}>961 362 9724</a>
                   </p>
                 </div>

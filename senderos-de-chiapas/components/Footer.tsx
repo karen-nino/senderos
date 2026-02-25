@@ -29,22 +29,22 @@ export default function Footer() {
               <div className="col-lg-3 col-sm-6">
                 <div className="single-info-item mb-40">
                   <div className="icon">
-                    <i className="far fa-envelope-open"></i>
+                    <i className="far fa-phone"></i>
                   </div>
                   <div className="info">
-                    <span className="title">Email</span>
-                    <p><a href="mailto:reservas@senderosdechiapas.com.mx">reservas@senderosdechiapas.com.mx</a></p>
+                    <span className="title">Teléfono</span>
+                    <p><a href="tel:+529613629724">961 362 9724</a></p>
                   </div>
                 </div>
               </div>
               <div className="col-lg-3 col-sm-6">
                 <div className="single-info-item mb-40">
                   <div className="icon">
-                    <i className="far fa-phone"></i>
+                    <i className="far fa-envelope-open"></i>
                   </div>
                   <div className="info">
-                    <span className="title">Teléfono</span>
-                    <p><a href="tel:+529613629724">961 362 9724</a></p>
+                    <span className="title">Email</span>
+                    <p><a href="mailto:reservas@senderosdechiapas.com.mx">reservas@senderosdechiapas.com.mx</a></p>
                   </div>
                 </div>
               </div>
@@ -78,14 +78,14 @@ export default function Footer() {
                   <h4 className="widget-title">Servicios</h4>
                   <div className="footer-content">
                     <ul className="footer-widget-nav">
-                      <li><a href="#">Tours</a></li>
-                      <li><a href="#">Paquetes</a></li>
-                      <li><a href="#">Internacional</a></li>
-                      <li><Link href="/preguntas-frecuentes">Nosotros</Link></li>
+                      <li><a href="/tours">Tours</a></li>
+                      <li><a href="/packages">Paquetes</a></li>
+                      <li><a href="/internacional">Internacional</a></li>
+                      <li><Link href="/about">Nosotros</Link></li>
                     </ul>
                     <ul className="footer-widget-nav">
-                      <li><a href="#">Preguntas Frecuentes</a></li>
-                      <li><a href="#">Contacto</a></li>
+                      <li><a href="/faq">Preguntas Frecuentes</a></li>
+                      <li><a href="/contact">Contacto</a></li>
                     </ul>
                   </div>
                 </div>

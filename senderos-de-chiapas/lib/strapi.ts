@@ -1435,6 +1435,59 @@ export async function fetchAboutPageData(): Promise<AboutPageData> {
   }
 }
 
+/** Single type FAQ (api::faq.faq): lista en componente repeatable "faq". Strapi v5 puede devolver sin populate por defecto. */
+const STRAPI_FAQ_PAGE_URLS = [
+  "/api/faq?populate=*&status=published",
+  "/api/faq?populate[0]=faq&status=published",
+  "/api/faq?populate=faq&status=published",
+  "/api/faq?populate=*",
+  "/api/faq?populate[0]=faq",
+  "/api/faq?populate=faq",
+  "/api/faq?status=published",
+  "/api/faq",
+] as const;
+
+export interface FaqItem {
+  id: string;
+  question: string;
+  answer: string;
+}
+
+/** Extrae el array de ítems FAQ del documento (soporta data plano, data.attributes v4, y faq como array o { data: [] }). */
+function getFaqArrayFromDoc(doc: Record<string, unknown>): Array<Record<string, unknown>> {
+  const attrs = (doc.attributes ?? doc) as Record<string, unknown>;
+  const rawFaq = attrs.faq ?? doc.faq;
+  if (Array.isArray(rawFaq)) return rawFaq as Array<Record<string, unknown>>;
+  const inner = rawFaq && typeof rawFaq === "object" && (rawFaq as Record<string, unknown>).data;
+  if (Array.isArray(inner)) return inner as Array<Record<string, unknown>>;
+  return [];
+}
+
+/** Obtiene los ítems de FAQ desde Strapi (single type api::faq.faq, componente faq). */
+export async function fetchFaqPageData(): Promise<FaqItem[]> {
+  try {
+    let doc: Record<string, unknown> = {};
+    for (const url of STRAPI_FAQ_PAGE_URLS) {
+      const response = await fetchStrapi(url, STRAPI_TOURS_FETCH_OPTIONS);
+      if (response?.error) continue;
+      const data = response?.data;
+      if (data == null) continue;
+      doc = (typeof data === "object" && !Array.isArray(data) ? data : {}) as Record<string, unknown>;
+      if (Object.keys(doc).length > 0) break;
+    }
+    const faqArray = getFaqArrayFromDoc(doc);
+    if (faqArray.length === 0) return [];
+    return faqArray.map((item, index) => ({
+      id: String(item.documentId ?? item.id ?? `faq${index + 1}`),
+      question: String(item.question ?? ""),
+      answer: String(item.answer ?? ""),
+    }));
+  } catch (error) {
+    console.error("Error fetching FAQ from Strapi:", error);
+    return [];
+  }
+}
+
 /** Obtiene un tour por slug desde Collection Type /api/tours (filtro por slug). */
 export async function fetchTourBySlug(
   slug: string,
