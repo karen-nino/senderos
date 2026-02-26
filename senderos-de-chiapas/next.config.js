@@ -11,6 +11,15 @@ const nextConfig = {
       { source: '/contact', destination: '/contacto', permanent: true },
       { source: '/faq', destination: '/preguntas-frecuentes', permanent: true },
       { source: '/privacy-policy', destination: '/politica-de-privacidad', permanent: true },
+      // URL pública en español; la ruta interna sigue siendo tour-details
+      { source: '/tour-details', destination: '/tour-detalles', permanent: true },
+      { source: '/tour-details/:path*', destination: '/tour-detalles/:path*', permanent: true },
+      // URL pública en español; la ruta interna sigue siendo packages
+      { source: '/packages', destination: '/paquetes', permanent: true },
+      { source: '/packages/:path*', destination: '/paquetes/:path*', permanent: true },
+      // URL pública en español; la ruta interna sigue siendo package-details
+      { source: '/package-details', destination: '/paquete-detalles', permanent: true },
+      { source: '/package-details/:path*', destination: '/paquete-detalles/:path*', permanent: true },
     ]
   },
   async rewrites() {
@@ -18,6 +27,7 @@ const nextConfig = {
     const strapiUrl = process.env.STRAPI_URL || process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337'
     return [
       { source: '/destinos', destination: '/tours' },
+      { source: '/tour-detalles/:path*', destination: '/tour-details/:path*' },
       { source: '/destino-detalles/:path*', destination: '/tour-details/:path*' },
       { source: '/nosotros', destination: '/about' },
       { source: '/experiencias', destination: '/gallery' },
@@ -25,6 +35,8 @@ const nextConfig = {
       { source: '/contacto', destination: '/contact' },
       { source: '/preguntas-frecuentes', destination: '/faq' },
       { source: '/politica-de-privacidad', destination: '/privacy-policy' },
+      { source: '/paquetes', destination: '/packages' },
+      { source: '/paquetes/:path*', destination: '/packages/:path*' },
       { source: '/paquete-detalles/:path*', destination: '/package-details/:path*' },
       { source: '/internacional-detalles/:path*', destination: '/package-details/:path*' },
       // Proxy de imágenes de Strapi para evitar CORS y permitir carga desde mismo origen

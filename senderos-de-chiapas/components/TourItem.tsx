@@ -21,14 +21,14 @@ export default function TourItem({
     duration,
     badge
 }: TourItemProps) {
-    // Asegurar que el enlace sea siempre /tour-details/[slug] (si link es solo el slug, añadir ruta)
+    // Asegurar que el enlace sea siempre /tour-detalles/[slug] (si link es solo el slug, añadir ruta)
     const href = !link
-        ? '/tour-details/chiapas'
+        ? '/tour-detalles/chiapas'
         : link.startsWith('/')
             ? link
-            : `/tour-details/${link}`
+            : `/tour-detalles/${link}`
     return (
-        <div className="single-service-item mb-40">
+        <Link href={href} className="single-service-item mb-40 d-block text-decoration-none">
             <div className="content">
                 <h3 className="title">{title}</h3>
                 <p className='pb-2'>{description}</p>
@@ -69,7 +69,7 @@ export default function TourItem({
                 )}
                 <img src={image} alt={title} />
             </div>
-            <Link href={href} className="tour-item-more-info-btn">Más información</Link>
-        </div>
+            <span className="tour-item-more-info-btn">Más información</span>
+        </Link>
     )
 }

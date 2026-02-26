@@ -4,7 +4,7 @@
   "info": {
     "singularName": "holiday",
     "pluralName": "holidays",
-    "displayName": "Holiday"
+    "displayName": "Paquetes por Temporada"
   },
   "options": {
     "draftAndPublish": true

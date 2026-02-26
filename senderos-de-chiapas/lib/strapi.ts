@@ -38,16 +38,30 @@ const STRAPI_INTERNATIONAL_PAGE_URLS = [
   "/api/international-page",
 ] as const;
 
-/** Extrae el array de tours de la respuesta de Strapi (soporta data como array o data.data, etc.). */
+/** Aplana attributes de Strapi v4 (o anidados) para que title, documentId, etc. queden en la raíz. */
+function normalizeTourItem(raw: Record<string, unknown>): StrapiDestinationItem {
+  const attrs = raw.attributes as Record<string, unknown> | undefined;
+  if (attrs && typeof attrs === "object") {
+    return { ...raw, ...attrs } as StrapiDestinationItem;
+  }
+  return raw as StrapiDestinationItem;
+}
+
+/** Extrae el array de tours de la respuesta de Strapi (soporta data como array o data.data, etc.). Normaliza ítems v5 (attributes). */
 function getToursArrayFromResponse(response: Record<string, unknown> | null): StrapiDestinationItem[] {
   if (!response || response.error) return [];
   const data = response.data;
-  if (Array.isArray(data)) return data as StrapiDestinationItem[];
-  const inner = data && typeof data === "object" && (data as Record<string, unknown>).data;
-  if (Array.isArray(inner)) return inner as StrapiDestinationItem[];
-  const results = data && typeof data === "object" && (data as Record<string, unknown>).results;
-  if (Array.isArray(results)) return results as StrapiDestinationItem[];
-  return [];
+  let items: Record<string, unknown>[] = [];
+  if (Array.isArray(data)) items = data as Record<string, unknown>[];
+  else {
+    const inner = data && typeof data === "object" && (data as Record<string, unknown>).data;
+    if (Array.isArray(inner)) items = inner as Record<string, unknown>[];
+    else {
+      const results = data && typeof data === "object" && (data as Record<string, unknown>).results;
+      if (Array.isArray(results)) items = results as Record<string, unknown>[];
+    }
+  }
+  return items.map(normalizeTourItem);
 }
 
 const HOME_QUERY = "populate=*&status=published";
@@ -239,8 +253,10 @@ export interface AdaptedDestination {
   departure?: string;
   /** Lista de ítems (cada bloque = un ítem) para mostrar como lista vertical */
   includes?: string[];
-  /** Slug para URL de detalle (ej: internacional-detalles/[slug]) */
+  /** Slug para URL de detalle (ej: tour-details/[slug]). Preferir slug legible (título); documentId es fallback. */
   slug?: string;
+  /** documentId de Strapi (v5); se usa como fallback para el enlace de detalle si no hay slug. */
+  documentId?: string;
 }
 
 /** Busca la primera propiedad "url" en un objeto/array (Strapi puede anidar la media). */
@@ -571,7 +587,12 @@ export function adaptStrapiDestination(
     transport: d.transport,
     departure: d.departure,
     includes: blocksToList(d.includes),
-    slug: d.slug ?? getSlugFromLink(d.link) ?? (d.title ? slugify(d.title) : undefined),
+    slug:
+      d.slug ??
+      getSlugFromLink(d.link) ??
+      (d.title ? slugify(d.title) : undefined) ??
+      (d.documentId ? String(d.documentId) : undefined),
+    documentId: d.documentId ? String(d.documentId) : undefined,
   };
 }
 
@@ -913,6 +934,53 @@ export interface AdaptedPackageDetail {
   transport?: string;
 }
 
+/** Adapta un ítem Package o Holiday (misma estructura en Strapi) a AdaptedPackageDetail. Holiday tiene description; Package usa subtitle. */
+function adaptPackageOrHolidayToDetail(item: StrapiPackageItem & { description?: string }): AdaptedPackageDetail {
+  const adapted = adaptStrapiPackageItem(item);
+  const routeList = blocksToList(
+    item.route as StrapiDestinationItem["includes"],
+  );
+  const itinerary = Array.isArray(item.itineraryItem)
+    ? item.itineraryItem
+        .map((i) => ({
+          dayTitle: i.dayTitle ?? "Día",
+          time: typeof i.time === "string" ? i.time : undefined,
+          activity: richTextToPlainString(i.activity) ?? "",
+          routeItinerary: richTextToPlainString(i.routeItinerary),
+          accommodation: richTextToPlainString(i.accommodation),
+        }))
+        .filter((entry) => entry.activity.length > 0)
+    : undefined;
+  const imagesDetails = getImagesDetailsUrls(item.imagesDetails);
+  return {
+    title: adapted.title,
+    description: item.description ?? adapted.description,
+    image: adapted.image,
+    imagesDetails: imagesDetails.length > 0 ? imagesDetails : undefined,
+    price: adapted.price ?? "Consultar",
+    duration: adapted.duration,
+    route: adapted.route,
+    routeList: routeList ?? undefined,
+    includes: adapted.includes,
+    itinerary: itinerary?.length ? itinerary : undefined,
+    calendarStart: item.calendarStart,
+    calendarEnd: item.calendarEnd,
+    accommodation: item.accommodation,
+    departure: item.departure,
+    transport: item.transport,
+    mapItem: (() => {
+      const raw = item.mapItem;
+      if (!raw) return undefined;
+      const arr = Array.isArray(raw) ? raw : [raw];
+      const mapItems = arr.map((m) => ({
+        map: typeof m?.map === "string" ? m.map : undefined,
+        title: typeof m?.title === "string" ? m.title : undefined,
+      }));
+      return mapItems.length ? mapItems : undefined;
+    })(),
+  };
+}
+
 /** Obtiene un paquete por slug desde Strapi Collection Type /api/packages. */
 export async function fetchPackageBySlug(
   slug: string,
@@ -926,54 +994,31 @@ export async function fetchPackageBySlug(
       const itemSlug = p.title ? slugify(p.title) : "";
       return itemSlug === normalizedSlug;
     });
-    if (item) {
-      const adapted = adaptStrapiPackageItem(item);
-      const routeList = blocksToList(
-        item.route as StrapiDestinationItem["includes"],
-      );
-      const itinerary = Array.isArray(item.itineraryItem)
-        ? item.itineraryItem
-            .map((i) => ({
-              dayTitle: i.dayTitle ?? "Día",
-              time: typeof i.time === "string" ? i.time : undefined,
-              activity: richTextToPlainString(i.activity) ?? "",
-              routeItinerary: richTextToPlainString(i.routeItinerary),
-              accommodation: richTextToPlainString(i.accommodation),
-            }))
-            .filter((entry) => entry.activity.length > 0)
-        : undefined;
-      const imagesDetails = getImagesDetailsUrls(item.imagesDetails);
-      return {
-        title: adapted.title,
-        description: adapted.description,
-        image: adapted.image,
-        imagesDetails: imagesDetails.length > 0 ? imagesDetails : undefined,
-        price: adapted.price ?? "Consultar",
-        duration: adapted.duration,
-        route: adapted.route,
-        routeList: routeList ?? undefined,
-        includes: adapted.includes,
-        itinerary: itinerary?.length ? itinerary : undefined,
-        calendarStart: item.calendarStart,
-        calendarEnd: item.calendarEnd,
-        accommodation: item.accommodation,
-        departure: item.departure,
-        transport: item.transport,
-        mapItem: (() => {
-          const raw = item.mapItem;
-          if (!raw) return undefined;
-          const arr = Array.isArray(raw) ? raw : [raw];
-          const items = arr.map((m) => ({
-            map: typeof m?.map === "string" ? m.map : undefined,
-            title: typeof m?.title === "string" ? m.title : undefined,
-          }));
-          return items.length ? items : undefined;
-        })(),
-      };
-    }
+    if (item) return adaptPackageOrHolidayToDetail(item);
     return null;
   } catch (error) {
     console.error("Error fetching package by slug from Strapi:", error);
+    return null;
+  }
+}
+
+/** Obtiene un paquete de temporada (Holiday) por slug desde Strapi Collection Type /api/holidays. */
+export async function fetchHolidayBySlug(
+  slug: string,
+): Promise<AdaptedPackageDetail | null> {
+  try {
+    const response = await fetchStrapi(STRAPI_HOLIDAYS_URL, STRAPI_TOURS_FETCH_OPTIONS);
+    if (response?.error) return null;
+    const items = getToursArrayFromResponse(response as Record<string, unknown>) as StrapiPackageItem[];
+    const normalizedSlug = slug.toLowerCase().replace(/\s+/g, "-");
+    const item = items.find((p) => {
+      const itemSlug = p.title ? slugify(p.title) : "";
+      return itemSlug === normalizedSlug;
+    });
+    if (item) return adaptPackageOrHolidayToDetail(item);
+    return null;
+  } catch (error) {
+    console.error("Error fetching holiday by slug from Strapi:", error);
     return null;
   }
 }
@@ -1151,14 +1196,30 @@ function getSlugFromLink(link?: string): string {
   return parts[parts.length - 1] ?? "";
 }
 
-/** Genera slug desde título (para URLs) */
-function slugify(title: string): string {
+/** Genera slug desde título (para URLs). Exportado para construir URLs de detalle en la UI. */
+export function slugify(title: string): string {
   return title
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
+}
+
+/** Devuelve la URL de la página de detalle de un tour (para usar en enlaces desde listados). Usa slug legible (título) o documentId como fallback; solo devuelve /tours si no hay ninguno. */
+export function getTourDetailHref(destination: {
+  slug?: string;
+  link?: string;
+  title: string;
+  documentId?: string;
+}): string {
+  const slug =
+    (destination.slug && destination.slug.trim()) ||
+    (destination.link ? getSlugFromLink(destination.link) : "") ||
+    (destination.title ? slugify(destination.title) : "") ||
+    destination.documentId ||
+    "";
+  return slug ? `/tour-detalles/${slug}` : "/tours";
 }
 
 /** Extrae la URL de un ítem de media (objeto con .url, .data.url, .attributes.url o anidado). */
@@ -1488,18 +1549,22 @@ export async function fetchFaqPageData(): Promise<FaqItem[]> {
   }
 }
 
-/** Obtiene un tour por slug desde Collection Type /api/tours (filtro por slug). */
+/** Obtiene un tour por slug desde Collection Type /api/tours. El content-type tour no tiene campo slug; se busca por slug generado del título (slugify) o por documentId. */
 export async function fetchTourBySlug(
   slug: string,
 ): Promise<AdaptedDestinationDetail | null> {
   try {
-    const encodedSlug = encodeURIComponent(slug);
+    const normalizedSlug = slugify(slug);
     const response = await fetchStrapi(
-      `/api/tours?filters[slug][$eq]=${encodedSlug}&${STRAPI_TOURS_POPULATE}`,
+      STRAPI_TOURS_URL,
       STRAPI_TOURS_FETCH_OPTIONS,
     );
     const items = getToursArrayFromResponse(response as Record<string, unknown>);
-    const item = items[0] ?? null;
+    const item = items.find((d) => {
+      const byDocId = d.documentId && String(d.documentId) === slug;
+      const byTitle = d.title ? slugify(d.title) === normalizedSlug : false;
+      return byDocId || byTitle;
+    }) ?? null;
     if (item) return adaptToDestinationDetail(item);
     return null;
   } catch (error) {

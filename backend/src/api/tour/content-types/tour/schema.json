@@ -11,10 +11,6 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "slug": {
-      "type": "uid",
-      "targetField": "title"
-    },
     "home": {
       "type": "boolean"
     },

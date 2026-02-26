@@ -22,10 +22,10 @@ export default function PackageItem({
   badge,
 }: PackageItemProps) {
   const href = !link
-    ? '/packages'
+    ? '/paquetes'
     : link.startsWith('/')
       ? link
-      : `/package-details/${link}`
+      : `/paquete-detalles/${link}`
 
   return (
     <div className="single-service-item mb-40">

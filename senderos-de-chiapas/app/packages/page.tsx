@@ -107,7 +107,7 @@ export default async function PackagesPage() {
                           title={pkg.title}
                           description={pkg.description}
                           image={pkg.image && !pkg.image.includes('las-tres-tzimoleras') ? pkg.image : DEFAULT_IMAGE}
-                          link={pkg.slug ? `/package-details/${pkg.slug}` : (pkg.link || '/packages')}
+                          link={pkg.slug ? `/paquete-detalles/${pkg.slug}` : (pkg.link || '/paquetes')}
                           departureDate={pkg.departureDate}
                           duration={pkg.duration}
                           price={pkg.price}

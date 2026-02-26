@@ -433,7 +433,7 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
 export interface ApiAboutAbout extends Struct.SingleTypeSchema {
   collectionName: 'abouts';
   info: {
-    displayName: 'Nosotros';
+    displayName: 'Nosotros - P\u00E1gina';
     pluralName: 'abouts';
     singularName: 'about';
   };
@@ -460,7 +460,7 @@ export interface ApiAboutAbout extends Struct.SingleTypeSchema {
 export interface ApiFaqFaq extends Struct.SingleTypeSchema {
   collectionName: 'faqs';
   info: {
-    displayName: 'Faq';
+    displayName: 'Preguntas Frecuentes - P\u00E1gina';
     pluralName: 'faqs';
     singularName: 'faq';
   };
@@ -485,7 +485,7 @@ export interface ApiFaqFaq extends Struct.SingleTypeSchema {
 export interface ApiGalleryGallery extends Struct.SingleTypeSchema {
   collectionName: 'galleries';
   info: {
-    displayName: 'Experiencias';
+    displayName: 'Experiencias - P\u00E1gina';
     pluralName: 'galleries';
     singularName: 'gallery';
   };
@@ -514,7 +514,7 @@ export interface ApiGalleryGallery extends Struct.SingleTypeSchema {
 export interface ApiHolidayHoliday extends Struct.CollectionTypeSchema {
   collectionName: 'holidays';
   info: {
-    displayName: 'Holiday';
+    displayName: 'Paquetes por Temporada';
     pluralName: 'holidays';
     singularName: 'holiday';
   };
@@ -618,7 +618,7 @@ export interface ApiInternationalPageInternationalPage
   extends Struct.SingleTypeSchema {
   collectionName: 'international_pages';
   info: {
-    displayName: 'International-Page';
+    displayName: 'Internacional - P\u00E1gina';
     pluralName: 'international-pages';
     singularName: 'international-page';
   };
@@ -649,7 +649,7 @@ export interface ApiInternationalInternational
   extends Struct.CollectionTypeSchema {
   collectionName: 'internationals';
   info: {
-    displayName: 'International';
+    displayName: 'Internacional';
     pluralName: 'internationals';
     singularName: 'international';
   };
@@ -696,7 +696,7 @@ export interface ApiInternationalInternational
 export interface ApiPackagePackage extends Struct.CollectionTypeSchema {
   collectionName: 'packages';
   info: {
-    displayName: 'Package';
+    displayName: 'Paquetes';
     pluralName: 'packages';
     singularName: 'package';
   };
@@ -747,7 +747,7 @@ export interface ApiPackagePackage extends Struct.CollectionTypeSchema {
 export interface ApiPackagesPagePackagesPage extends Struct.SingleTypeSchema {
   collectionName: 'packages_pages';
   info: {
-    displayName: 'Packages-Page';
+    displayName: 'Paquetes - P\u00E1gina';
     pluralName: 'packages-pages';
     singularName: 'packages-page';
   };
@@ -815,7 +815,6 @@ export interface ApiTourTour extends Struct.CollectionTypeSchema {
     price: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     route: Schema.Attribute.Blocks;
-    slug: Schema.Attribute.UID<'title'>;
     title: Schema.Attribute.String;
     transport: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
@@ -827,7 +826,7 @@ export interface ApiTourTour extends Struct.CollectionTypeSchema {
 export interface ApiToursPageToursPage extends Struct.SingleTypeSchema {
   collectionName: 'tours_pages';
   info: {
-    displayName: 'Tours-Page';
+    displayName: 'Tours - P\u00E1gina';
     pluralName: 'tours-pages';
     singularName: 'tours-page';
   };

@@ -5,7 +5,7 @@ import SeasonPackageItem from '@/components/SeasonPackageItem'
 import HeroSlider from '@/components/HeroSlider'
 import GallerySlider from '@/components/GallerySlider'
 import Link from 'next/link'
-import { fetchHome, fetchHomeHeroSlides, fetchDestinationsForHome, fetchPackages, fetchSeasonsForHome, parseHomeServices, parseHomeTestimonial, parseHomeGallery, GALLERY_FALLBACK_IMAGES, STRAPI_REVALIDATE_SECONDS, type AdaptedDestination, type AdaptedHomeService, type AdaptedSeason } from '@/lib/strapi'
+import { fetchHome, fetchHomeHeroSlides, fetchDestinationsForHome, fetchPackages, fetchSeasonsForHome, parseHomeServices, parseHomeTestimonial, parseHomeGallery, GALLERY_FALLBACK_IMAGES, STRAPI_REVALIDATE_SECONDS, getTourDetailHref, type AdaptedDestination, type AdaptedHomeService, type AdaptedSeason } from '@/lib/strapi'
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
 
@@ -121,7 +121,7 @@ export default async function Home() {
                       title={destination.title}
                       description={destination.description}
                       image={destination.image}
-                      link={destination.slug ? `/tour-details/${destination.slug}` : (destination.link || '/tour-details/chiapas')}
+                      link={getTourDetailHref(destination)}
                       departureDate={destination.departureDate}
                       duration={destination.duration}
                       price={destination.price}

@@ -4,7 +4,7 @@
   "info": {
     "singularName": "packages-page",
     "pluralName": "packages-pages",
-    "displayName": "Packages-Page"
+    "displayName": "Paquetes - Página"
   },
   "options": {
     "draftAndPublish": true

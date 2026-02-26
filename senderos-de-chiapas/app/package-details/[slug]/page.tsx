@@ -3,7 +3,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
 import { WhatsAppIcon } from '@/components/WhatsAppIcon'
-import { fetchPackageBySlug, fetchPackages, STRAPI_REVALIDATE_SECONDS } from '@/lib/strapi'
+import { fetchPackageBySlug, fetchHolidayBySlug, fetchPackages, STRAPI_REVALIDATE_SECONDS } from '@/lib/strapi'
 
 /** Extrae la URL del src de un iframe o devuelve la URL apropiada para el mapa */
 function getMapUrl(
@@ -52,11 +52,13 @@ export const revalidate = STRAPI_REVALIDATE_SECONDS
 
 export default async function PaqueteDetailPage({ params }: PageProps) {
   const { slug } = await params
-  const [data, allPackages] = await Promise.all([
+  const [packageData, holidayData, allPackages] = await Promise.all([
     fetchPackageBySlug(slug),
+    fetchHolidayBySlug(slug),
     fetchPackages(),
   ])
-  const pkg = data ?? FALLBACK
+  // Mostrar paquete normal o paquete de temporada (Holiday) según el slug
+  const pkg = packageData ?? holidayData ?? FALLBACK
   const locationLabel = pkg.route ?? pkg.title ?? 'Chiapas, México'
 
   // Hasta 3 paquetes aleatorios (distintos al actual) para "Más paquetes"
@@ -406,7 +408,7 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                             <img src={p.image && !p.image.includes('las-tres-tzimoleras') ? p.image : FALLBACK.image} alt={p.title} />
                             <div className="place-content">
                               <h5>
-                                <Link href={p.slug ? `/package-details/${p.slug}` : (p.link || '/packages')} className="recent-place-title-link">{p.title}</Link>
+                                <Link href={p.slug ? `/paquete-detalles/${p.slug}` : (p.link || '/paquetes')} className="recent-place-title-link">{p.title}</Link>
                               </h5>
                               {(p.duration || p.price) && (
                                 <ul className="place-meta recent-place-meta list-unstyled mt-1 mb-0 small">
@@ -420,7 +422,7 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                       }
                     </ul>
                     <div className="place-content">
-                      <h5><Link href="/packages" className="recent-place-title-link">Ver todos los paquetes</Link></h5>
+                      <h5><Link href="/paquetes" className="recent-place-title-link">Ver todos los paquetes</Link></h5>
                     </div>
                   </div>
                 </div>

@@ -91,7 +91,7 @@ export default function Header() {
                       <Link href="/tours" onClick={closeMenu}>Tours</Link>
                     </li>
                     <li className="menu-item">
-                      <Link href="/packages" onClick={closeMenu}>Paquetes</Link>
+                      <Link href="/paquetes" onClick={closeMenu}>Paquetes</Link>
                     </li>
                     <li className="menu-item">
                       <Link href="/internacional" onClick={closeMenu}>Internacional</Link>
@@ -107,7 +107,7 @@ export default function Header() {
                       <a href="#">Destination</a>
                       <ul className="sub-menu">
                         <li><Link href="/tours">Destinos</Link></li>
-                        <li><Link href="/tour-details">Tour Details</Link></li>
+                        <li><Link href="/tour-detalles">Tour Details</Link></li>
                       </ul>
                     </li> */}
                     <li className="menu-item">

@@ -3,7 +3,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import TourItem from '@/components/TourItem'
 import Link from 'next/link'
-import { fetchTourPageData, STRAPI_REVALIDATE_SECONDS, type AdaptedDestination } from '@/lib/strapi'
+import { fetchTourPageData, STRAPI_REVALIDATE_SECONDS, getTourDetailHref, type AdaptedDestination } from '@/lib/strapi'
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
 
@@ -58,7 +58,7 @@ export default async function ToursPage() {
                       title={destination.title}
                       description={destination.description}
                       image={destination.image}
-                      link={destination.slug ? `/tour-details/${destination.slug}` : (destination.link || '/tour-details/chiapas')}
+                      link={getTourDetailHref(destination)}
                       departureDate={destination.departureDate}
                       duration={destination.duration}
                       price={destination.price}

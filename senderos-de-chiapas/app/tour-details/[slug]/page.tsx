@@ -403,7 +403,7 @@ export default async function TourDetailPage({ params }: PageProps) {
                           <li key={tour.slug ?? `${tour.title}-${i}`} className="place-thumbnail-content">
                             <img src={tour.image} alt={tour.title} width={100} height={74} />
                             <div className="place-content">
-                              <h5><Link href={tour.slug ? `/tour-details/${tour.slug}` : (tour.link || '/tour-details/chiapas')} className="recent-place-title-link">{tour.title}</Link></h5>
+                              <h5><Link href={tour.slug ? `/tour-detalles/${tour.slug}` : (tour.link || '/tour-detalles/chiapas')} className="recent-place-title-link">{tour.title}</Link></h5>
                               {(tour.duration || tour.price) && (
                                 <ul className="place-meta recent-place-meta list-unstyled mt-1 mb-0 small">
                                   {tour.duration && <li><i className="fal fa-clock me-1"></i>{tour.duration}</li>}
@@ -417,7 +417,7 @@ export default async function TourDetailPage({ params }: PageProps) {
                         <li className="place-thumbnail-content">
                           <img src="/assets/images/place/thumb-1.jpg" alt="post thumb" width={100} height={74} />
                           <div className="place-content">
-                            <h5><Link href="/tour-details/chiapas" className="recent-place-title-link">Tour en Chiapas</Link></h5>
+                            <h5><Link href="/tour-detalles/chiapas" className="recent-place-title-link">Tour en Chiapas</Link></h5>
                           </div>
                         </li>
                       )}

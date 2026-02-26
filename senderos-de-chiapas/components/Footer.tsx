@@ -79,7 +79,7 @@ export default function Footer() {
                   <div className="footer-content">
                     <ul className="footer-widget-nav">
                       <li><a href="/tours">Tours</a></li>
-                      <li><a href="/packages">Paquetes</a></li>
+                      <li><a href="/paquetes">Paquetes</a></li>
                       <li><a href="/internacional">Internacional</a></li>
                       <li><Link href="/about">Nosotros</Link></li>
                     </ul>
