@@ -2,6 +2,16 @@
 @import "../styles/scss/main";
 
 /* Global styles adicionales */
+/* Preloader: centrado en desktop y mobile */
+.preloader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.preloader .loader {
+  width: 50px;
+  flex-shrink: 0;
+}
 .preloader.fade-out {
   opacity: 0;
   transition: opacity 0.5s ease-out;
