@@ -9,28 +9,28 @@ const SITE_URL = 'https://senderosdechiapas.com.mx'
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: 'Senderos de Chiapas - Tours and Travel',
-  description: 'Adventure, Tours, Travel',
+  title: 'Senderos de Chiapas - Rutas, regiones y actividades',
+  description: 'Agencia de viajes y turismo en Chiapas, México.',
   openGraph: {
     type: 'website',
     locale: 'es_MX',
     url: SITE_URL,
     siteName: 'Senderos de Chiapas',
-    title: 'Senderos de Chiapas - Tours and Travel',
-    description: 'Adventure, Tours, Travel',
+    title: 'Senderos de Chiapas - Rutas, regiones y actividades',
+    description: 'Agencia de viajes y turismo en Chiapas, México',
     images: [
       {
         url: '/assets/images/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'Senderos de Chiapas - Tours and Travel',
+        alt: 'Senderos de Chiapas - Rutas, regiones y actividades',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Senderos de Chiapas - Tours and Travel',
-    description: 'Adventure, Tours, Travel',
+    title: 'Senderos de Chiapas - Rutas, regiones y actividades',
+    description: 'Agencia de viajes y turismo en Chiapas, México',
     images: ['/assets/images/og-image.jpg'],
   },
 }
