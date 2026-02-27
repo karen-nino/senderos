@@ -6,6 +6,7 @@ import ThemeReinitOnRoute from '@/components/ThemeReinitOnRoute'
 import './globals.scss'
 
 const SITE_URL = 'https://senderosdechiapas.com.mx'
+const OG_IMAGE_URL = `${SITE_URL}/assets/images/og-image.jpg`
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
     description: 'Agencia de viajes y turismo en Chiapas, México',
     images: [
       {
-        url: '/assets/images/og-image.jpg',
+        url: OG_IMAGE_URL,
         width: 1200,
         height: 630,
         alt: 'Senderos de Chiapas - Rutas, regiones y actividades',
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Senderos de Chiapas - Rutas, regiones y actividades',
     description: 'Agencia de viajes y turismo en Chiapas, México',
-    images: ['/assets/images/og-image.jpg'],
+    images: [OG_IMAGE_URL],
   },
 }
 
