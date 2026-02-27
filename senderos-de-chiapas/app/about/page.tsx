@@ -150,7 +150,7 @@ export default async function About() {
         </div>
       </section>
 
-      {/* Who We Are Section - imagen con modal de plantilla (img-popup) */}
+      {/* Who We Are Section */}
       <section className="who-we-section">
         <div className="container">
           <div className="row align-items-xl-center">
@@ -158,9 +158,6 @@ export default async function About() {
               <div className="we-image-box text-center text-lg-left wow fadeInDown">
                 <div className="gallery-img">
                   <img src={whoWeImage} className="radius-top-left-right-288 who-we-are-img" alt="Quiénes somos" width={577} height={721} style={{ objectFit: 'cover' }} />
-                  <div className="hover-overlay">
-                    <a href={whoWeImage} className="icon-btn img-popup" aria-label="Ver imagen ampliada"><i className="far fa-plus"></i></a>
-                  </div>
                 </div>
               </div>
             </div>
@@ -177,7 +174,7 @@ export default async function About() {
         </div>
       </section>
 
-      {/* What We Section - imágenes con modal de plantilla (img-popup) */}
+      {/* What We Section */}
       <section className="we-section pt-160 pb-160 gray-bg">
         <div className="container">
           <div className="row align-items-xl-center">
@@ -255,9 +252,6 @@ export default async function About() {
                       <div className="we-image mb-30 wow fadeInLeft">
                         <div className="gallery-img">
                           <img src={galleryImages[0]} alt="Senderos de Chiapas" width={300} height={300} style={{ objectFit: 'cover' }} />
-                          <div className="hover-overlay">
-                            <a href={galleryImages[0]} className="icon-btn img-popup" aria-label="Ver imagen ampliada"><i className="far fa-plus"></i></a>
-                          </div>
                         </div>
                       </div>
                     </div>
@@ -267,9 +261,6 @@ export default async function About() {
                       <div className="we-image mb-30 wow fadeInRight">
                         <div className="gallery-img">
                           <img src={galleryImages[1]} alt="Senderos de Chiapas" width={300} height={355} style={{ objectFit: 'cover' }} />
-                          <div className="hover-overlay">
-                            <a href={galleryImages[1]} className="icon-btn img-popup" aria-label="Ver imagen ampliada"><i className="far fa-plus"></i></a>
-                          </div>
                         </div>
                       </div>
                     </div>
@@ -279,9 +270,6 @@ export default async function About() {
                       <div className="we-image mb-30 pr-lg-30 text-md-end wow fadeInDown">
                         <div className="gallery-img">
                           <img src={galleryImages[2]} alt="Senderos de Chiapas" width={520} height={255} style={{ objectFit: 'cover' }} />
-                          <div className="hover-overlay">
-                            <a href={galleryImages[2]} className="icon-btn img-popup" aria-label="Ver imagen ampliada"><i className="far fa-plus"></i></a>
-                          </div>
                         </div>
                       </div>
                     </div>

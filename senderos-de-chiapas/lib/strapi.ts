@@ -1407,9 +1407,8 @@ function getMediaUrl(media: unknown): string {
   return "";
 }
 
-/** Obtiene datos de la página About (Strapi v5: data es el documento). */
-export async function fetchAboutPageData(): Promise<AboutPageData> {
-  const empty: AboutPageData = { imageBannerUrl: null };
+/** Obtiene datos de la página About (Strapi v5: data es el documento). Devuelve null si no hay datos o hay error. */
+export async function fetchAboutPageData(): Promise<AboutPageData | null> {
   try {
     let doc: Record<string, unknown> = {};
     for (const url of STRAPI_ABOUT_PAGE_URLS) {
@@ -1419,6 +1418,9 @@ export async function fetchAboutPageData(): Promise<AboutPageData> {
         if (Object.keys(doc).length > 0) break;
       }
     }
+
+    // Sin documento o documento vacío → mostrar "en mantenimiento" en la página
+    if (Object.keys(doc).length === 0) return null;
 
     const imageBannerAbout = doc.imageBannerAbout ?? doc.imageBanner;
     const bannerUrl =
@@ -1443,7 +1445,7 @@ export async function fetchAboutPageData(): Promise<AboutPageData> {
     const galleryImages = getMultipleMediaUrls(doc.imageAboutGallery);
 
     const whoWe = doc.whoWeAre as Record<string, unknown> | undefined;
-    return {
+    const result: AboutPageData = {
       imageBannerUrl,
       galleryImages: galleryImages.length > 0 ? galleryImages : undefined,
       title: doc.title ? String(doc.title) : undefined,
@@ -1490,9 +1492,25 @@ export async function fetchAboutPageData(): Promise<AboutPageData> {
       ctaButtonText: doc.ctaButtonText ? String(doc.ctaButtonText) : undefined,
       ctaButtonLink: doc.ctaButtonLink ? String(doc.ctaButtonLink) : undefined,
     };
+
+    // Si no hay contenido real (solo metadata o campos vacíos), mostrar "en mantenimiento"
+    const hasContent =
+      (result.title && result.title.trim()) ||
+      (result.description && result.description.trim()) ||
+      (result.features && result.features.length > 0) ||
+      (result.featuresTitle && result.featuresTitle.trim()) ||
+      (result.whoWeAre?.title || result.whoWeAre?.description) ||
+      (result.whatWeTitle && result.whatWeTitle.trim()) ||
+      (result.ctaTitle && result.ctaTitle.trim()) ||
+      (result.galleryImages && result.galleryImages.length > 0) ||
+      (whoWeImgUrl != null && whoWeImgUrl !== "") ||
+      (imageBannerUrl != null && imageBannerUrl !== "");
+    if (!hasContent) return null;
+
+    return result;
   } catch (error) {
     console.error("Error fetching about from Strapi:", error);
-    return empty;
+    return null;
   }
 }
 

@@ -5,9 +5,21 @@ import SeasonPackageItem from '@/components/SeasonPackageItem'
 import HeroSlider from '@/components/HeroSlider'
 import GallerySlider from '@/components/GallerySlider'
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
 import { fetchHome, fetchHomeHeroSlides, fetchDestinationsForHome, fetchPackages, fetchSeasonsForHome, parseHomeServices, parseHomeTestimonial, parseHomeGallery, GALLERY_FALLBACK_IMAGES, STRAPI_REVALIDATE_SECONDS, getTourDetailHref, type AdaptedDestination, type AdaptedHomeService, type AdaptedSeason } from '@/lib/strapi'
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
+
+const HERO_FALLBACK = [
+  {
+    id: 0,
+    title: 'Travel & Adventure Camping',
+    subtitle: 'Nunc et dui nullam aliquam eget velit. Consectetur nulla convallis viverra quisque eleifend',
+    image: '/assets/images/hero/hero-one_img-1.jpg',
+    ctaText: 'Explorar más',
+    ctaLink: '/nosotros',
+  },
+]
 
 export default async function Home() {
   let heroSlides: Awaited<ReturnType<typeof fetchHomeHeroSlides>> = []
@@ -17,44 +29,49 @@ export default async function Home() {
   let testimonial: Awaited<ReturnType<typeof parseHomeTestimonial>> = null
   let galleryImages: string[] = []
   let seasons: AdaptedSeason[] = []
+  let hasHeroFromStrapi = false
+  let hasHomeData = false
 
   try {
     // Obtener heroSlides (Página Principal - Carrusel), services y testimonial desde home
-    // Sintaxis Strapi v5: heroSlides, services, testimonial, gallery (Página Principal)
     const response = await fetchHome()
     const home = response?.data || {}
+    hasHomeData = !!response?.data && Object.keys(home as object).length > 0
+
     heroSlides = await fetchHomeHeroSlides(home as Record<string, unknown>)
-    // Fallback: si no hay slides en Strapi, usar imagen del HTML Template (hero-one_img-1.jpg)
+    hasHeroFromStrapi = heroSlides.length > 0
     if (heroSlides.length === 0) {
-      heroSlides = [
-        {
-          id: 0,
-          title: 'Travel & Adventure Camping',
-          subtitle: 'Nunc et dui nullam aliquam eget velit. Consectetur nulla convallis viverra quisque eleifend',
-          image: '/assets/images/hero/hero-one_img-1.jpg',
-          ctaText: 'Explorar más',
-          ctaLink: '/nosotros',
-        },
-      ]
+      heroSlides = [...HERO_FALLBACK]
     }
+
     services = parseHomeServices(home)
     testimonial = parseHomeTestimonial(home)
     galleryImages = parseHomeGallery(home)
 
-    // Obtener destinos con home: true desde /api/tour (Strapi)
     destinations = (await fetchDestinationsForHome()).filter(
       (d) => (d.badge || '').toLowerCase() !== 'hide'
     )
-
-    // Obtener paquetes desde single type /api/package (Strapi)
     packages = (await fetchPackages()).filter(
       (pkg) => (pkg.badge || '').toLowerCase() !== 'hide'
     )
-
-    // Obtener paquetes de temporada (Holiday con home: true) desde /api/holidays (Strapi)
     seasons = await fetchSeasonsForHome()
   } catch (error) {
     console.error('Error fetching data from Strapi:', error)
+    notFound()
+  }
+
+  // Si no hay datos de Strapi para las secciones principales, mostrar 404 como en el resto de páginas
+  const hasAnyContent =
+    hasHomeData ||
+    hasHeroFromStrapi ||
+    packages.length > 0 ||
+    destinations.length > 0 ||
+    services.length > 0 ||
+    testimonial != null ||
+    seasons.length > 0
+
+  if (!hasAnyContent) {
+    notFound()
   }
 
   return (
