@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import { Analytics } from '@vercel/analytics/next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import Scripts from '@/components/Scripts'
 import ThemeReinitOnRoute from '@/components/ThemeReinitOnRoute'
 import './globals.scss'
@@ -60,6 +62,8 @@ export default function RootLayout({
         {children}
         <Scripts />
         <ThemeReinitOnRoute />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )
