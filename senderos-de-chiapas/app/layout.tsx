@@ -3,9 +3,34 @@ import Scripts from '@/components/Scripts'
 import ThemeReinitOnRoute from '@/components/ThemeReinitOnRoute'
 import './globals.scss'
 
+const SITE_URL = 'https://senderosdechiapas.com.mx'
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: 'Senderos de Chiapas - Tours and Travel',
   description: 'Adventure, Tours, Travel',
+  openGraph: {
+    type: 'website',
+    locale: 'es_MX',
+    url: SITE_URL,
+    siteName: 'Senderos de Chiapas',
+    title: 'Senderos de Chiapas - Tours and Travel',
+    description: 'Adventure, Tours, Travel',
+    images: [
+      {
+        url: '/assets/images/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Senderos de Chiapas - Tours and Travel',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Senderos de Chiapas - Tours and Travel',
+    description: 'Adventure, Tours, Travel',
+    images: ['/assets/images/og-image.jpg'],
+  },
 }
 
 export default function RootLayout({
