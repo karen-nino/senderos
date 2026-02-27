@@ -12,7 +12,7 @@ export default function Contact() {
         <div className="container">
           <div className="row">
             <div className="col-lg-6">
-              <div className="contact-form-wrapper mb-50">
+              <div className="contact-form-wrapper mb-180">
                 <div className="section-title mb-40">
                   <span className="sub-title">Contáctanos</span>
                   <h2>Mándanos un mensaje</h2>
