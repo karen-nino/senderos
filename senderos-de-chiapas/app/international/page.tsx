@@ -26,7 +26,7 @@ export default async function InternationalPage() {
   }
 
   const displayDestinations = destinations.filter(
-    (d) => (d.badge || '').toLowerCase() !== 'hide'
+    (d) => (d.badge || '') !== 'oculto'
   )
   const hasDataFromStrapi = displayDestinations.length > 0
   const bannerBg = imageBannerUrl || '/assets/images/bg/page-bg.jpg'
@@ -62,12 +62,12 @@ export default async function InternationalPage() {
                   <div className="wow fadeInUp">
                     <InternationalItem
                       title={destination.title}
-                      description={destination.description}
+                      description={destination.subtitle ?? destination.description}
                       image={destination.image}
                       departureDate={destination.departureDate}
                       duration={destination.duration}
                       price={destination.price}
-                      badge={destination.badge === 'hide' ? undefined : destination.badge}
+                      badge={destination.badge === 'oculto' ? undefined : destination.badge}
                       route={destination.route}
                       includes={destination.includes}
                     />

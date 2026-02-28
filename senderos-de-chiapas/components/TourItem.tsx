@@ -2,18 +2,18 @@ import Link from 'next/link'
 
 interface TourItemProps {
     title: string
-    description: string
+    subtitle: string
     image: string
     link?: string
     departureDate?: string
     price?: string
     duration?: string
-    badge?: 'new' | 'few_left' | 'sold_out' | 'hide'
+    badge?: 'nuevo' | 'pocos_lugares' | 'agotado' | 'oculto'
 }
 
 export default function TourItem({
     title,
-    description,
+    subtitle,
     image,
     link,
     departureDate,
@@ -31,7 +31,7 @@ export default function TourItem({
         <Link href={href} className="single-service-item mb-40 d-block text-decoration-none">
             <div className="content">
                 <h3 className="title">{title}</h3>
-                <p className='pb-2'>{description}</p>
+                <p className='pb-2'>{subtitle}</p>
                 {(departureDate || price || duration) && (
                     <div className="destination-info mb-15">
                         {departureDate && (
@@ -59,12 +59,12 @@ export default function TourItem({
                 )}
             </div>
             <div className="img-holder destination-img-wrapper">
-                {badge && badge !== 'hide' && (
+                {badge && badge !== 'oculto' && (
                     <span
                         className={`destination-badge destination-badge--${badge}`}
-                        aria-label={badge === 'new' ? 'Nuevo destino' : badge === 'few_left' ? 'Pocos lugares disponibles' : 'Agotado'}
+                        aria-label={badge === 'nuevo' ? 'Nuevo destino' : badge === 'pocos_lugares' ? 'Pocos lugares disponibles' : 'Agotado'}
                     >
-                        {badge === 'new' ? '¡NUEVO!' : badge === 'few_left' ? 'POCOS LUGARES' : 'AGOTADO'}
+                        {badge === 'nuevo' ? '¡NUEVO!' : badge === 'pocos_lugares' ? 'POCOS LUGARES' : 'AGOTADO'}
                     </span>
                 )}
                 <img src={image} alt={title} />

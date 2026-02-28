@@ -12,10 +12,9 @@ export async function GET() {
       process.env.NEXT_PUBLIC_STRAPI_URL ||
       "http://localhost:1337";
 
-    const response = await fetchStrapi(
-      `/api/tours?${TOURS_POPULATE}`,
-      { useToken: false }
-    );
+    const response = await fetchStrapi(`/api/tours?${TOURS_POPULATE}`, {
+      useToken: false,
+    });
 
     const rawData = response?.data;
     const responseKeys = response ? Object.keys(response) : [];
@@ -27,7 +26,9 @@ export async function GET() {
         ? Object.keys(firstItem as object)
         : [];
 
-    const err = response?.error as { status?: number; message?: string } | undefined;
+    const err = response?.error as
+      | { status?: number; message?: string }
+      | undefined;
     let fixHint: string | null = null;
     if (err?.status === 403 || err?.status === 401) {
       fixHint =
@@ -40,17 +41,17 @@ export async function GET() {
     const pageData = await fetchTourPageData();
     const adaptedCount = pageData.destinations.length;
     const adaptedAfterBadgeFilter = pageData.destinations.filter(
-      (d) => (d.badge || "").toLowerCase() !== "hide"
+      (d) => (d.badge || "") !== "oculto",
     );
 
     // Debug banner: populate=imageBanner (sin =* para evitar "Invalid key related at imageBanner.related")
     const toursPageResPlural = await fetchStrapi(
       "/api/tours-pages?populate=imageBanner&status=published",
-      { useToken: false }
+      { useToken: false },
     ).catch(() => null);
     const toursPageResSingular = await fetchStrapi(
       "/api/tours-page?populate=imageBanner&status=published",
-      { useToken: false }
+      { useToken: false },
     ).catch(() => null);
     const toursPageRaw =
       toursPageResSingular?.data ??
@@ -80,12 +81,12 @@ export async function GET() {
         rawData,
         fixHint,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     return NextResponse.json(
       { error: String(error), message: "Error debugging tours from Strapi" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

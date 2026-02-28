@@ -524,7 +524,7 @@ export interface ApiHolidayHoliday extends Struct.CollectionTypeSchema {
   attributes: {
     accommodation: Schema.Attribute.String;
     badge: Schema.Attribute.Enumeration<
-      ['new', 'few_left', 'sold_out', 'hide']
+      ['nuevo', 'pocos_lugares', 'agotado', 'oculto']
     >;
     calendarEnd: Schema.Attribute.Date;
     calendarStart: Schema.Attribute.Date;
@@ -659,7 +659,7 @@ export interface ApiInternationalInternational
   attributes: {
     accommodation: Schema.Attribute.String;
     badge: Schema.Attribute.Enumeration<
-      ['new', 'few_left', 'sold_out', 'hide']
+      ['nuevo', 'pocos_lugares', 'agotado', 'oculto']
     >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -706,7 +706,7 @@ export interface ApiPackagePackage extends Struct.CollectionTypeSchema {
   attributes: {
     accommodation: Schema.Attribute.String;
     badge: Schema.Attribute.Enumeration<
-      ['new', 'few_left', 'sold_out', 'hide']
+      ['nuevo', 'pocos_lugares', 'agotado', 'oculto']
     >;
     calendarEnd: Schema.Attribute.Date;
     calendarStart: Schema.Attribute.Date;
@@ -787,7 +787,7 @@ export interface ApiTourTour extends Struct.CollectionTypeSchema {
   attributes: {
     accommodation: Schema.Attribute.String;
     badge: Schema.Attribute.Enumeration<
-      ['new', 'few_left', 'sold_out', 'hide']
+      ['nuevo', 'pocos_lugares', 'agotado', 'oculto']
     >;
     calendarEnd: Schema.Attribute.Date;
     calendarStart: Schema.Attribute.Date;
@@ -810,7 +810,6 @@ export interface ApiTourTour extends Struct.CollectionTypeSchema {
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::tour.tour'> &
       Schema.Attribute.Private;
-    location: Schema.Attribute.String;
     mapItem: Schema.Attribute.Component<'map.map-item', true>;
     price: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;

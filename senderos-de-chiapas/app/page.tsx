@@ -49,10 +49,10 @@ export default async function Home() {
     galleryImages = parseHomeGallery(home)
 
     destinations = (await fetchDestinationsForHome()).filter(
-      (d) => (d.badge || '').toLowerCase() !== 'hide'
+      (d) => (d.badge || '') !== 'oculto'
     )
     packages = (await fetchPackages()).filter(
-      (pkg) => (pkg.badge || '').toLowerCase() !== 'hide'
+      (pkg) => (pkg.badge || '') !== 'oculto'
     )
     seasons = await fetchSeasonsForHome()
   } catch (error) {
@@ -136,7 +136,7 @@ export default async function Home() {
                   <div key={index} className="places-section__item">
                     <TourItem
                       title={destination.title}
-                      description={destination.description}
+                      subtitle={destination.subtitle ?? destination.description}
                       image={destination.image}
                       link={getTourDetailHref(destination)}
                       departureDate={destination.departureDate}

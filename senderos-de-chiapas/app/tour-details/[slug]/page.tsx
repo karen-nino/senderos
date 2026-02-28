@@ -279,10 +279,14 @@ export default async function TourDetailPage({ params }: PageProps) {
 
             <div className="row">
               <div className="col-xl-8">
-                {/* Place Content Wrap */}
+                {/* Bloque: descripción del tour (igual que en package-details) */}
                 <div className="place-content-wrap pt-45 wow fadeInUp mb-100">
-                  {/* <h3 className="title">Explorar Destinos</h3>
-                  <p>{destination.description || 'Sed ut perspiciatis unde omniste natus error sit voluptatem accusantium doloremque laudantium totam rem aperiam, eaque ip quae abillo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor si amet consectetur adipisci velit sed quian numquam eius modi tempora incidunt ut labore dolore magnam aliquam quaerat voluptatem.'}</p> */}
+                  {destination.description && (
+                    <>
+                      <h3 className="title">Descripción</h3>
+                      <p>{destination.description}</p>
+                    </>
+                  )}
                   <h4>Incluye</h4>
                   <p>Este tour incluye los siguientes servicios:</p>
                   <div className="row align-items-lg-center">

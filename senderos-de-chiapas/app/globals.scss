@@ -1643,17 +1643,17 @@ ul.info-list ul.route-list li:last-child {
   z-index: 2;
 }
 
-.single-service-item .destination-badge--new {
+.single-service-item .destination-badge--nuevo {
   background-color: #bbdefb; /* azul claro */
   color: #0d47a1; /* azul oscuro - buen contraste */
 }
 
-.single-service-item .destination-badge--few_left {
+.single-service-item .destination-badge--pocos_lugares {
   background-color: #ffe0b2; /* naranja claro */
   color: #bf360c; /* naranja oscuro - buen contraste */
 }
 
-.single-service-item .destination-badge--sold_out {
+.single-service-item .destination-badge--agotado {
   background-color: #e9ecef; /* gris claro */
   color: #6c757d; /* gris */
 }
@@ -1684,16 +1684,16 @@ ul.info-list ul.route-list li:last-child {
 }
 
 /* Card completa en gris y no clickeable cuando está agotado */
-.single-service-item:has(.destination-badge--sold_out) {
+.single-service-item:has(.destination-badge--agotado) {
   filter: grayscale(0.9);
   pointer-events: none;
   cursor: default;
   transition: filter 0.3s ease;
 }
 
-.single-service-item:has(.destination-badge--sold_out) .content,
-.single-service-item:has(.destination-badge--sold_out) .destination-img-wrapper,
-.single-service-item:has(.destination-badge--sold_out)
+.single-service-item:has(.destination-badge--agotado) .content,
+.single-service-item:has(.destination-badge--agotado) .destination-img-wrapper,
+.single-service-item:has(.destination-badge--agotado)
   .international-img-wrapper {
   opacity: 0.6;
   transition: opacity 0.3s ease;

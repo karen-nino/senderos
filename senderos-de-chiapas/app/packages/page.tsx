@@ -34,7 +34,7 @@ export default async function PackagesPage() {
   }
 
   const displayPackages = packagesList.filter(
-    (pkg) => (pkg.badge || '').toLowerCase() !== 'hide'
+    (pkg) => (pkg.badge || '') !== 'oculto'
   )
   const hasDataFromStrapi = displayPackages.length > 0 || seasons.length > 0
   const bannerBg = imageBannerUrl || '/assets/images/bg/page-bg.jpg'

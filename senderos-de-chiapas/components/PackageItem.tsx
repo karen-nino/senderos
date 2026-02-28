@@ -8,7 +8,7 @@ interface PackageItemProps {
   departureDate?: string
   price?: string
   duration?: string
-  badge?: 'new' | 'few_left' | 'sold_out' | 'hide'
+  badge?: 'nuevo' | 'pocos_lugares' | 'agotado' | 'oculto'
 }
 
 export default function PackageItem({
@@ -59,18 +59,18 @@ export default function PackageItem({
         )}
       </div>
       <div className="img-holder destination-img-wrapper">
-        {badge && badge !== 'hide' && (
+        {badge && badge !== 'oculto' && (
           <span
             className={`destination-badge destination-badge--${badge}`}
             aria-label={
-              badge === 'new'
+              badge === 'nuevo'
                 ? 'Nuevo paquete'
-                : badge === 'few_left'
+                : badge === 'pocos_lugares'
                   ? 'Pocos lugares disponibles'
                   : 'Agotado'
             }
           >
-            {badge === 'new' ? '¡NUEVO!' : badge === 'few_left' ? 'POCOS LUGARES' : 'AGOTADO'}
+            {badge === 'nuevo' ? '¡NUEVO!' : badge === 'pocos_lugares' ? 'POCOS LUGARES' : 'AGOTADO'}
           </span>
         )}
         <img src={image} alt={title} />

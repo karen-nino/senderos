@@ -70,10 +70,10 @@
     "badge": {
       "type": "enumeration",
       "enum": [
-        "new",
-        "few_left",
-        "sold_out",
-        "hide"
+        "nuevo",
+        "pocos_lugares",
+        "agotado",
+        "oculto"
       ]
     },
     "calendarStart": {

@@ -26,7 +26,7 @@ export default async function ToursPage() {
   }
 
   const displayDestinations = destinations.filter(
-    (d) => (d.badge || '').toLowerCase() !== 'hide'
+    (d) => (d.badge || '') !== 'oculto'
   )
   const hasDataFromStrapi = displayDestinations.length > 0
   const bannerBg = imageBannerUrl || '/assets/images/bg/page-bg.jpg'
@@ -62,7 +62,7 @@ export default async function ToursPage() {
                   <div className="wow fadeInUp">
                     <TourItem
                       title={destination.title}
-                      description={destination.description}
+                      subtitle={destination.subtitle ?? destination.description}
                       image={destination.image}
                       link={getTourDetailHref(destination)}
                       departureDate={destination.departureDate}

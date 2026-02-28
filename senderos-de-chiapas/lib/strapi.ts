@@ -182,6 +182,7 @@ export interface StrapiDestinationItem {
   documentId?: string;
   title?: string;
   description?: string;
+  subtitle?: string;
   departureDate?: string;
   accommodation?: string;
   duration?: string;
@@ -221,7 +222,7 @@ export interface StrapiDestinationItem {
   mapItem?:
     | { map?: string; title?: string }
     | Array<{ map?: string; title?: string }>;
-  badge?: "new" | "few_left" | "sold_out" | "hide";
+  badge?: string;
   /** Ruta: en Destinations (tours) es Blocks; en International puede ser String */
   route?: string | StrapiBlock | StrapiBlock[];
   transport?: string;
@@ -239,6 +240,8 @@ export interface StrapiDestinationItem {
 export interface AdaptedDestination {
   title: string;
   description: string;
+  /** Subtítulo desde Strapi (para listados tipo TourItem). */
+  subtitle?: string;
   image: string;
   link?: string;
   icons?: string[];
@@ -246,7 +249,8 @@ export interface AdaptedDestination {
   price?: string;
   accommodation?: string;
   duration?: string;
-  badge?: "new" | "few_left" | "sold_out" | "hide";
+  /** Valores internos: nuevo | pocos_lugares | agotado | oculto */
+  badge?: "nuevo" | "pocos_lugares" | "agotado" | "oculto";
   /** Campos específicos de International desde Strapi */
   route?: string;
   transport?: string;
@@ -569,6 +573,7 @@ export function adaptStrapiDestination(
   return {
     title: d.title ?? "",
     description: d.description ?? "",
+    subtitle: d.subtitle ?? undefined,
     image: fullImageUrl,
     link: d.link,
     icons: Array.isArray(d.icons) ? d.icons : undefined,
@@ -576,13 +581,7 @@ export function adaptStrapiDestination(
     price: d.price,
     accommodation: d.accommodation,
     duration: d.duration,
-    badge:
-      d.badge === "new" ||
-      d.badge === "few_left" ||
-      d.badge === "sold_out" ||
-      d.badge === "hide"
-        ? d.badge
-        : undefined,
+    badge: normalizeBadge(d.badge),
     route: routeToStr(d.route),
     transport: d.transport,
     departure: d.departure,
@@ -696,7 +695,20 @@ export interface StrapiPackageItem {
   accommodation?: string;
   departure?: string;
   transport?: string;
-  badge?: "new" | "few_left" | "sold_out" | "hide";
+  badge?: string;
+}
+
+/** Normaliza badge de Strapi (puede venir en inglés o español) al valor interno. */
+function normalizeBadge(
+  badge: string | undefined,
+): "nuevo" | "pocos_lugares" | "agotado" | "oculto" | undefined {
+  if (!badge || typeof badge !== "string") return undefined;
+  const v = badge.trim().toLowerCase();
+  if (v === "new" || v === "nuevo") return "nuevo";
+  if (v === "few_left" || v === "pocos_lugares") return "pocos_lugares";
+  if (v === "sold_out" || v === "agotado") return "agotado";
+  if (v === "hide" || v === "oculto") return "oculto";
+  return undefined;
 }
 
 /** Convierte blocks de Strapi en un solo string (para route, etc.) */
@@ -732,7 +744,7 @@ function adaptStrapiPackageItem(p: StrapiPackageItem): AdaptedDestination {
     route: blocksToSingleString(p.route),
     includes: blocksToList(p.includes as StrapiDestinationItem["includes"]),
     slug,
-    badge: p.badge,
+    badge: normalizeBadge(p.badge),
   };
 }
 
@@ -1023,7 +1035,7 @@ export async function fetchHolidayBySlug(
   }
 }
 
-/** Obtiene todos los tours publicados para la home (Collection Type /api/tours). Sin filtro home para que se vean todos; la home excluye solo badge "hide". */
+/** Obtiene todos los tours publicados para la home (Collection Type /api/tours). Sin filtro home para que se vean todos; la home excluye solo badge "oculto". */
 export async function fetchDestinationsForHome(): Promise<
   AdaptedDestination[]
 > {

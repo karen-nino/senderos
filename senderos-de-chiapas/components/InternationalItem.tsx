@@ -9,7 +9,7 @@ interface InternationalItemProps {
     price?: string
     accommodation?: string
     duration?: string
-    badge?: 'new' | 'few_left' | 'sold_out'
+    badge?: 'nuevo' | 'pocos_lugares' | 'agotado'
     /** Campos de Strapi International */
     route?: string
     transport?: string
@@ -114,9 +114,9 @@ export default function InternationalItem({
                 {badge && (
                     <span
                         className={`destination-badge destination-badge--${badge}`}
-                        aria-label={badge === 'new' ? 'Nuevo destino' : badge === 'few_left' ? 'Pocos lugares disponibles' : 'Agotado'}
+                        aria-label={badge === 'nuevo' ? 'Nuevo destino' : badge === 'pocos_lugares' ? 'Pocos lugares disponibles' : 'Agotado'}
                     >
-                        {badge === 'new' ? '¡NUEVO!' : badge === 'few_left' ? 'POCOS LUGARES' : 'AGOTADO'}
+                        {badge === 'nuevo' ? '¡NUEVO!' : badge === 'pocos_lugares' ? 'POCOS LUGARES' : 'AGOTADO'}
                     </span>
                 )}
                 <img src={image} alt={title} />

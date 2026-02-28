@@ -41,9 +41,6 @@
     "price": {
       "type": "string"
     },
-    "location": {
-      "type": "string"
-    },
     "icons": {
       "type": "json"
     },
@@ -70,10 +67,10 @@
     "badge": {
       "type": "enumeration",
       "enum": [
-        "new",
-        "few_left",
-        "sold_out",
-        "hide"
+        "nuevo",
+        "pocos_lugares",
+        "agotado",
+        "oculto"
       ]
     },
     "includes": {
