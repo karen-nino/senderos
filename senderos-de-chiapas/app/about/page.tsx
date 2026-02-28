@@ -1,9 +1,15 @@
+import type { Metadata } from 'next'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
 import { fetchAboutPageData, STRAPI_REVALIDATE_SECONDS } from '@/lib/strapi'
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
+
+export const metadata: Metadata = {
+  title: 'Nosotros - Senderos de Chiapas',
+  description: 'Conoce al equipo de Senderos de Chiapas. Experiencias de viaje únicas, atención personalizada y años de experiencia en turismo en Chiapas y destinos internacionales.',
+}
 
 const DEFAULT_FEATURES = [
   { icon: 'flaticon-gps', title: 'Experiencias y Tours', description: 'En zonas naturales y culturales.' },

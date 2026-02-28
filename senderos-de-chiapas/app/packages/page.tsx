@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import React from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -7,6 +8,11 @@ import Link from 'next/link'
 import { fetchPackagesPageData, fetchSeasonsForPackagesPage, STRAPI_REVALIDATE_SECONDS, type AdaptedDestination, type AdaptedSeason } from '@/lib/strapi'
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
+
+export const metadata: Metadata = {
+  title: 'Paquetes turísticos - Senderos de Chiapas',
+  description: 'Paquetes y rutas turísticas en Chiapas por temporada. Incluyen itinerario, precios y opciones de pago.',
+}
 
 const DEFAULT_IMAGE = '/assets/images/place/single-place-1.jpg'
 

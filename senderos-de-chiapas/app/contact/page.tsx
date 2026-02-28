@@ -1,6 +1,12 @@
+import type { Metadata } from 'next'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import ContactForm from '@/components/ContactForm'
+
+export const metadata: Metadata = {
+  title: 'Contacto - Senderos de Chiapas',
+  description: 'Reserva tu tour o paquete en Chiapas. Escríbenos por WhatsApp, teléfono o correo. Te respondemos a la brevedad.',
+}
 
 export default function Contact() {
   return (

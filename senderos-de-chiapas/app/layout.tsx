@@ -3,6 +3,7 @@ import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import Scripts from '@/components/Scripts'
 import ThemeReinitOnRoute from '@/components/ThemeReinitOnRoute'
+import { JsonLd, buildOrganizationJsonLd } from '@/components/JsonLd'
 import './globals.scss'
 
 const SITE_URL = 'https://senderosdechiapas.com.mx'
@@ -11,14 +12,15 @@ const OG_IMAGE_URL = `${SITE_URL}/assets/images/og-image.jpg`
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: 'Senderos de Chiapas - Rutas, regiones y actividades',
-  description: 'Agencia de viajes y turismo en Chiapas, México.',
+  description: 'Agencia de viajes y turismo en Chiapas, México. Tours, paquetes y experiencias: cascadas, zonas arqueológicas, ecoturismo. Reserva y cotiza en línea.',
+  keywords: ['turismo Chiapas', 'tours Chiapas', 'paquetes turísticos', 'viajes Chiapas', 'agencias de viajes', 'cascadas', 'ecoturismo', 'Senderos de Chiapas'],
   openGraph: {
     type: 'website',
     locale: 'es_MX',
     url: SITE_URL,
     siteName: 'Senderos de Chiapas',
     title: 'Senderos de Chiapas - Rutas, regiones y actividades',
-    description: 'Agencia de viajes y turismo en Chiapas, México',
+    description: 'Agencia de viajes y turismo en Chiapas, México. Tours, paquetes y experiencias: cascadas, zonas arqueológicas, ecoturismo. Reserva y cotiza en línea.',
     images: [
       {
         url: OG_IMAGE_URL,
@@ -31,7 +33,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Senderos de Chiapas - Rutas, regiones y actividades',
-    description: 'Agencia de viajes y turismo en Chiapas, México',
+    description: 'Agencia de viajes y turismo en Chiapas, México. Tours, paquetes y experiencias. Reserva y cotiza en línea.',
     images: [OG_IMAGE_URL],
   },
 }
@@ -44,7 +46,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <head>
-        <link rel="shortcut icon" href="/assets/images/favicon.ico" type="image/png" />
+        <link rel="icon" href="/assets/images/favicon.ico" type="image/x-icon" />
         <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
         <link rel="stylesheet" href="/assets/fonts/flaticon/flaticon_gowilds.css" />
         <link rel="stylesheet" href="/assets/fonts/fontawesome/css/all.min.css" />
@@ -60,6 +62,7 @@ export default function RootLayout({
         {/* <link rel="stylesheet" href="/assets/css/style.css" /> */}
       </head>
       <body>
+        <JsonLd data={buildOrganizationJsonLd()} />
         {children}
         <Scripts />
         <ThemeReinitOnRoute />

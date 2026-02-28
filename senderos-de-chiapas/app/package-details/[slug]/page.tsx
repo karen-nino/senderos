@@ -1,9 +1,13 @@
+import type { Metadata } from 'next'
 import React from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
 import { WhatsAppIcon } from '@/components/WhatsAppIcon'
+import { JsonLd, buildProductJsonLd } from '@/components/JsonLd'
 import { fetchPackageBySlug, fetchHolidayBySlug, fetchPackages, STRAPI_REVALIDATE_SECONDS } from '@/lib/strapi'
+
+const SITE_URL = 'https://senderosdechiapas.com.mx'
 
 /** Extrae la URL del src de un iframe o devuelve la URL apropiada para el mapa */
 function getMapUrl(
@@ -49,6 +53,39 @@ interface PageProps {
 }
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params
+  const [packageData, holidayData] = await Promise.all([
+    fetchPackageBySlug(slug),
+    fetchHolidayBySlug(slug),
+  ])
+  const pkg = packageData ?? holidayData
+  const title = pkg?.title ?? 'Paquete'
+  const description =
+    (pkg?.description ?? pkg?.subtitle)?.toString().replace(/\s+/g, ' ').trim().slice(0, 160) ||
+    `Paquete ${title} en Chiapas. Precio: ${pkg?.price ?? 'Consultar'}. Reserva con Senderos de Chiapas.`
+  const canonical = `${SITE_URL}/paquete-detalles/${slug}`
+  const image = pkg?.imagesDetails?.[0] ?? pkg?.image
+  const ogImage = image ? (image.startsWith('http') ? image : `${SITE_URL}${image.startsWith('/') ? image : `/${image}`}`) : undefined
+  return {
+    title: `${title} - Senderos de Chiapas`,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      title: `${title} - Senderos de Chiapas`,
+      description,
+      url: canonical,
+      ...(ogImage && { images: [{ url: ogImage, width: 1200, height: 630, alt: title }] }),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${title} - Senderos de Chiapas`,
+      description,
+      ...(ogImage && { images: [ogImage] }),
+    },
+  }
+}
 
 export default async function PaqueteDetailPage({ params }: PageProps) {
   const { slug } = await params
@@ -100,8 +137,19 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
   ].filter(Boolean) as string[]
   const whatsappMessage = whatsappLines.join('\n')
 
+  const packageJsonLd = buildProductJsonLd({
+    name: pkg.title,
+    description: (pkg.description ?? '').toString().replace(/\s+/g, ' ').trim() || `Paquete ${pkg.title} en Chiapas. ${pkg.price}.`,
+    image: pkg.imagesDetails?.length ? pkg.imagesDetails : [pkg.image],
+    url: `${SITE_URL}/paquete-detalles/${slug}`,
+    price: pkg.price,
+    duration: pkg.duration,
+    providerName: 'Senderos de Chiapas',
+  })
+
   return (
     <>
+      <JsonLd data={packageJsonLd} />
       <Header />
 
       {/* ====== Start Place Details Section (basado en destination-details) ====== */}
@@ -175,7 +223,7 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                 <div className="col-xl-6">
                   <div className="tour-title mb-20">
                     <span className="tour-label">PAQUETE</span>
-                    <h3 className="title">{pkg.title}</h3>
+                    <h1 className="title">{pkg.title}</h1>
                   </div>
                 </div>
                 <div className="col-xl-6 d-none d-xl-block">

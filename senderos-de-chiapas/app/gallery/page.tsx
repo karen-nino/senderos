@@ -1,9 +1,15 @@
+import type { Metadata } from 'next'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
 import { fetchGalleryPageData, STRAPI_REVALIDATE_SECONDS } from '@/lib/strapi'
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
+
+export const metadata: Metadata = {
+  title: 'Experiencias - Galería | Senderos de Chiapas',
+  description: 'Galería de experiencias y momentos de nuestros tours y paquetes en Chiapas. Descubre destinos, cascadas, cultura y naturaleza.',
+}
 
 export default async function Gallery() {
   let imageBannerUrl: string | null = null

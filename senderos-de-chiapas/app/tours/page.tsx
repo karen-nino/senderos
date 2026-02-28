@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import React from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -6,6 +7,11 @@ import Link from 'next/link'
 import { fetchTourPageData, STRAPI_REVALIDATE_SECONDS, getTourDetailHref, type AdaptedDestination } from '@/lib/strapi'
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
+
+export const metadata: Metadata = {
+  title: 'Tours en Chiapas - Rutas y experiencias',
+  description: 'Explora nuestros tours y rutas en Chiapas: cascadas, zonas arqueológicas, ecoturismo y más. Precios, duración e itinerarios para planear tu viaje.',
+}
 
 export default async function ToursPage() {
   let destinations: AdaptedDestination[] = []

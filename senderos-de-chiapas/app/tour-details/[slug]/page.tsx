@@ -1,9 +1,13 @@
+import type { Metadata } from 'next'
 import React from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
 import { WhatsAppIcon } from '@/components/WhatsAppIcon'
+import { JsonLd, buildProductJsonLd } from '@/components/JsonLd'
 import { fetchTourBySlug, fetchTourPageData, STRAPI_REVALIDATE_SECONDS } from '@/lib/strapi'
+
+const SITE_URL = 'https://senderosdechiapas.com.mx'
 
 /** Extrae la URL del src de un iframe o devuelve la URL apropiada para el mapa */
 function getMapUrl(
@@ -51,6 +55,35 @@ interface PageProps {
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
 
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params
+  const destination = await fetchTourBySlug(slug)
+  const title = destination?.title ?? 'Tour en Chiapas'
+  const description =
+    destination?.description?.replace(/\s+/g, ' ').trim().slice(0, 160) ||
+    `Tour ${title} en Chiapas. Precio: ${destination?.price ?? 'Consultar'}. Duración: ${destination?.duration ?? 'Consultar'}. Reserva con Senderos de Chiapas.`
+  const canonical = `${SITE_URL}/tour-detalles/${slug}`
+  const image = destination?.imagesDetails?.[0] ?? destination?.image
+  const ogImage = image ? (image.startsWith('http') ? image : `${SITE_URL}${image.startsWith('/') ? image : `/${image}`}`) : undefined
+  return {
+    title: `${title} - Senderos de Chiapas`,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      title: `${title} - Senderos de Chiapas`,
+      description,
+      url: canonical,
+      ...(ogImage && { images: [{ url: ogImage, width: 1200, height: 630, alt: title }] }),
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${title} - Senderos de Chiapas`,
+      description,
+      ...(ogImage && { images: [ogImage] }),
+    },
+  }
+}
+
 export default async function TourDetailPage({ params }: PageProps) {
   const { slug } = await params
   const [strapiDestination, tourPageData] = await Promise.all([
@@ -88,8 +121,19 @@ export default async function TourDetailPage({ params }: PageProps) {
   ].filter(Boolean) as string[]
   const whatsappMessage = whatsappLines.join('\n')
 
+  const tourJsonLd = buildProductJsonLd({
+    name: destination.title,
+    description: destination.description?.replace(/\s+/g, ' ').trim() || `Tour ${destination.title} en Chiapas. ${destination.price}. ${destination.duration}.`,
+    image: destination.imagesDetails?.length ? destination.imagesDetails : [destination.image],
+    url: `${SITE_URL}/tour-detalles/${slug}`,
+    price: destination.price,
+    duration: destination.duration,
+    providerName: 'Senderos de Chiapas',
+  })
+
   return (
     <>
+      <JsonLd data={tourJsonLd} />
       <Header />
 
       {/* ====== Start Place Details Section (tour-details.html) ====== */}
@@ -163,7 +207,7 @@ export default async function TourDetailPage({ params }: PageProps) {
               <div className="row">
                 <div className="col-xl-6">
                   <div className="tour-title mb-10">
-                    <h3 className="title">{destination.title}</h3>
+                    <h1 className="title">{destination.title}</h1>
                     {/* <p><i className="far fa-map-marker-alt"></i>{destination.location}</p> */}
                   </div>
                 </div>

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import React from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -6,6 +7,11 @@ import Link from 'next/link'
 import { fetchInternationalPageData, STRAPI_REVALIDATE_SECONDS, type AdaptedDestination } from '@/lib/strapi'
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
+
+export const metadata: Metadata = {
+  title: 'Viajes internacionales - Senderos de Chiapas',
+  description: 'Paquetes y destinos internacionales con Senderos de Chiapas. Experiencias de viaje fuera de México con la misma calidad y atención.',
+}
 
 export default async function InternationalPage() {
   let destinations: AdaptedDestination[] = []
