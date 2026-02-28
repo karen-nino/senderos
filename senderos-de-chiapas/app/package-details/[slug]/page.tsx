@@ -63,7 +63,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const pkg = packageData ?? holidayData
   const title = pkg?.title ?? 'Paquete'
   const description =
-    (pkg?.description ?? pkg?.subtitle)?.toString().replace(/\s+/g, ' ').trim().slice(0, 160) ||
+    pkg?.description?.replace(/\s+/g, ' ').trim().slice(0, 160) ||
     `Paquete ${title} en Chiapas. Precio: ${pkg?.price ?? 'Consultar'}. Reserva con Senderos de Chiapas.`
   const canonical = `${SITE_URL}/paquete-detalles/${slug}`
   const image = pkg?.imagesDetails?.[0] ?? pkg?.image
