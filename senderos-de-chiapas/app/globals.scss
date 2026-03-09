@@ -2,8 +2,9 @@
 @import "../styles/scss/main";
 
 /* Global styles adicionales */
-/* Preloader: centrado en desktop y mobile */
+/* Preloader: altura completa y centrado */
 .preloader {
+  min-height: 100svh;
   display: flex;
   align-items: center;
   justify-content: center;
