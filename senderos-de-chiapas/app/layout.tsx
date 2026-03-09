@@ -7,7 +7,7 @@ import { JsonLd, buildOrganizationJsonLd } from '@/components/JsonLd'
 import './globals.scss'
 
 const SITE_URL = 'https://senderosdechiapas.com.mx'
-const OG_IMAGE_URL = `${SITE_URL}/assets/images/og-image.jpg`
+const OG_IMAGE_URL = `${SITE_URL}/og-image.jpg`
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
