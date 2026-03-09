@@ -118,12 +118,12 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
   }
 
   return (
-    <section className="hero-section">
+    <section className="hero-section" style={{ minHeight: '100svh' }}>
       <div className="hero-wrapper bg-light">
         <div className="hero-slider-one">
           {slides.map((slide, index) => (
-            <div key={slide.id || index} className="single-slider">
-              <div className="container-fluid">
+            <div key={slide.id || index} className="single-slider" style={{ minHeight: '100svh', display: 'flex', alignItems: 'center' }}>
+              <div className="container-fluid w-100">
                 <div className="row align-items-center">
                   <div className="col-xl-6">
                     <div className="hero-content">
