@@ -5,7 +5,6 @@ import SeasonPackageItem from '@/components/SeasonPackageItem'
 import HeroSlider from '@/components/HeroSlider'
 import GallerySlider from '@/components/GallerySlider'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
 import { fetchHome, fetchHomeHeroSlides, fetchDestinationsForHome, fetchPackages, fetchSeasonsForHome, parseHomeServices, parseHomeTestimonial, parseHomeGallery, GALLERY_FALLBACK_IMAGES, STRAPI_REVALIDATE_SECONDS, getTourDetailHref, type AdaptedDestination, type AdaptedHomeService, type AdaptedSeason } from '@/lib/strapi'
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
@@ -30,13 +29,11 @@ export default async function Home() {
   let galleryImages: string[] = []
   let seasons: AdaptedSeason[] = []
   let hasHeroFromStrapi = false
-  let hasHomeData = false
 
   try {
     // Obtener heroSlides (Página Principal - Carrusel), services y testimonial desde home
     const response = await fetchHome()
     const home = response?.data || {}
-    hasHomeData = !!response?.data && Object.keys(home as object).length > 0
 
     heroSlides = await fetchHomeHeroSlides(home as Record<string, unknown>)
     hasHeroFromStrapi = heroSlides.length > 0
@@ -57,21 +54,47 @@ export default async function Home() {
     seasons = await fetchSeasonsForHome()
   } catch (error) {
     console.error('Error fetching data from Strapi:', error)
-    notFound()
   }
 
-  // Si no hay datos de Strapi para las secciones principales, mostrar 404 como en el resto de páginas
+  // Si no hay datos de Strapi para las secciones principales, mostrar la página de mantenimiento.
+  // No usar hasHomeData: Strapi puede devolver un documento con solo metadata (sin hero, services, etc.).
   const hasAnyContent =
-    hasHomeData ||
     hasHeroFromStrapi ||
     packages.length > 0 ||
     destinations.length > 0 ||
     services.length > 0 ||
     testimonial != null ||
-    seasons.length > 0
+    seasons.length > 0 ||
+    galleryImages.length > 0
 
   if (!hasAnyContent) {
-    notFound()
+    return (
+      <>
+        <Header />
+        <section className="contact-section pt-220 pb-220">
+          <div className="container">
+            <div className="row justify-content-center">
+              <div className="col-lg-8 text-center">
+                <div className="section-title mb-70 wow fadeInDown">
+                  <i className="fas fa-tools mb-30 d-block" style={{ color: '#63ab45', fontSize: '3.5rem' }} aria-hidden />
+                  <span className="sub-title">En mantenimiento</span>
+                  <h2>Esta página está en mantenimiento</h2>
+                  <p className="mt-40">
+                    Estaremos de vuelta pronto. Contáctanos si necesitas más información.
+                  </p>
+                </div>
+                <div className="d-flex flex-wrap justify-content-center gap-3">
+                  <Link href="/contacto" className="main-btn primary-btn wow fadeInUp" style={{ padding: '16px 45px' }}>
+                    Contáctanos
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <Footer />
+      </>
+    )
   }
 
   return (
