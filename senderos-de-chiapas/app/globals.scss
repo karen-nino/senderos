@@ -815,6 +815,19 @@ ul.info-list ul.route-list li:last-child {
   margin-bottom: 0;
 }
 
+/* Detalles del tour (móvil): etiqueta arriba, valor en línea siguiente */
+ul.info-list.info-list--stack > li > span > span:last-of-type {
+  float: none !important;
+  display: block;
+  width: 100%;
+  margin-top: 0.35rem;
+  text-align: left !important;
+  clear: both;
+}
+ul.info-list.info-list--stack > li > span {
+  line-height: 1.45;
+}
+
 /* tour-title-wrapper - border-bottom solo en desktop */
 .tour-title-wrapper {
   border-bottom: none;

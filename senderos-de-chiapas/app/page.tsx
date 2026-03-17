@@ -226,9 +226,9 @@ export default async function Home() {
                         <div className="row align-items-center">
                           <div className="col-md-6">
                             <div className="activity-content-box pl-lg-40">
-                              <div className="icon">
+                              {/* <div className="icon">
                                 <i className={svc.icon || 'flaticon-camp'}></i>
-                              </div>
+                              </div> */}
                               <h3 className="title">{svc.title || svc.subtitle || 'Servicio'}</h3>
                               {svc.description && (
                                 <p>{svc.description}</p>
@@ -262,9 +262,9 @@ export default async function Home() {
                       <div className="row align-items-center">
                         <div className="col-md-6">
                           <div className="activity-content-box pl-lg-40">
-                            <div className="icon">
+                            {/* <div className="icon">
                               <i className="flaticon-camp"></i>
-                            </div>
+                            </div> */}
                             <h3 className="title">Tu próxima aventura, empezando aquí y ahora</h3>
                             <ul className="check-list">
                               <li><i className="fas fa-badge-check"></i>Tours Diarios</li>
@@ -316,7 +316,7 @@ export default async function Home() {
                 <div className="testimonial-slider-one pl-lg-55 mb-40 wow fadeInRight">
                   <div className="gw-testimonial-item">
                     <div className="testimonial-inner-content">
-                      <div className="quote-rating-box">
+                      <div className="quote-rating-box px-4">
                         <div className="icon">
                           <img src="/assets/images/testimonial/quote.png" alt="quote icon" />
                         </div>
@@ -331,10 +331,10 @@ export default async function Home() {
                           </ul>
                         </div>
                       </div>
-                      <p>
+                      <p className="px-4">
                         {testimonial.testimonial || 'To take a trivial example which of usev undertakes laborious physical exercise excepto obtain advantage from has any right to find fault with man who chooses to enjoy'}
                       </p>
-                      <div className="author-thumb-title">
+                      <div className="author-thumb-title px-4">
                         <div className="author-thumb">
                           <img
                             src={testimonial.profilePhotoUrl || '/assets/images/testimonial/author-1.jpg'}

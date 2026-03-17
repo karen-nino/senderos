@@ -248,7 +248,7 @@ export default async function TourDetailPage({ params }: PageProps) {
             <div className="sidebar-widget-area d-block d-xl-none pb-30">
               <div className="sidebar-widget booking-info-widget wow fadeInUp mb-40">
                 <h4 className="widget-title">Detalles del tour</h4>
-                <ul className="info-list">
+                <ul className="info-list info-list--stack">
                   {(destination.routeList?.length ?? (destination.route ? 1 : 0)) > 0 && (
                     <li>
                       <span>
