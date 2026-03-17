@@ -865,9 +865,13 @@ function adaptStrapiPackageItem(p: StrapiPackageItem): AdaptedDestination {
 export interface StrapiSeasonItem {
   title?: string;
   subtitle?: string;
+  description?: string | StrapiBlock | StrapiBlock[];
   departureDate?: string;
+  duration?: string;
+  price?: string;
   link?: string;
   home?: boolean;
+  badge?: string;
   image?:
     | {
         data?: { attributes?: { url?: string }; url?: string };
@@ -884,6 +888,11 @@ export interface AdaptedSeason {
   title: string;
   link: string;
   image: string;
+  /** Extracto de description (blocks) para tarjeta */
+  description?: string;
+  duration?: string;
+  price?: string;
+  badge?: "nuevo" | "pocos_lugares" | "agotado" | "oculto";
 }
 
 function formatSeasonDate(dateStr: string | undefined): string {
@@ -943,12 +952,19 @@ function adaptStrapiSeasonItem(
     : SEASON_FALLBACK_IMAGES[index % SEASON_FALLBACK_IMAGES.length];
   const slug = s.title ? slugify(s.title) : undefined;
   const link = s.link?.trim() || (slug ? `/paquete-detalles/${slug}` : "#");
+  const descPlain = descriptionFromBlocks(s.description);
+  const description =
+    descPlain.length > 220 ? `${descPlain.slice(0, 217).trim()}…` : descPlain;
   return {
     category: s.subtitle ?? "",
     dateFormatted: formatSeasonDate(s.departureDate),
     title: s.title ?? "",
     link,
     image: fullImageUrl,
+    description: description || undefined,
+    duration: s.duration?.trim() || undefined,
+    price: s.price?.trim() || undefined,
+    badge: normalizeBadge(s.badge),
   };
 }
 
@@ -970,7 +986,9 @@ export async function fetchSeasonsForHome(): Promise<AdaptedSeason[]> {
     const all = rawSeasons
       .filter((s) => s.home === true)
       .map((s, i) => adaptStrapiSeasonItem(s, i));
-    return all.filter((s) => s.title || s.category);
+    return all.filter(
+      (s) => (s.title || s.category) && s.badge !== "oculto",
+    );
   } catch (error) {
     console.error("Error fetching seasons (holidays) from Strapi:", error);
     return [];
@@ -982,7 +1000,9 @@ export async function fetchSeasonsForPackagesPage(): Promise<AdaptedSeason[]> {
   try {
     const rawSeasons = await fetchRawSeasonsFromStrapi();
     const all = rawSeasons.map((s, i) => adaptStrapiSeasonItem(s, i));
-    return all.filter((s) => s.title || s.category);
+    return all.filter(
+      (s) => (s.title || s.category) && s.badge !== "oculto",
+    );
   } catch (error) {
     console.error("Error fetching seasons (holidays) from Strapi:", error);
     return [];

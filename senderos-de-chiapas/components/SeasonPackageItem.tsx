@@ -6,8 +6,93 @@ interface SeasonPackageItemProps {
   link: string
   category?: string
   dateFormatted?: string
-  /** 'section' = layout para home (con col). 'card' = card compacta para página Paquetes, mismo peso visual que PackageItem */
+  description?: string
+  duration?: string
+  price?: string
+  badge?: 'nuevo' | 'pocos_lugares' | 'agotado' | 'oculto'
+  /** 'section' = home en columnas. 'card' = página Paquetes (mismo layout que PackageItem) */
   variant?: 'section' | 'card'
+}
+
+function SeasonPackageCardBody({
+  title,
+  image,
+  link,
+  category,
+  dateFormatted,
+  description,
+  duration,
+  price,
+  badge,
+}: Omit<SeasonPackageItemProps, 'variant'>) {
+  const href = !link?.trim() || link === '#'
+    ? '/paquetes'
+    : link.startsWith('/')
+      ? link
+      : `/paquete-detalles/${link}`
+
+  return (
+    <div className="single-service-item mb-40">
+      <div className="content">
+        {category ? (
+          <div className="mb-10">
+            <span className="seasonal-pill">{category}</span>
+          </div>
+        ) : null}
+        <h3 className="title">{title}</h3>
+        {description ? <p className="pb-2">{description}</p> : null}
+        {(dateFormatted || duration || price) && (
+          <div className="destination-info mb-15">
+            {dateFormatted ? (
+              <div className="departure-date">
+                <span className="label">Fecha de salida:</span>
+                <div className="value-wrapper">
+                  <i className="far fa-calendar-alt" />
+                  <span className="value">{dateFormatted}</span>
+                </div>
+              </div>
+            ) : null}
+            {duration ? (
+              <div className="duration">
+                <span className="label">Tiempo:</span>
+                <span className="value">{duration}</span>
+              </div>
+            ) : null}
+            {price ? (
+              <div className="price price--highlight">
+                <span className="label">Precio por persona:</span>
+                <span className="price-amount">{price}</span>
+              </div>
+            ) : null}
+          </div>
+        )}
+      </div>
+      <div className="img-holder destination-img-wrapper">
+        {badge && badge !== 'oculto' ? (
+          <span
+            className={`destination-badge destination-badge--${badge}`}
+            aria-label={
+              badge === 'nuevo'
+                ? 'Nuevo paquete'
+                : badge === 'pocos_lugares'
+                  ? 'Pocos lugares disponibles'
+                  : 'Agotado'
+            }
+          >
+            {badge === 'nuevo'
+              ? '¡NUEVO!'
+              : badge === 'pocos_lugares'
+                ? 'POCOS LUGARES'
+                : 'AGOTADO'}
+          </span>
+        ) : null}
+        <img src={image} alt={title || 'Paquete de temporada'} />
+      </div>
+      <Link href={href} className="tour-item-more-info-btn">
+        Más información
+      </Link>
+    </div>
+  )
 }
 
 export default function SeasonPackageItem({
@@ -16,57 +101,32 @@ export default function SeasonPackageItem({
   link,
   category,
   dateFormatted,
+  description,
+  duration,
+  price,
+  badge,
   variant = 'section',
 }: SeasonPackageItemProps) {
+  const props = {
+    title,
+    image,
+    link,
+    category,
+    dateFormatted,
+    description,
+    duration,
+    price,
+    badge,
+  }
+
   if (variant === 'card') {
-    return (
-      <div className="single-service-item single-service-item--seasonal seasonal-card-horizontal mb-40">
-        <div className="seasonal-card-horizontal__image">
-          <img src={image} alt={title || 'Paquete de temporada'} />
-        </div>
-        <div className="seasonal-card-horizontal__body">
-          {(category || dateFormatted) && (
-            <div className="seasonal-meta mb-10">
-              {category && <span className="seasonal-pill">{category}</span>}
-              {dateFormatted && (
-                <span className="seasonal-date">
-                  <i className="far fa-calendar-alt" aria-hidden />
-                  {dateFormatted}
-                </span>
-              )}
-            </div>
-          )}
-          <h3 className="title">{title}</h3>
-          <Link href={link} className="tour-item-more-info-btn">
-            Más información
-          </Link>
-        </div>
-      </div>
-    )
+    return <SeasonPackageCardBody {...props} />
   }
 
   return (
     <div className="col-lg-4 col-md-6 col-sm-12">
-      <div className="single-seasonal-package mb-40 wow fadeInUp">
-        <div className="post-thumbnail">
-          <img src={image} alt={title || 'Paquete de temporada'} />
-        </div>
-        <div className="entry-content">
-          {category && (
-            <span className="cat-btn">{category}</span>
-          )}
-          {dateFormatted && (
-            <div className="post-meta">
-              <span><i className="far fa-calendar-alt"></i><a href="#">{dateFormatted}</a></span>
-            </div>
-          )}
-          <h3 className="title">
-            <Link href={link}>{title}</Link>
-          </h3>
-          <Link href={link} className="main-btn filled-btn">
-            Más Información<i className="far fa-paper-plane"></i>
-          </Link>
-        </div>
+      <div className="wow fadeInUp">
+        <SeasonPackageCardBody {...props} />
       </div>
     </div>
   )

@@ -379,6 +379,10 @@ export default async function Home() {
                   link={season.link}
                   category={season.category}
                   dateFormatted={season.dateFormatted}
+                  description={season.description}
+                  duration={season.duration}
+                  price={season.price}
+                  badge={season.badge}
                 />
               ))}
             </div>
