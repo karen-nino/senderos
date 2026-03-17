@@ -267,7 +267,7 @@ export default async function TourDetailPage({ params }: PageProps) {
                   {destination.transport && <li><span><i className="fal fa-bus"></i>Transporte<span>{destination.transport}</span></span></li>}
                   {destination.accommodation && <li><span><i className="far fa-bed"></i>Alojamiento<span>{destination.accommodation}</span></span></li>}
                   {destination.departureDate && <li><span><i className="far fa-calendar-alt"></i>Fecha de salida<span>{destination.departureDate}</span></span></li>}
-                  <li>
+                  <li className="tour-details-wa-cta-mobile">
                     <div className="submit-button">
                       <a
                         href={`https://wa.me/529613629724?text=${encodeURIComponent(whatsappMessage)}`}
@@ -282,7 +282,7 @@ export default async function TourDetailPage({ params }: PageProps) {
                 </ul>
               </div>
               {(destination.calendarStart || destination.calendarEnd) && (
-                <div className="calendar-wrapper wow fadeInUp mb-40">
+                <div className="calendar-wrapper calendar-wrapper--mobile-stack wow fadeInUp mb-40">
                   <div
                     className="calendar-container"
                     data-calendar-date={destination.calendarStart ?? ''}
@@ -298,9 +298,11 @@ export default async function TourDetailPage({ params }: PageProps) {
                 {destination.description?.trim() && (
                   <div className="place-content-wrap pt-45 wow fadeInUp mb-40">
                     <h4 className="title pb-2">Descripción</h4>
-                    <div className="tour-description-text">
+                    <div className="tour-description-text" style={{ lineHeight: 1.85 }}>
                       {destination.description.split(/\n\n+/).map((para, idx) => (
-                        <p key={idx} className={idx > 0 ? 'mt-3' : ''}>{para.trim()}</p>
+                        <p key={idx} className={idx > 0 ? 'mt-3' : ''} style={{ lineHeight: 'inherit' }}>
+                          {para.trim()}
+                        </p>
                       ))}
                     </div>
                   </div>
@@ -418,26 +420,32 @@ export default async function TourDetailPage({ params }: PageProps) {
                 )}
 
                 {/* Map Box(es) - solo se muestra si hay mapItem en Strapi */}
-                {destination.mapItem?.length
-                  ? destination.mapItem
-                    .map((item) => ({
-                      src: getMapUrl(item.map, destination.location),
-                      title: item.title?.trim() || "Ubicación",
-                    }))
-                    .filter((e) => e.src)
-                    .map((entry, i) => (
-                      <div
-                        key={i}
-                        className="map-box mb-100 wow fadeInUp"
-                      >
-                        <h4 className="title pb-4">{entry.title}</h4>
-                        <iframe
-                          src={entry.src}
-                          title={`Mapa - ${entry.title}`}
-                        />
-                      </div>
-                    ))
-                  : null}
+                {destination.mapItem?.length ? (
+                  <>
+                    <div className="tour-details-map-section">
+                      {destination.mapItem
+                        .map((item) => ({
+                          src: getMapUrl(item.map, destination.location),
+                          title: item.title?.trim() || "Ubicación",
+                        }))
+                        .filter((e) => e.src)
+                        .map((entry, i) => (
+                          <div
+                            key={i}
+                            className="map-box mb-0 tour-details-map-box wow fadeInUp"
+                          >
+                            <h4 className="title pb-4">{entry.title}</h4>
+                            <iframe
+                              src={entry.src}
+                              title={`Mapa - ${entry.title}`}
+                            />
+                          </div>
+                        ))}
+                    </div>
+                    {/* Altura fija: el margen bajo el último mapa se ve (evita colapso de márgenes) */}
+                    <div className="tour-details-map-bottom-space" aria-hidden />
+                  </>
+                ) : null}
               </div>
 
               {/* Sidebar */}

@@ -2386,3 +2386,54 @@ ul.info-list ul.route-list li:last-child {
     object-fit: cover;
   }
 }
+
+/* Tour detalle (móvil/tablet): espacio extra arriba del botón WhatsApp y del calendario */
+@media (max-width: 1199.98px) {
+  .tour-details-wa-cta-mobile {
+    margin-top: 1.75rem;
+    padding-top: 0.75rem;
+    text-align: center;
+    list-style: none;
+    .submit-button {
+      display: flex;
+      justify-content: center;
+    }
+    .main-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: fit-content;
+      max-width: 100%;
+    }
+  }
+  .calendar-wrapper--mobile-stack {
+    margin-top: 2.75rem;
+    padding-top: 1.25rem;
+  }
+}
+
+/* Tour detalle: separación entre mapas */
+.tour-details-map-section {
+  display: flow-root;
+}
+.tour-details-map-section .tour-details-map-box:not(:last-child) {
+  margin-bottom: 2.5rem;
+}
+.tour-details-map-section .tour-details-map-box:last-child {
+  margin-bottom: 0;
+}
+/* Espacio visible solo tras el último mapa (desktop: grande; móvil: poco) */
+.tour-details-map-bottom-space {
+  width: 100%;
+  min-height: 2.5rem;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+@media (min-width: 1200px) {
+  .tour-details-map-section .tour-details-map-box:not(:last-child) {
+    margin-bottom: 5rem;
+  }
+  .tour-details-map-bottom-space {
+    min-height: 14rem;
+  }
+}
