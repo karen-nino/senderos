@@ -1,5 +1,5 @@
 ---
-description: Cuando el usuario escribe "git" significa add, commit y push
+description: Cuando el usuario escribe "git" significa add y commit (sin push)
 alwaysApply: true
 ---
 
@@ -9,6 +9,7 @@ Cuando el usuario escriba solo **"git"** (o pida "git", "haz git", etc.), interp
 
 1. `git add .`
 2. `git commit` (usar un mensaje descriptivo según los cambios recientes, o preguntar si hace falta)
-3. `git push`
 
-Ejecutar los tres pasos en ese orden (con los permisos necesarios: `git_write` para add/commit, `network` y `git_write` para push).
+**No** incluir `git push` salvo que lo pida explícitamente.
+
+Ejecutar con permiso `git_write` para add y commit.
