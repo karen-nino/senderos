@@ -245,7 +245,7 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
             <div className="sidebar-widget-area d-block d-xl-none pb-30">
               <div className="sidebar-widget booking-info-widget wow fadeInUp mb-40">
                 <h4 className="widget-title">Detalles del paquete</h4>
-                <ul className="info-list">
+                <ul className="info-list info-list--stack">
                   <li><span><i className="fal fa-box-usd"></i>Precio<span>{pkg.price}</span></span></li>
                   <li><span><i className="fal fa-clock"></i>Duración<span>{pkg.duration || 'Variable'}</span></span></li>
                   {pkg.accommodation && <li><span><i className="far fa-bed"></i>Alojamiento<span>{pkg.accommodation}</span></span></li>}
