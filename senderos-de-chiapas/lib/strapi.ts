@@ -6,6 +6,12 @@ export const STRAPI_REVALIDATE_SECONDS = 60;
 /** Collection Type Tour (Strapi v5: GET /api/tours). Evitar populate[image]=* porque Strapi devuelve ValidationError "Invalid key related at image.related". */
 const STRAPI_TOURS_POPULATE = "populate=*";
 const STRAPI_TOURS_URL = `/api/tours?${STRAPI_TOURS_POPULATE}`;
+/**
+ * Strapi 5: populate=* NO rellena componentes anidados. itineraryItem.activity (repeatable)
+ * solo llega con populate explícito; sin esto el itinerario sale vacío en el detalle.
+ */
+const STRAPI_TOUR_ITINERARY_POPULATE =
+  "populate[itineraryItem][populate][activity]=*&populate[image]=true&populate[imagesDetails]=true&populate[mapItem]=true";
 /** Single type Tours-Page: banner (imageBanner). Sin populate[imageBanner]=* para evitar ValidationError "Invalid key related at imageBanner.related". */
 const STRAPI_TOURS_PAGE_URLS = [
   "/api/tours-page?populate=imageBanner&status=published",
@@ -62,6 +68,80 @@ function getToursArrayFromResponse(response: Record<string, unknown> | null): St
     }
   }
   return items.map(normalizeTourItem);
+}
+
+/** Respuesta findOne o data única: un documento tour plano (Strapi v5). */
+function getSingleTourFromResponse(
+  response: Record<string, unknown> | null,
+): StrapiDestinationItem | null {
+  if (!response || response.error) return null;
+  const data = response.data;
+  if (data && typeof data === "object" && !Array.isArray(data)) {
+    const d = data as Record<string, unknown>;
+    if (
+      d.documentId != null ||
+      d.id != null ||
+      d.title != null ||
+      Array.isArray(d.itineraryItem)
+    ) {
+      return normalizeTourItem(d);
+    }
+  }
+  const items = getToursArrayFromResponse(response);
+  return items[0] ?? null;
+}
+
+/**
+ * Segunda petición con populate anidado: sin esto Strapi 5 no devuelve activity dentro de itineraryItem.
+ */
+async function fetchTourWithItineraryPopulated(
+  item: StrapiDestinationItem,
+): Promise<StrapiDestinationItem> {
+  const docId =
+    item.documentId != null ? String(item.documentId).trim() : "";
+  const numId = item.id != null ? String(item.id) : "";
+  const queries: string[] = [];
+  if (docId) {
+    queries.push(
+      `/api/tours?filters[documentId][$eq]=${encodeURIComponent(docId)}&${STRAPI_TOUR_ITINERARY_POPULATE}`,
+    );
+    queries.push(
+      `/api/tours/${encodeURIComponent(docId)}?${STRAPI_TOUR_ITINERARY_POPULATE}`,
+    );
+  }
+  if (numId) {
+    queries.push(
+      `/api/tours?filters[id][$eq]=${encodeURIComponent(numId)}&${STRAPI_TOUR_ITINERARY_POPULATE}`,
+    );
+  }
+  for (const url of queries) {
+    try {
+      const res = await fetchStrapi(url, STRAPI_TOURS_FETCH_OPTIONS);
+      if ((res as Record<string, unknown>)?.error) continue;
+      const one = getSingleTourFromResponse(res as Record<string, unknown>);
+      if (!one) continue;
+      return {
+        ...item,
+        itineraryItem:
+          Array.isArray(one.itineraryItem) && one.itineraryItem.length > 0
+            ? (one.itineraryItem as StrapiItineraryItem[])
+            : item.itineraryItem,
+        image:
+          one.image !== undefined && one.image !== null ? one.image : item.image,
+        imagesDetails:
+          one.imagesDetails !== undefined && one.imagesDetails !== null
+            ? one.imagesDetails
+            : item.imagesDetails,
+        mapItem:
+          one.mapItem !== undefined && one.mapItem !== null
+            ? one.mapItem
+            : item.mapItem,
+      };
+    } catch {
+      /* probar siguiente URL */
+    }
+  }
+  return item;
 }
 
 const HOME_QUERY = "populate=*&status=published";
@@ -167,11 +247,11 @@ export type StrapiBlock = {
   [key: string]: unknown;
 };
 
-/** Ítem de itinerario desde Strapi (activity/routeItinerary/accommodation pueden ser string o rich text) */
+/** Ítem de día en itinerario: en Strapi v5 suele ser dayTitle + activity[] (componente activity-item). Legacy: time/activity en el mismo nivel. */
 export interface StrapiItineraryItem {
   dayTitle?: string;
   time?: string;
-  activity?: string | StrapiBlock | StrapiBlock[];
+  activity?: string | StrapiBlock | StrapiBlock[] | Array<Record<string, unknown>>;
   routeItinerary?: string | StrapiBlock | StrapiBlock[];
   accommodation?: string | StrapiBlock | StrapiBlock[];
 }
@@ -181,7 +261,8 @@ export interface StrapiDestinationItem {
   id?: number;
   documentId?: string;
   title?: string;
-  description?: string;
+  /** En Collection Type Tour es blocks; puede llegar como string en otros tipos */
+  description?: string | StrapiBlock | StrapiBlock[];
   subtitle?: string;
   departureDate?: string;
   accommodation?: string;
@@ -342,6 +423,38 @@ function extractTextFromBlock(block: StrapiBlock): string[] {
     }
   }
   return out;
+}
+
+/** Descripción desde Strapi blocks o string (Collection Type Tour). */
+export function descriptionFromBlocks(value: unknown): string {
+  if (value == null) return "";
+  if (typeof value === "string") return value.trim();
+  if (!Array.isArray(value)) {
+    return richTextToPlainString(value) ?? "";
+  }
+  const parts: string[] = [];
+  for (const block of value) {
+    if (typeof block === "object" && block) {
+      const p = extractTextFromBlock(block as StrapiBlock)
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .join(" ");
+      if (p) parts.push(p);
+    }
+  }
+  return parts.join("\n\n");
+}
+
+/** Texto corto para tarjetas de tour (subtitle Strapi o extracto de descripción). */
+export function tourCardSubtitle(d: {
+  subtitle?: string;
+  description?: string;
+}): string {
+  const s = d.subtitle?.trim();
+  if (s) return s;
+  const desc = (d.description || "").replace(/\s+/g, " ").trim();
+  if (!desc) return "";
+  return desc.length <= 240 ? desc : `${desc.slice(0, 237).trim()}…`;
 }
 
 /** Convierte valor que puede ser string o rich text (Strapi blocks) a string plano */
@@ -572,7 +685,7 @@ export function adaptStrapiDestination(
   const fullImageUrl = imageUrl ? buildFullImageUrl(imageUrl) : FALLBACK_IMAGE;
   return {
     title: d.title ?? "",
-    description: d.description ?? "",
+    description: descriptionFromBlocks(d.description),
     subtitle: d.subtitle ?? undefined,
     image: fullImageUrl,
     link: d.link,
@@ -1056,11 +1169,15 @@ export async function fetchDestinationsForHome(): Promise<
 export interface AdaptedDestinationDetail {
   title: string;
   description: string;
+  subtitle?: string;
   image: string;
   imagesDetails: string[];
   location: string;
   price: string;
   duration: string;
+  /** Punto de salida (Strapi tour.departure) */
+  departure?: string;
+  transport?: string;
   link?: string;
   /** Ruta como texto único (para compatibilidad) */
   route?: string;
@@ -1107,18 +1224,110 @@ export interface AdaptedInternationalDetail {
 function getImagesDetailsUrls(
   imagesDetails: StrapiDestinationItem["imagesDetails"],
 ): string[] {
-  if (!imagesDetails) return [];
-  const arr = Array.isArray(imagesDetails)
-    ? imagesDetails
-    : ((
-        imagesDetails as { data?: Array<{ url?: string }> }
-      )?.data ?? []);
-  return arr
-    .map((img) => {
-      const url = (img as { url?: string })?.url ?? "";
-      return buildFullImageUrl(url);
-    })
-    .filter(Boolean);
+  return getMultipleMediaUrls(imagesDetails);
+}
+
+/** Componentes/repeatables a veces vienen como { data: [...] } en respuestas API. */
+function unwrapStrapiRelationArray(value: unknown): unknown[] {
+  if (value == null) return [];
+  if (Array.isArray(value)) return value;
+  if (typeof value === "object" && value !== null && "data" in value) {
+    const d = (value as { data: unknown }).data;
+    if (Array.isArray(d)) return d;
+    if (d != null && typeof d === "object") return [d];
+  }
+  return [value];
+}
+
+/** Aplana attributes en ítems de componente (v4 o respuestas anidadas). */
+function flattenStrapiComponent(raw: unknown): Record<string, unknown> {
+  if (!raw || typeof raw !== "object") return {};
+  const r = raw as Record<string, unknown>;
+  const attrs = r.attributes as Record<string, unknown> | undefined;
+  if (attrs && typeof attrs === "object") return { ...r, ...attrs };
+  return r;
+}
+
+/** true si parece bloque de Strapi (paragraph, list, etc.), no componente activity-item */
+function isStrapiRichTextBlock(obj: unknown): boolean {
+  if (!obj || typeof obj !== "object") return false;
+  const o = obj as Record<string, unknown>;
+  if (Array.isArray(o.children)) return true;
+  const t = typeof o.type === "string" ? o.type : "";
+  return (
+    t === "paragraph" ||
+    t === "heading" ||
+    t === "list" ||
+    t === "quote" ||
+    t === "link"
+  );
+}
+
+/** Itinerario: día + activity (un objeto o lista de activity-item) o blocks legacy. */
+function parseTourItinerary(
+  d: StrapiDestinationItem,
+): AdaptedDestinationDetail["itinerary"] {
+  const itineraryDays = unwrapStrapiRelationArray(d.itineraryItem);
+  if (itineraryDays.length === 0) return undefined;
+  const rows: NonNullable<AdaptedDestinationDetail["itinerary"]> = [];
+  for (const raw of itineraryDays) {
+    const i = flattenStrapiComponent(raw);
+    const dayTitle =
+      (typeof i.dayTitle === "string" && i.dayTitle.trim()) || "Día";
+    const activities = unwrapStrapiRelationArray(i.activity);
+    if (activities.length > 0) {
+      const first = activities[0];
+      const firstIsBlock = isStrapiRichTextBlock(first);
+      const firstObj = first as Record<string, unknown> | undefined;
+      const looksLikeActivityRow =
+        !firstIsBlock &&
+        firstObj &&
+        typeof firstObj === "object" &&
+        (typeof firstObj.time === "string" ||
+          typeof firstObj.activity === "string" ||
+          typeof firstObj.accommodation === "string" ||
+          (firstObj.activity != null && !isStrapiRichTextBlock(firstObj.activity)));
+      if (looksLikeActivityRow) {
+        for (const act of activities) {
+          const a = flattenStrapiComponent(act);
+          if (!a || Object.keys(a).length === 0) continue;
+          const time =
+            typeof a.time === "string" && a.time.trim()
+              ? a.time.trim()
+              : undefined;
+          const actText =
+            typeof a.activity === "string"
+              ? String(a.activity).trim()
+              : richTextToPlainString(a.activity) ?? "";
+          const acc =
+            typeof a.accommodation === "string"
+              ? String(a.accommodation).trim()
+              : richTextToPlainString(a.accommodation);
+          if (actText || time || acc) {
+            rows.push({
+              dayTitle,
+              time,
+              activity: actText || "—",
+              accommodation: acc,
+            });
+          }
+        }
+        continue;
+      }
+    }
+    const legacy = i as StrapiItineraryItem;
+    const activity = richTextToPlainString(legacy.activity) ?? "";
+    if (activity) {
+      rows.push({
+        dayTitle,
+        time: typeof legacy.time === "string" ? legacy.time : undefined,
+        activity,
+        routeItinerary: richTextToPlainString(legacy.routeItinerary),
+        accommodation: richTextToPlainString(legacy.accommodation),
+      });
+    }
+  }
+  return rows.length ? rows : undefined;
 }
 
 function adaptToDestinationDetail(
@@ -1127,23 +1336,17 @@ function adaptToDestinationDetail(
   const imageUrl = getImageUrl(d.image);
   const fullImageUrl = buildFullImageUrl(imageUrl);
   const imagesDetails = getImagesDetailsUrls(d.imagesDetails);
-  const itinerary = Array.isArray(d.itineraryItem)
-    ? d.itineraryItem
-        .map((i) => ({
-          dayTitle: i.dayTitle ?? "Día",
-          time: typeof i.time === "string" ? i.time : undefined,
-          activity: richTextToPlainString(i.activity) ?? "",
-          routeItinerary: richTextToPlainString(i.routeItinerary),
-          accommodation: richTextToPlainString(i.accommodation),
-        }))
-        .filter((entry) => entry.activity.length > 0)
-    : undefined;
+  const itinerary = parseTourItinerary(d);
   return {
     title: d.title ?? "",
-    description: d.description ?? "",
+    description: descriptionFromBlocks(d.description),
+    subtitle: d.subtitle?.trim() || undefined,
     image: fullImageUrl,
     imagesDetails,
-    location: d.location ?? "Chiapas, México",
+    location:
+      d.departure?.trim() ||
+      d.location?.trim() ||
+      "Chiapas, México",
     price: d.price ?? "Consultar",
     duration: d.duration ?? "Variable",
     link: d.link,
@@ -1156,6 +1359,8 @@ function adaptToDestinationDetail(
         : blocksToList(d.route as StrapiDestinationItem["includes"]),
     accommodation: d.accommodation,
     departureDate: d.departureDate,
+    departure: d.departure?.trim() || undefined,
+    transport: d.transport?.trim() || undefined,
     map:
       (Array.isArray(d.mapItem) ? d.mapItem[0]?.map : d.mapItem?.map) ?? d.map,
     mapItem: (() => {
@@ -1185,7 +1390,7 @@ function adaptToInternationalDetail(
   const imagesDetails = getImagesDetailsUrls(d.imagesDetails);
   return {
     title: d.title ?? "",
-    description: d.description ?? "",
+    description: descriptionFromBlocks(d.description),
     image: fullImageUrl,
     imagesDetails,
     price: d.price ?? "Consultar",
@@ -1595,8 +1800,9 @@ export async function fetchTourBySlug(
       const byTitle = d.title ? slugify(d.title) === normalizedSlug : false;
       return byDocId || byTitle;
     }) ?? null;
-    if (item) return adaptToDestinationDetail(item);
-    return null;
+    if (!item) return null;
+    const withItinerary = await fetchTourWithItineraryPopulated(item);
+    return adaptToDestinationDetail(withItinerary);
   } catch (error) {
     console.error("Error fetching tour by slug from Strapi:", error);
     return null;

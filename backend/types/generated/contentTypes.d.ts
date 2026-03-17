@@ -796,7 +796,7 @@ export interface ApiTourTour extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     departure: Schema.Attribute.String;
     departureDate: Schema.Attribute.String;
-    description: Schema.Attribute.String;
+    description: Schema.Attribute.Blocks;
     duration: Schema.Attribute.String;
     home: Schema.Attribute.Boolean;
     image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;

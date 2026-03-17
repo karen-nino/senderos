@@ -4,7 +4,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import TourItem from '@/components/TourItem'
 import Link from 'next/link'
-import { fetchTourPageData, STRAPI_REVALIDATE_SECONDS, getTourDetailHref, type AdaptedDestination } from '@/lib/strapi'
+import { fetchTourPageData, STRAPI_REVALIDATE_SECONDS, getTourDetailHref, tourCardSubtitle, type AdaptedDestination } from '@/lib/strapi'
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
 
@@ -62,7 +62,7 @@ export default async function ToursPage() {
                   <div className="wow fadeInUp">
                     <TourItem
                       title={destination.title}
-                      subtitle={destination.subtitle ?? destination.description}
+                      subtitle={tourCardSubtitle(destination)}
                       image={destination.image}
                       link={getTourDetailHref(destination)}
                       departureDate={destination.departureDate}

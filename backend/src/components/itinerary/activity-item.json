@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_itinerary_activity_items",
+  "info": {
+    "displayName": "activityItem"
+  },
+  "options": {},
+  "attributes": {
+    "time": {
+      "type": "string"
+    },
+    "activity": {
+      "type": "string"
+    },
+    "accommodation": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

@@ -65,17 +65,26 @@ export interface HomeTestimonial extends Struct.ComponentSchema {
   };
 }
 
+export interface ItineraryActivityItem extends Struct.ComponentSchema {
+  collectionName: 'components_itinerary_activity_items';
+  info: {
+    displayName: 'activityItem';
+  };
+  attributes: {
+    accommodation: Schema.Attribute.String;
+    activity: Schema.Attribute.String;
+    time: Schema.Attribute.String;
+  };
+}
+
 export interface ItineraryItineraryItem extends Struct.ComponentSchema {
   collectionName: 'components_itinerary_itinerary_items';
   info: {
     displayName: 'itineraryItem';
   };
   attributes: {
-    accommodation: Schema.Attribute.String;
-    activity: Schema.Attribute.String;
+    activity: Schema.Attribute.Component<'itinerary.activity-item', true>;
     dayTitle: Schema.Attribute.String;
-    routeItinerary: Schema.Attribute.Blocks;
-    time: Schema.Attribute.String;
   };
 }
 
@@ -98,6 +107,7 @@ declare module '@strapi/strapi' {
       'home.hero-slide': HomeHeroSlide;
       'home.services': HomeServices;
       'home.testimonial': HomeTestimonial;
+      'itinerary.activity-item': ItineraryActivityItem;
       'itinerary.itinerary-item': ItineraryItineraryItem;
       'map.map-item': MapMapItem;
     }

@@ -32,6 +32,7 @@ function getMapUrl(
 const FALLBACK_DESTINATION = {
   title: 'Tour en Chiapas',
   description: '',
+  subtitle: undefined as string | undefined,
   image: '/assets/images/place/single-place-1.jpg',
   imagesDetails: [] as string[],
   location: 'Chiapas, México',
@@ -39,6 +40,8 @@ const FALLBACK_DESTINATION = {
   duration: 'Consultar',
   accommodation: undefined as string | undefined,
   departureDate: undefined as string | undefined,
+  departure: undefined as string | undefined,
+  transport: undefined as string | undefined,
   map: undefined as string | undefined,
   mapItem: undefined as Array<{ map?: string; title?: string }> | undefined,
   includes: undefined as string[] | undefined,
@@ -113,7 +116,9 @@ export default async function TourDetailPage({ params }: PageProps) {
     `• Duración: ${destination.duration}`,
     destination.location ? `• Ubicación: ${destination.location}` : null,
     destination.accommodation ? `• Alojamiento: ${destination.accommodation}` : null,
-    destination.departureDate ? `• Salida: ${destination.departureDate}` : null,
+    destination.departure ? `• Punto de salida: ${destination.departure}` : null,
+    destination.transport ? `• Transporte: ${destination.transport}` : null,
+    destination.departureDate ? `• Fecha de salida: ${destination.departureDate}` : null,
     routeList.length > 0 ? `• Ruta: ${routeList.join(' → ')}` : null,
     destination.itinerary && destination.itinerary.length > 0
       ? `\n📅 *Itinerario:*\n${destination.itinerary.map((item) => `• ${item.dayTitle}${item.time ? ` (${item.time})` : ''}: ${item.activity}`).join('\n')}`
@@ -140,11 +145,17 @@ export default async function TourDetailPage({ params }: PageProps) {
       <section className="place-details-section">
         {/* Place Slider - desktop: slider; tablet/mobile: imagen 465x630 fija centrada */}
         {(() => {
-          const img1 = destination.imagesDetails?.[0] ?? destination.image;
-          const img2 = destination.imagesDetails?.[1] ?? destination.image;
+          const gallery = (() => {
+            const raw = destination.imagesDetails?.filter(Boolean) ?? [];
+            if (raw.length === 0) return [destination.image];
+            const seen = new Set<string>();
+            return raw.filter((u) => (seen.has(u) ? false : (seen.add(u), true)));
+          })();
+          const img1 = gallery[0] ?? destination.image;
+          const img2 = gallery[1] ?? gallery[0] ?? destination.image;
           const sizeFeatured = { width: 950, height: 300 };
           const sizeSlide = { width: 465, height: 300 };
-          const images = [img1, img2, img1, img2];
+          const images = [0, 1, 2, 3].map((i) => gallery[i % gallery.length]);
           return (
             <>
               {/* Desktop: slider con 4 imágenes */}
@@ -208,7 +219,9 @@ export default async function TourDetailPage({ params }: PageProps) {
                 <div className="col-xl-6">
                   <div className="tour-title mb-10">
                     <h1 className="title">{destination.title}</h1>
-                    {/* <p><i className="far fa-map-marker-alt"></i>{destination.location}</p> */}
+                    {destination.subtitle ? (
+                      <p className="text-muted mb-0 mt-2">{destination.subtitle}</p>
+                    ) : null}
                   </div>
                 </div>
                 <div className="col-xl-6 d-none d-xl-block">
@@ -250,8 +263,10 @@ export default async function TourDetailPage({ params }: PageProps) {
                   )}
                   <li><span><i className="fal fa-box-usd"></i>Precio<span>{destination.price}</span></span></li>
                   <li><span><i className="fal fa-clock"></i>Duración<span>{destination.duration}</span></span></li>
+                  {destination.departure && <li><span><i className="far fa-map-marker-alt"></i>Punto de salida<span>{destination.departure}</span></span></li>}
+                  {destination.transport && <li><span><i className="fal fa-bus"></i>Transporte<span>{destination.transport}</span></span></li>}
                   {destination.accommodation && <li><span><i className="far fa-bed"></i>Alojamiento<span>{destination.accommodation}</span></span></li>}
-                  {destination.departureDate && <li><span><i className="far fa-calendar-alt"></i>Salida<span>{destination.departureDate}</span></span></li>}
+                  {destination.departureDate && <li><span><i className="far fa-calendar-alt"></i>Fecha de salida<span>{destination.departureDate}</span></span></li>}
                   <li>
                     <div className="submit-button">
                       <a
@@ -279,15 +294,21 @@ export default async function TourDetailPage({ params }: PageProps) {
 
             <div className="row">
               <div className="col-xl-8">
-                {/* Bloque: descripción del tour (igual que en package-details) */}
-                <div className="place-content-wrap pt-45 wow fadeInUp mb-100">
-                  {destination.description && (
-                    <>
-                      <h3 className="title">Descripción</h3>
-                      <p>{destination.description}</p>
-                    </>
-                  )}
-                  <h4>Incluye</h4>
+                {/* Descripción: bloque propio (mismo ritmo que package-details → Incluye) */}
+                {destination.description?.trim() && (
+                  <div className="place-content-wrap pt-45 wow fadeInUp mb-40">
+                    <h4 className="title pb-2">Descripción</h4>
+                    <div className="tour-description-text">
+                      {destination.description.split(/\n\n+/).map((para, idx) => (
+                        <p key={idx} className={idx > 0 ? 'mt-3' : ''}>{para.trim()}</p>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <div
+                  className={`${destination.description?.trim() ? 'package-includes' : 'place-content-wrap'} pt-45 wow fadeInUp mb-100`}
+                >
+                  <h4 className="title pb-2">Incluye</h4>
                   <p>Este tour incluye los siguientes servicios:</p>
                   <div className="row align-items-lg-center">
                     <div className="col-lg-12">
@@ -308,28 +329,36 @@ export default async function TourDetailPage({ params }: PageProps) {
 
                 {/* Days Area - Itinerario desde Strapi (solo se muestra si hay datos) */}
                 {destination.itinerary && destination.itinerary.length > 0 && (
-                  <div className="days-area mb-100 wow fadeInUp">
-                    <h4 className="title">Itinerario</h4>
+                  <div className="days-area mb-140 wow fadeInUp">
+                    <h4 className="title pb-2">Itinerario</h4>
                     <p className="pb-4">Cronograma de actividades del tour:</p>
                     {(() => {
-                      const daysMap = new Map<string, typeof destination.itinerary>();
-                      for (const item of destination.itinerary!) {
-                        const day = item.dayTitle || "Día";
-                        if (!daysMap.has(day)) daysMap.set(day, []);
+                      const items = destination.itinerary!;
+                      const daysMap = new Map<string, typeof items>();
+                      const dayOrder: string[] = [];
+                      for (const item of items) {
+                        const day = (item.dayTitle || "Día").trim() || "Día";
+                        if (!daysMap.has(day)) {
+                          daysMap.set(day, []);
+                          dayOrder.push(day);
+                        }
                         daysMap.get(day)!.push(item);
                       }
-                      const days = Array.from(daysMap.keys());
-                      const dayIds = days.map((d, i) => `day${i + 1}`);
+                      const dayIds = dayOrder.map((_, i) => `itinerary-day-${i}`);
                       return (
                         <>
-                          <ul className="nav nav-tabs mb-35">
-                            {days.map((day, i) => (
-                              <li key={day} className="nav-item">
+                          <ul className="nav nav-tabs mb-35 flex-wrap" role="tablist">
+                            {dayOrder.map((day, i) => (
+                              <li key={dayIds[i]} className="nav-item" role="presentation">
                                 <button
                                   className={`nav-link ${i === 0 ? "active" : ""}`}
+                                  id={`${dayIds[i]}-tab`}
                                   data-bs-toggle="tab"
                                   data-bs-target={`#${dayIds[i]}`}
                                   type="button"
+                                  role="tab"
+                                  aria-controls={dayIds[i]}
+                                  aria-selected={i === 0}
                                 >
                                   {day}
                                 </button>
@@ -337,29 +366,46 @@ export default async function TourDetailPage({ params }: PageProps) {
                             ))}
                           </ul>
                           <div className="tab-content">
-                            {days.map((day, i) => (
+                            {dayOrder.map((day, i) => (
                               <div
-                                key={day}
+                                key={dayIds[i]}
                                 className={`tab-pane fade ${i === 0 ? "show active" : ""}`}
                                 id={dayIds[i]}
+                                role="tabpanel"
+                                aria-labelledby={`${dayIds[i]}-tab`}
                               >
                                 <div className="content-box">
                                   <ul className="check-list">
-                                    {daysMap.get(day)!.map((item: { dayTitle: string; time?: string; activity: string; routeItinerary?: string; accommodation?: string }, j: number) => (
-                                      <React.Fragment key={j}>
-                                        <li>
-                                          <i className="fas fa-clock"></i>
-                                          {item.time ? `${item.time} - ` : ""}
-                                          {item.activity}
-                                        </li>
-                                        {item.routeItinerary && (
-                                          <li><i className="fas fa-route"></i> {item.routeItinerary}</li>
-                                        )}
-                                        {item.accommodation && (
-                                          <li><i className="fas fa-bed"></i> {item.accommodation}</li>
-                                        )}
-                                      </React.Fragment>
-                                    ))}
+                                    {daysMap.get(day)!.map(
+                                      (
+                                        item: {
+                                          dayTitle: string;
+                                          time?: string;
+                                          activity: string;
+                                          routeItinerary?: string;
+                                          accommodation?: string;
+                                        },
+                                        j: number,
+                                      ) => (
+                                        <React.Fragment key={`${dayIds[i]}-act-${j}`}>
+                                          <li>
+                                            <i className="fas fa-clock"></i>
+                                            {item.time ? `${item.time} - ` : ""}
+                                            {item.activity}
+                                          </li>
+                                          {item.routeItinerary ? (
+                                            <li>
+                                              <i className="fas fa-route"></i> {item.routeItinerary}
+                                            </li>
+                                          ) : null}
+                                          {item.accommodation ? (
+                                            <li>
+                                              <i className="fas fa-bed"></i> {item.accommodation}
+                                            </li>
+                                          ) : null}
+                                        </React.Fragment>
+                                      ),
+                                    )}
                                   </ul>
                                 </div>
                               </div>
@@ -416,8 +462,10 @@ export default async function TourDetailPage({ params }: PageProps) {
                         )}
                         <li><span><i className="fal fa-box-usd"></i>Precio<span>{destination.price}</span></span></li>
                         <li><span><i className="fal fa-clock"></i>Duración<span>{destination.duration}</span></span></li>
+                        {destination.departure && <li><span><i className="far fa-map-marker-alt"></i>Punto de salida<span>{destination.departure}</span></span></li>}
+                        {destination.transport && <li><span><i className="fal fa-bus"></i>Transporte<span>{destination.transport}</span></span></li>}
                         {destination.accommodation && <li><span><i className="far fa-bed"></i>Alojamiento<span>{destination.accommodation}</span></span></li>}
-                        {destination.departureDate && <li><span><i className="far fa-calendar-alt"></i>Salida<span>{destination.departureDate}</span></span></li>}
+                        {destination.departureDate && <li><span><i className="far fa-calendar-alt"></i>Fecha de salida<span>{destination.departureDate}</span></span></li>}
                         <li>
                           <div className="submit-button">
                             <a

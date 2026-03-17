@@ -8,17 +8,10 @@
     "dayTitle": {
       "type": "string"
     },
-    "time": {
-      "type": "string"
-    },
     "activity": {
-      "type": "string"
-    },
-    "accommodation": {
-      "type": "string"
-    },
-    "routeItinerary": {
-      "type": "blocks"
+      "type": "component",
+      "component": "itinerary.activity-item",
+      "repeatable": true
     }
   },
   "config": {}
