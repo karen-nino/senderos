@@ -41,9 +41,6 @@
     "price": {
       "type": "string"
     },
-    "icons": {
-      "type": "json"
-    },
     "image": {
       "type": "media",
       "multiple": false,

@@ -306,6 +306,9 @@ export default async function Home() {
                   <img
                     src={testimonial.photoUrl || '/assets/images/testimonial/testimonial-1.jpg'}
                     alt={testimonial.name ? `Testimonial de ${testimonial.name}` : 'Testimonial Image'}
+                    width={875}
+                    height={565}
+                    style={{ width: '875px', height: '565px', objectFit: 'cover' }}
                   />
                 </div>
               </div>
@@ -336,6 +339,9 @@ export default async function Home() {
                           <img
                             src={testimonial.profilePhotoUrl || '/assets/images/testimonial/author-1.jpg'}
                             alt={testimonial.name || 'Author Image'}
+                            width={80}
+                            height={80}
+                            style={{ width: '80px', height: '80px', objectFit: 'cover' }}
                           />
                         </div>
                         <div className="author-title">

@@ -149,6 +149,9 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
                       <img
                         src={getImageUrl(slide.image)}
                         alt={getImageAlt(slide.image, slide.title)}
+                        width={871}
+                        height={670}
+                        style={{ width: '871px', height: '670px', objectFit: 'cover' }}
                       />
                     </div>
                   </div>

@@ -102,13 +102,13 @@ export default function InternationalItem({
                         )}
                     </div>
                 )}
-                <div className="meta">
+                {/* <div className="meta">
                     {icons.map((icon, index) => (
                         <span key={index} className="icon">
                             <i className={icon}></i>
                         </span>
                     ))}
-                </div>
+                </div> */}
             </div>
             <div className="img-holder international-img-wrapper">
                 {badge && (
