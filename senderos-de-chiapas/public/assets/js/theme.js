@@ -420,28 +420,7 @@
             ]
         });
     }
-    if ($('.place-slider').length) {
-        $('.place-slider').slick({
-            dots: false,
-            arrows: false,
-            infinite: true,
-            speed: 800,
-            autoplay: true,
-            variableWidth: true,
-            slidesToShow: 3,
-            slidesToScroll: 1,
-            prevArrow: '<div class="prev"><i class="far fa-arrow-left"></i></div>',
-            nextArrow: '<div class="next"><i class="far fa-arrow-right"></i></div>',
-            responsive: [
-                {
-                    breakpoint: 767,
-                    settings: {
-                        slidesToShow: 1
-                    }
-                }
-            ]
-        });
-    }
+    // place-slider: inicializado desde React (PlaceSlider.tsx)
     if ($('.recent-place-slider').length) {
         var sliderArrows = $('.place-arrows');
         $('.recent-place-slider').slick({

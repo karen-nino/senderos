@@ -130,25 +130,8 @@
         // Importante: no inicializar Slick en elementos ocultos (display:none),
         // porque calcula anchos en 0 y el slider queda roto en mobile / navegación SPA.
         //
-        // place-slider: mosaico horizontal (anchos variables)
-        var $placeSliders = $('.place-slider:visible');
-        if ($placeSliders.length) {
-            $placeSliders.each(function () {
-                var $el = $(this);
-                $el.slick({
-                    dots: false, arrows: true, infinite: true, speed: 800,
-                    autoplay: true, autoplaySpeed: 4500,
-                    variableWidth: true,
-                    slidesToShow: 3, slidesToScroll: 1,
-                    prevArrow: '<button type="button" class="prev slick-arrow" aria-label="Anterior"><i class="far fa-angle-left"></i></button>',
-                    nextArrow: '<button type="button" class="next slick-arrow" aria-label="Siguiente"><i class="far fa-angle-right"></i></button>',
-                    responsive: [
-                        { breakpoint: 991, settings: { arrows: false } }
-                    ]
-                });
-                try { $el.slick('setPosition'); } catch (e) { /* ignore */ }
-            });
-        }
+        // place-slider: ahora se inicializa desde el componente React PlaceSlider.tsx
+        // (useEffect con reintentos) para evitar problemas de timing en deploy.
         if ($('.recent-place-slider').length) {
             var placeArrows = $('.place-arrows');
             $('.recent-place-slider').slick({

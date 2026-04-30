@@ -4,6 +4,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
 import { WhatsAppIcon } from '@/components/WhatsAppIcon'
+import PlaceSlider from '@/components/PlaceSlider'
 import { JsonLd, buildProductJsonLd } from '@/components/JsonLd'
 import { fetchTourBySlug, fetchTourPageData, STRAPI_REVALIDATE_SECONDS } from '@/lib/strapi'
 
@@ -151,46 +152,11 @@ export default async function TourDetailPage({ params }: PageProps) {
             const seen = new Set<string>();
             return raw.filter((u) => (seen.has(u) ? false : (seen.add(u), true)));
           })();
-          const sizeFeatured = { width: 950, height: 300 };
-          const sizeSlide = { width: 465, height: 300 };
           const images = (() => {
             const list = gallery.length > 0 ? gallery : [destination.image];
-            // Siempre 4 slides para mantener patrón de mosaico
             return [0, 1, 2, 3].map((i) => list[i % list.length]);
           })();
-          return (
-            <>
-              <div className="place-slider-area overflow-hidden wow fadeInUp">
-                <div className="place-slider">
-                  {images.map((img, i) => {
-                    const isFeatured = i === 1 || i === 3; // orden: 465, 950, 465, 950
-                    const size = isFeatured ? sizeFeatured : sizeSlide;
-                    return (
-                    <div key={`${img}-${i}`} className={isFeatured ? 'place-item' : 'place-slider-item'}>
-                      <div
-                        className="place-img"
-                        style={{
-                          width: size.width,
-                          height: size.height,
-                          overflow: 'hidden',
-                          borderRadius: 15,
-                        }}
-                      >
-                        <img
-                          src={img}
-                          alt={`${destination.title} - Imagen ${i + 1}`}
-                          width={size.width}
-                          height={size.height}
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                        />
-                      </div>
-                    </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </>
-          );
+          return <PlaceSlider images={images} alt={destination.title} />;
         })()}
 
         <div className="container">
