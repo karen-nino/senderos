@@ -73,6 +73,7 @@ export interface ItineraryActivityItem extends Struct.ComponentSchema {
   attributes: {
     accommodation: Schema.Attribute.String;
     activity: Schema.Attribute.String;
+    description: Schema.Attribute.Blocks;
     time: Schema.Attribute.String;
   };
 }

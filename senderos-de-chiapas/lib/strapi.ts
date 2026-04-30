@@ -252,6 +252,10 @@ export interface StrapiItineraryItem {
   dayTitle?: string;
   time?: string;
   activity?: string | StrapiBlock | StrapiBlock[] | Array<Record<string, unknown>>;
+  /** Algunos modelos usan "description" en vez de "activity" */
+  description?: string | StrapiBlock | StrapiBlock[] | Array<Record<string, unknown>>;
+  /** Fallback común en componentes legacy */
+  text?: string | StrapiBlock | StrapiBlock[] | Array<Record<string, unknown>>;
   routeItinerary?: string | StrapiBlock | StrapiBlock[];
   accommodation?: string | StrapiBlock | StrapiBlock[];
 }
@@ -1092,7 +1096,10 @@ function adaptPackageOrHolidayToDetail(item: StrapiPackageItem): AdaptedPackageD
         .map((i) => ({
           dayTitle: i.dayTitle ?? "Día",
           time: typeof i.time === "string" ? i.time : undefined,
-          activity: richTextToPlainString(i.activity) ?? "",
+          activity:
+            richTextToPlainString(
+              i.activity ?? i.description ?? i.text,
+            ) ?? "",
           routeItinerary: richTextToPlainString(i.routeItinerary),
           accommodation: richTextToPlainString(i.accommodation),
         }))
@@ -1318,10 +1325,11 @@ function parseTourItinerary(
             typeof a.time === "string" && a.time.trim()
               ? a.time.trim()
               : undefined;
+          const rawActivity = a.activity ?? a.description ?? a.text;
           const actText =
-            typeof a.activity === "string"
-              ? String(a.activity).trim()
-              : richTextToPlainString(a.activity) ?? "";
+            typeof rawActivity === "string"
+              ? String(rawActivity).trim()
+              : richTextToPlainString(rawActivity) ?? "";
           const acc =
             typeof a.accommodation === "string"
               ? String(a.accommodation).trim()
@@ -1339,7 +1347,10 @@ function parseTourItinerary(
       }
     }
     const legacy = i as StrapiItineraryItem;
-    const activity = richTextToPlainString(legacy.activity) ?? "";
+    const activity =
+      richTextToPlainString(
+        legacy.activity ?? legacy.description ?? legacy.text,
+      ) ?? "";
     if (activity) {
       rows.push({
         dayTitle,

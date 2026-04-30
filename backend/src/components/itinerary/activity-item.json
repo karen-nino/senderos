@@ -13,6 +13,9 @@
     },
     "accommodation": {
       "type": "string"
+    },
+    "description": {
+      "type": "blocks"
     }
   },
   "config": {}
