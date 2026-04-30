@@ -331,7 +331,7 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                                           <li><i className="fas fa-route"></i> {item.routeItinerary}</li>
                                         )}
                                         {item.description && (
-                                          <li className="ps-4 text-muted" style={{ listStyle: 'none' }}>
+                                          <li className="text-muted" style={{ listStyle: 'none' }}>
                                             {item.description}
                                           </li>
                                         )}
