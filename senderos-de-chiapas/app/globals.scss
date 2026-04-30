@@ -494,7 +494,7 @@ section.hero-section .hero-wrapper.bg-light,
   margin-right: 20px;
 }
 
-/* Place Slider (tour-details / package-details): carrusel horizontal */
+/* Place Slider (tour-details / package-details): mosaico horizontal */
 .place-slider-area {
   position: relative;
 }
@@ -529,35 +529,9 @@ section.hero-section .hero-wrapper.bg-light,
   background: rgba(0, 0, 0, 0.5);
 }
 
+/* Dots: ocultos por defecto (el mosaico usa flechas) */
 .place-slider-area .slick-dots {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 10px;
-  margin: 0;
-  padding: 0;
-  display: flex !important;
-  justify-content: center;
-  gap: 8px;
-  z-index: 2;
-}
-
-.place-slider-area .slick-dots li {
-  list-style: none;
-}
-
-.place-slider-area .slick-dots button {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  border: 0;
-  background: rgba(255, 255, 255, 0.55);
-  font-size: 0;
-  padding: 0;
-}
-
-.place-slider-area .slick-dots .slick-active button {
-  background: #fff;
+  display: none !important;
 }
 
 /* Services Slider Arrows (slider-active-3-item en services-section) */
