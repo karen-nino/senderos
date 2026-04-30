@@ -23,8 +23,9 @@ const STRAPI_TOURS_PAGE_URLS = [
 /** Opciones para peticiones a /api/tours: usar rol Public (sin token) para que coincida con permisos de visitantes. */
 const STRAPI_TOURS_FETCH_OPTIONS = { useToken: false } as const;
 
-/** Collection Type Package (Strapi v5: GET /api/packages). Mismo populate que tours. */
-const STRAPI_PACKAGES_POPULATE = "populate=*";
+/** Collection Type Package (Strapi v5: GET /api/packages). Necesita populate profundo igual que tours para itineraryItem.activity. */
+const STRAPI_PACKAGES_POPULATE =
+  "populate[itineraryItem][populate][activity]=*&populate[image]=true&populate[imagesDetails]=true&populate[mapItem]=true";
 const STRAPI_PACKAGES_URL = `/api/packages?${STRAPI_PACKAGES_POPULATE}`;
 /** Single type Packages-Page: solo banner (imageBanner). Sin populate[imageBanner]=* para evitar ValidationError "Invalid key related". */
 const STRAPI_PACKAGES_PAGE_URLS = [
@@ -974,8 +975,10 @@ function adaptStrapiSeasonItem(
   };
 }
 
-/** Collection Type Holiday (temporadas): GET /api/holidays */
-const STRAPI_HOLIDAYS_URL = `/api/holidays?${STRAPI_TOURS_POPULATE}`;
+/** Collection Type Holiday (temporadas): GET /api/holidays. Populate profundo para itineraryItem.activity. */
+const STRAPI_HOLIDAYS_POPULATE =
+  "populate[itineraryItem][populate][activity]=*&populate[image]=true&populate[imagesDetails]=true&populate[mapItem]=true";
+const STRAPI_HOLIDAYS_URL = `/api/holidays?${STRAPI_HOLIDAYS_POPULATE}`;
 
 /** Obtiene las temporadas desde Strapi Collection Type /api/holidays (Holiday). */
 async function fetchRawSeasonsFromStrapi(): Promise<StrapiSeasonItem[]> {
@@ -1091,20 +1094,50 @@ function adaptPackageOrHolidayToDetail(item: StrapiPackageItem): AdaptedPackageD
   const routeList = blocksToList(
     item.route as StrapiDestinationItem["includes"],
   );
-  const itinerary = Array.isArray(item.itineraryItem)
-    ? item.itineraryItem
-        .map((i) => ({
-          dayTitle: i.dayTitle ?? "Día",
-          time: typeof i.time === "string" ? i.time : undefined,
-          activity:
-            richTextToPlainString(
-              i.activity ?? i.description ?? i.text,
-            ) ?? "",
-          routeItinerary: richTextToPlainString(i.routeItinerary),
-          accommodation: richTextToPlainString(i.accommodation),
-        }))
-        .filter((entry) => entry.activity.length > 0)
-    : undefined;
+  const itinerary = (() => {
+    if (!Array.isArray(item.itineraryItem) || item.itineraryItem.length === 0) return undefined;
+    const rows: NonNullable<AdaptedPackageDetail["itinerary"]> = [];
+    for (const raw of item.itineraryItem) {
+      const dayTitle = (typeof raw.dayTitle === "string" && raw.dayTitle.trim()) || "Día";
+      const activities = unwrapStrapiRelationArray(raw.activity);
+      if (activities.length > 0) {
+        const first = activities[0] as Record<string, unknown>;
+        const looksLikeActivityRow =
+          !isStrapiRichTextBlock(first) &&
+          first &&
+          typeof first === "object" &&
+          (typeof first.time === "string" ||
+            typeof first.activity === "string" ||
+            typeof first.accommodation === "string");
+        if (looksLikeActivityRow) {
+          for (const act of activities) {
+            const a = flattenStrapiComponent(act);
+            if (!a || Object.keys(a).length === 0) continue;
+            const time = typeof a.time === "string" && a.time.trim() ? a.time.trim() : undefined;
+            const rawActivity = a.activity ?? a.description ?? a.text;
+            const actText = typeof rawActivity === "string" ? String(rawActivity).trim() : richTextToPlainString(rawActivity) ?? "";
+            const acc = typeof a.accommodation === "string" ? String(a.accommodation).trim() : richTextToPlainString(a.accommodation);
+            if (actText || time || acc) {
+              rows.push({ dayTitle, time, activity: actText || "—", accommodation: acc });
+            }
+          }
+          continue;
+        }
+      }
+      // Legacy: activity is rich text or plain string at day level
+      const activity = richTextToPlainString(raw.activity ?? raw.description ?? raw.text) ?? "";
+      if (activity) {
+        rows.push({
+          dayTitle,
+          time: typeof raw.time === "string" ? raw.time : undefined,
+          activity,
+          routeItinerary: richTextToPlainString(raw.routeItinerary),
+          accommodation: richTextToPlainString(raw.accommodation),
+        });
+      }
+    }
+    return rows.length ? rows : undefined;
+  })();
   const imagesDetails = getImagesDetailsUrls(item.imagesDetails);
   return {
     title: adapted.title,
