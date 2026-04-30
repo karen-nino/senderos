@@ -317,13 +317,18 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                               >
                                 <div className="content-box">
                                   <ul className="check-list">
-                                    {daysMap.get(day)!.map((item: { dayTitle: string; time?: string; activity: string; routeItinerary?: string; accommodation?: string }, j: number) => (
+                                    {daysMap.get(day)!.map((item: { dayTitle: string; time?: string; activity: string; description?: string; routeItinerary?: string; accommodation?: string }, j: number) => (
                                       <React.Fragment key={j}>
                                         <li>
                                           <i className="fas fa-clock"></i>
                                           {item.time ? `${item.time} - ` : ''}
                                           {item.activity}
                                         </li>
+                                        {item.description && (
+                                          <li className="ps-4 text-muted" style={{ listStyle: 'none' }}>
+                                            {item.description}
+                                          </li>
+                                        )}
                                         {item.routeItinerary && (
                                           <li><i className="fas fa-route"></i> {item.routeItinerary}</li>
                                         )}

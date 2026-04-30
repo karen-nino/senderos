@@ -1074,6 +1074,7 @@ export interface AdaptedPackageDetail {
     dayTitle: string;
     time?: string;
     activity: string;
+    description?: string;
     routeItinerary?: string;
     accommodation?: string;
   }>;
@@ -1114,11 +1115,12 @@ function adaptPackageOrHolidayToDetail(item: StrapiPackageItem): AdaptedPackageD
             const a = flattenStrapiComponent(act);
             if (!a || Object.keys(a).length === 0) continue;
             const time = typeof a.time === "string" && a.time.trim() ? a.time.trim() : undefined;
-            const rawActivity = a.activity ?? a.description ?? a.text;
+            const rawActivity = a.activity ?? a.text;
             const actText = typeof rawActivity === "string" ? String(rawActivity).trim() : richTextToPlainString(rawActivity) ?? "";
+            const desc = richTextToPlainString(a.description);
             const acc = typeof a.accommodation === "string" ? String(a.accommodation).trim() : richTextToPlainString(a.accommodation);
             if (actText || time || acc) {
-              rows.push({ dayTitle, time, activity: actText || "—", accommodation: acc });
+              rows.push({ dayTitle, time, activity: actText || "—", description: desc, accommodation: acc });
             }
           }
           continue;
@@ -1257,6 +1259,7 @@ export interface AdaptedDestinationDetail {
     dayTitle: string;
     time?: string;
     activity: string;
+    description?: string;
     routeItinerary?: string;
     accommodation?: string;
   }>;
@@ -1358,11 +1361,12 @@ function parseTourItinerary(
             typeof a.time === "string" && a.time.trim()
               ? a.time.trim()
               : undefined;
-          const rawActivity = a.activity ?? a.description ?? a.text;
+          const rawActivity = a.activity ?? a.text;
           const actText =
             typeof rawActivity === "string"
               ? String(rawActivity).trim()
               : richTextToPlainString(rawActivity) ?? "";
+          const desc = richTextToPlainString(a.description);
           const acc =
             typeof a.accommodation === "string"
               ? String(a.accommodation).trim()
@@ -1372,6 +1376,7 @@ function parseTourItinerary(
               dayTitle,
               time,
               activity: actText || "—",
+              description: desc,
               accommodation: acc,
             });
           }

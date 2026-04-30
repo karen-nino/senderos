@@ -332,6 +332,7 @@ export default async function TourDetailPage({ params }: PageProps) {
                                           dayTitle: string;
                                           time?: string;
                                           activity: string;
+                                          description?: string;
                                           routeItinerary?: string;
                                           accommodation?: string;
                                         },
@@ -343,6 +344,11 @@ export default async function TourDetailPage({ params }: PageProps) {
                                             {item.time ? `${item.time} - ` : ""}
                                             {item.activity}
                                           </li>
+                                          {item.description ? (
+                                            <li className="ps-4 text-muted" style={{ listStyle: 'none' }}>
+                                              {item.description}
+                                            </li>
+                                          ) : null}
                                           {item.routeItinerary ? (
                                             <li>
                                               <i className="fas fa-route"></i> {item.routeItinerary}
