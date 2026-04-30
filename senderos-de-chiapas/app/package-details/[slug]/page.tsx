@@ -154,66 +154,65 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
 
       {/* ====== Start Place Details Section (basado en destination-details) ====== */}
       <section className="place-details-section">
-        {/* Place Slider - desktop: slider 950x630 + 465x630; tablet/mobile: imagen 465x630 fija centrada */}
-        <div className="place-slider-area overflow-hidden wow fadeInUp">
-          {(() => {
-            const sizeFeatured = { width: 950, height: 300 }
-            const sizeSlide = { width: 465, height: 300 }
-            return (
-              <>
-                {/* Desktop: slider con 4 imágenes */}
-                <div className="d-none d-lg-block">
-                  <div className="place-slider">
-                    {images.map((img, i) => {
-                      const isFeatured = i === 1 || i === 3 // orden: 465, 950, 465, 950
-                      const size = isFeatured ? sizeFeatured : sizeSlide
-                      return (
-                        <div key={i} className={isFeatured ? 'place-item' : 'place-slider-item'}>
-                          <div
-                            className="place-img"
-                            style={{ width: size.width, height: size.height, overflow: 'hidden', borderRadius: 15 }}
-                          >
-                            <img
-                              src={img}
-                              alt={`${pkg.title} - Imagen ${(i % 2) + 1}`}
-                              width={size.width}
-                              height={size.height}
-                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                            />
-                          </div>
+        {/* Place Slider - desktop: slider; tablet/mobile: imagen fija (evita inicializar slick en display:none) */}
+        {(() => {
+          const sizeFeatured = { width: 950, height: 300 }
+          const sizeSlide = { width: 465, height: 300 }
+          return (
+            <>
+              {/* Desktop: slider con 4 imágenes */}
+              <div className="place-slider-area overflow-hidden wow fadeInUp d-none d-lg-block">
+                <div className="place-slider">
+                  {images.map((img, i) => {
+                    const isFeatured = i === 1 || i === 3 // orden: 465, 950, 465, 950
+                    const size = isFeatured ? sizeFeatured : sizeSlide
+                    return (
+                      <div key={i} className={isFeatured ? 'place-item' : 'place-slider-item'}>
+                        <div
+                          className="place-img"
+                          style={{ width: size.width, height: size.height, overflow: 'hidden', borderRadius: 15 }}
+                        >
+                          <img
+                            src={img}
+                            alt={`${pkg.title} - Imagen ${(i % 2) + 1}`}
+                            width={size.width}
+                            height={size.height}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          />
                         </div>
-                      )
-                    })}
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Tablet y mobile: una sola imagen centrada, sin slider */}
+              <div className="place-slider-area overflow-hidden wow fadeInUp d-block d-lg-none">
+                <div className="d-flex justify-content-center px-2">
+                  <div
+                    className="place-img"
+                    style={{
+                      width: '100%',
+                      maxWidth: sizeSlide.width,
+                      aspectRatio: '465/300',
+                      overflow: 'hidden',
+                      borderRadius: 15,
+                      flexShrink: 0,
+                    }}
+                  >
+                    <img
+                      src={img1}
+                      alt={`${pkg.title} - Imagen 1`}
+                      width={sizeSlide.width}
+                      height={sizeSlide.height}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
                   </div>
                 </div>
-                {/* Tablet y mobile: una sola imagen 465x630 centrada, sin slider */}
-                <div className="d-block d-lg-none">
-                  <div className="d-flex justify-content-center px-2">
-                    <div
-                      className="place-img"
-                      style={{
-                        width: '100%',
-                        maxWidth: sizeSlide.width,
-                        aspectRatio: '465/300',
-                        overflow: 'hidden',
-                        borderRadius: 15,
-                        flexShrink: 0,
-                      }}
-                    >
-                      <img
-                        src={img1}
-                        alt={`${pkg.title} - Imagen 1`}
-                        width={sizeSlide.width}
-                        height={sizeSlide.height}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </>
-            )
-          })()}
-        </div>
+              </div>
+            </>
+          )
+        })()}
 
         <div className="container">
           <div className="tour-details-wrapper pt-80">

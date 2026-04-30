@@ -127,13 +127,20 @@
                 ]
             });
         }
-        if ($('.place-slider').length) {
-            $('.place-slider').slick({
-                dots: false, arrows: false, infinite: true, speed: 800, autoplay: true,
-                variableWidth: true, slidesToShow: 3, slidesToScroll: 1,
-                prevArrow: '<div class="prev"><i class="far fa-arrow-left"></i></div>',
-                nextArrow: '<div class="next"><i class="far fa-arrow-right"></i></div>',
-                responsive: [{ breakpoint: 767, settings: { slidesToShow: 1 } }]
+        // Importante: no inicializar Slick en elementos ocultos (display:none),
+        // porque calcula anchos en 0 y el slider queda roto en mobile / navegación SPA.
+        var $placeSliders = $('.place-slider:visible');
+        if ($placeSliders.length) {
+            $placeSliders.each(function () {
+                var $el = $(this);
+                $el.slick({
+                    dots: false, arrows: false, infinite: true, speed: 800, autoplay: true,
+                    variableWidth: true, slidesToShow: 3, slidesToScroll: 1,
+                    prevArrow: '<div class="prev"><i class="far fa-arrow-left"></i></div>',
+                    nextArrow: '<div class="next"><i class="far fa-arrow-right"></i></div>',
+                    responsive: [{ breakpoint: 767, settings: { slidesToShow: 1 } }]
+                });
+                try { $el.slick('setPosition'); } catch (e) { /* ignore */ }
             });
         }
         if ($('.recent-place-slider').length) {
