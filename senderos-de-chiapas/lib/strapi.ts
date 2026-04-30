@@ -809,6 +809,8 @@ export interface StrapiPackageItem {
   departure?: string;
   transport?: string;
   badge?: string;
+  /** Texto largo o rich text (blocks); Holiday suele usarlo; Package puede tenerlo en CMS */
+  description?: string | StrapiBlock | StrapiBlock[];
 }
 
 /** Normaliza badge de Strapi (puede venir en inglés o español) al valor interno. */
@@ -1080,7 +1082,7 @@ export interface AdaptedPackageDetail {
 }
 
 /** Adapta un ítem Package o Holiday (misma estructura en Strapi) a AdaptedPackageDetail. Holiday tiene description; Package usa subtitle. */
-function adaptPackageOrHolidayToDetail(item: StrapiPackageItem & { description?: string }): AdaptedPackageDetail {
+function adaptPackageOrHolidayToDetail(item: StrapiPackageItem): AdaptedPackageDetail {
   const adapted = adaptStrapiPackageItem(item);
   const routeList = blocksToList(
     item.route as StrapiDestinationItem["includes"],
@@ -1099,7 +1101,8 @@ function adaptPackageOrHolidayToDetail(item: StrapiPackageItem & { description?:
   const imagesDetails = getImagesDetailsUrls(item.imagesDetails);
   return {
     title: adapted.title,
-    description: item.description ?? adapted.description,
+    description:
+      descriptionFromBlocks(item.description) || adapted.description || "",
     image: adapted.image,
     imagesDetails: imagesDetails.length > 0 ? imagesDetails : undefined,
     price: adapted.price ?? "Consultar",
