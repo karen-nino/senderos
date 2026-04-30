@@ -494,6 +494,72 @@ section.hero-section .hero-wrapper.bg-light,
   margin-right: 20px;
 }
 
+/* Place Slider (tour-details / package-details): carrusel horizontal */
+.place-slider-area {
+  position: relative;
+}
+
+.place-slider-area .slick-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.place-slider-area .slick-arrow.prev {
+  left: 12px;
+}
+
+.place-slider-area .slick-arrow.next {
+  right: 12px;
+}
+
+.place-slider-area .slick-arrow:hover,
+.place-slider-area .slick-arrow:focus {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.place-slider-area .slick-dots {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 10px;
+  margin: 0;
+  padding: 0;
+  display: flex !important;
+  justify-content: center;
+  gap: 8px;
+  z-index: 2;
+}
+
+.place-slider-area .slick-dots li {
+  list-style: none;
+}
+
+.place-slider-area .slick-dots button {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: 0;
+  background: rgba(255, 255, 255, 0.55);
+  font-size: 0;
+  padding: 0;
+}
+
+.place-slider-area .slick-dots .slick-active button {
+  background: #fff;
+}
+
 /* Services Slider Arrows (slider-active-3-item en services-section) */
 /* Estilos independientes con colores específicos */
 .services-seciton .slider-active-3-item {

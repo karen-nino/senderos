@@ -129,16 +129,23 @@
         }
         // Importante: no inicializar Slick en elementos ocultos (display:none),
         // porque calcula anchos en 0 y el slider queda roto en mobile / navegación SPA.
+        //
+        // place-slider: carrusel horizontal (no mosaico)
         var $placeSliders = $('.place-slider:visible');
         if ($placeSliders.length) {
             $placeSliders.each(function () {
                 var $el = $(this);
                 $el.slick({
-                    dots: false, arrows: false, infinite: true, speed: 800, autoplay: true,
-                    variableWidth: true, slidesToShow: 3, slidesToScroll: 1,
-                    prevArrow: '<div class="prev"><i class="far fa-arrow-left"></i></div>',
-                    nextArrow: '<div class="next"><i class="far fa-arrow-right"></i></div>',
-                    responsive: [{ breakpoint: 767, settings: { slidesToShow: 1 } }]
+                    dots: true, arrows: true, infinite: true, speed: 600,
+                    autoplay: true, autoplaySpeed: 4500,
+                    slidesToShow: 1, slidesToScroll: 1,
+                    adaptiveHeight: false,
+                    variableWidth: false,
+                    prevArrow: '<button type="button" class="prev slick-arrow" aria-label="Anterior"><i class="far fa-angle-left"></i></button>',
+                    nextArrow: '<button type="button" class="next slick-arrow" aria-label="Siguiente"><i class="far fa-angle-right"></i></button>',
+                    responsive: [
+                        { breakpoint: 767, settings: { arrows: false, dots: true } }
+                    ]
                 });
                 try { $el.slick('setPosition'); } catch (e) { /* ignore */ }
             });

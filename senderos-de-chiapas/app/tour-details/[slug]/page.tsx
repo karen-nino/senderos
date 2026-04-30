@@ -143,7 +143,7 @@ export default async function TourDetailPage({ params }: PageProps) {
 
       {/* ====== Start Place Details Section (tour-details.html) ====== */}
       <section className="place-details-section">
-        {/* Place Slider - desktop: slider; tablet/mobile: imagen 465x630 fija centrada */}
+        {/* Place Slider - carrusel horizontal */}
         {(() => {
           const gallery = (() => {
             const raw = destination.imagesDetails?.filter(Boolean) ?? [];
@@ -151,60 +151,30 @@ export default async function TourDetailPage({ params }: PageProps) {
             const seen = new Set<string>();
             return raw.filter((u) => (seen.has(u) ? false : (seen.add(u), true)));
           })();
-          const img1 = gallery[0] ?? destination.image;
-          const img2 = gallery[1] ?? gallery[0] ?? destination.image;
-          const sizeFeatured = { width: 950, height: 300 };
-          const sizeSlide = { width: 465, height: 300 };
-          const images = [0, 1, 2, 3].map((i) => gallery[i % gallery.length]);
+          const images = gallery.length > 0 ? gallery : [destination.image];
           return (
             <>
-              {/* Desktop: slider con 4 imágenes */}
-              <div className="place-slider-area overflow-hidden wow fadeInUp d-none d-lg-block">
+              <div className="place-slider-area overflow-hidden wow fadeInUp">
                 <div className="place-slider">
-                  {images.map((img, i) => {
-                    const isFeatured = i === 1 || i === 3; // orden: 465, 950, 465, 950
-                    const size = isFeatured ? sizeFeatured : sizeSlide;
-                    return (
-                      <div key={i} className={isFeatured ? 'place-item' : 'place-slider-item'}>
-                        <div
-                          className="place-img"
-                          style={{ width: size.width, height: size.height, overflow: 'hidden', borderRadius: 15 }}
-                        >
-                          <img
-                            src={img}
-                            alt={`${destination.title} - Imagen ${(i % 2) + 1}`}
-                            width={size.width}
-                            height={size.height}
-                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                          />
-                        </div>
+                  {images.map((img, i) => (
+                    <div key={`${img}-${i}`} className="place-slider-item">
+                      <div
+                        className="place-img"
+                        style={{
+                          width: '100%',
+                          aspectRatio: '16/9',
+                          overflow: 'hidden',
+                          borderRadius: 15,
+                        }}
+                      >
+                        <img
+                          src={img}
+                          alt={`${destination.title} - Imagen ${i + 1}`}
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
                       </div>
-                    );
-                  })}
-                </div>
-              </div>
-              {/* Tablet y mobile: una sola imagen 465x630 centrada, sin slider */}
-              <div className="place-slider-area overflow-hidden wow fadeInUp d-block d-lg-none">
-                <div className="d-flex justify-content-center px-2">
-                  <div
-                    className="place-img"
-                    style={{
-                      width: '100%',
-                      maxWidth: sizeSlide.width,
-                      aspectRatio: '465/300',
-                      overflow: 'hidden',
-                      borderRadius: 15,
-                      flexShrink: 0,
-                    }}
-                  >
-                    <img
-                      src={img1}
-                      alt={`${destination.title} - Imagen 1`}
-                      width={sizeSlide.width}
-                      height={sizeSlide.height}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
-                  </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </>
