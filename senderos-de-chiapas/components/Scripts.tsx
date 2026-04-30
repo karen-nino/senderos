@@ -41,11 +41,23 @@ export default function Scripts() {
       ]
 
       // Load scripts sequentially
-      scripts.reduce((promise, src) => {
-        return promise.then(() => loadScript(src))
-      }, Promise.resolve()).catch((error) => {
-        console.error('Error loading scripts:', error)
-      })
+      scripts
+        .reduce((promise, src) => {
+          return promise.then(() => loadScript(src))
+        }, Promise.resolve())
+        .then(() => {
+          // En prod, a veces el DOM ya está "ready" antes de que carguen estos scripts;
+          // forzamos una reinicialización al terminar de cargar para asegurar slick/WOW/etc.
+          const reinit = (window as any).reinitTheme
+          if (typeof reinit === 'function') {
+            setTimeout(() => reinit(), 50)
+            // Segundo intento (imágenes/layout) para casos donde slick calcule width=0
+            setTimeout(() => reinit(), 350)
+          }
+        })
+        .catch((error) => {
+          console.error('Error loading scripts:', error)
+        })
     }
   }, [])
 

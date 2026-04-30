@@ -15,14 +15,19 @@ export default function ThemeReinitOnRoute() {
     const didChange = prevPathname.current !== null && prevPathname.current !== pathname
     prevPathname.current = pathname
 
-    if (!didChange) return
-
-    const t = setTimeout(() => {
+    // También reinicializar en el primer mount (deploy suele fallar si solo lo hacemos en navegación)
+    const reinit = () => {
       if (typeof window !== 'undefined' && typeof (window as any).reinitTheme === 'function') {
-        ; (window as any).reinitTheme()
+        ;(window as any).reinitTheme()
       }
-    }, 50)
-    return () => clearTimeout(t)
+    }
+
+    const t1 = setTimeout(() => reinit(), didChange ? 80 : 150)
+    const t2 = setTimeout(() => reinit(), didChange ? 380 : 450)
+    return () => {
+      clearTimeout(t1)
+      clearTimeout(t2)
+    }
   }, [pathname])
 
   return null
