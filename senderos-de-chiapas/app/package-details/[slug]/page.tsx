@@ -324,16 +324,16 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                                           {item.time ? `${item.time} - ` : ''}
                                           {item.activity}
                                         </li>
-                                        {item.description && (
-                                          <li className="ps-4 text-muted" style={{ listStyle: 'none' }}>
-                                            {item.description}
-                                          </li>
+                                        {item.accommodation && (
+                                          <li><i className="fas fa-bed"></i> {item.accommodation}</li>
                                         )}
                                         {item.routeItinerary && (
                                           <li><i className="fas fa-route"></i> {item.routeItinerary}</li>
                                         )}
-                                        {item.accommodation && (
-                                          <li><i className="fas fa-bed"></i> {item.accommodation}</li>
+                                        {item.description && (
+                                          <li className="ps-4 text-muted" style={{ listStyle: 'none' }}>
+                                            {item.description}
+                                          </li>
                                         )}
                                       </React.Fragment>
                                     ))}
