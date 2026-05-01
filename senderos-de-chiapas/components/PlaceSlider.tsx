@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 interface PlaceSliderProps {
   images: string[]
@@ -9,11 +9,22 @@ interface PlaceSliderProps {
 
 const sizeFeatured = { width: 950, height: 300 }
 const sizeSlide = { width: 465, height: 300 }
+const MOBILE_QUERY = '(max-width: 767px)'
 
 export default function PlaceSlider({ images, alt }: PlaceSliderProps) {
   const sliderRef = useRef<HTMLDivElement>(null)
+  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
+    const mq = window.matchMedia(MOBILE_QUERY)
+    const update = () => setIsMobile(mq.matches)
+    update()
+    mq.addEventListener('change', update)
+    return () => mq.removeEventListener('change', update)
+  }, [])
+
+  useEffect(() => {
+    if (isMobile) return
     const el = sliderRef.current
     if (!el) return
 
@@ -24,7 +35,6 @@ export default function PlaceSlider({ images, alt }: PlaceSliderProps) {
       if (cancelled) return
       const $ = (window as any).jQuery
       if (!$ || typeof $.fn.slick !== 'function') {
-        // Slick not loaded yet — retry
         retryTimer = setTimeout(initSlick, 200)
         return
       }
@@ -55,7 +65,6 @@ export default function PlaceSlider({ images, alt }: PlaceSliderProps) {
       }
     }
 
-    // Small delay to ensure DOM is painted
     retryTimer = setTimeout(initSlick, 60)
 
     return () => {
@@ -70,7 +79,30 @@ export default function PlaceSlider({ images, alt }: PlaceSliderProps) {
         }
       }
     }
-  }, [])
+  }, [isMobile])
+
+  if (isMobile) {
+    const src = images[0]
+    return (
+      <div className="place-slider-area wow fadeInUp">
+        <div
+          className="place-img"
+          style={{
+            width: '100%',
+            aspectRatio: `${sizeSlide.width} / ${sizeSlide.height}`,
+            overflow: 'hidden',
+            borderRadius: 15,
+          }}
+        >
+          <img
+            src={src}
+            alt={alt}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+          />
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="place-slider-area overflow-hidden wow fadeInUp">
