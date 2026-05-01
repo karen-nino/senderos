@@ -1284,13 +1284,15 @@ ul.info-list.info-list--stack > li > span {
 /* Tarjetas de paquetes más altas */
 .features-section .single-features-item-two {
   min-width: 0; /* evita overflow en grid */
+  @media (max-width: 767px) {
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 .features-section .single-features-item-two .img-holder {
   aspect-ratio: 3 / 4;
-  min-height: 160px; /* móvil: 2 por fila sin overlap */
-  @media (min-width: 768px) {
-    min-height: 280px;
-  }
+  min-height: 280px;
 }
 .features-section .single-features-item-two .img-holder img {
   width: 100%;

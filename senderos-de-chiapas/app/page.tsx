@@ -117,7 +117,7 @@ export default async function Home() {
             </div>
             <div className="row g-2 g-md-3 justify-content-center">
               {packages.map((pkg: AdaptedDestination, index: number) => (
-                <div key={index} className="col-6 col-md-6 col-xl-3">
+                <div key={index} className="col-12 col-md-6 col-xl-3">
                   <Link
                     href={pkg.link || '#'}
                     className={`single-features-item-two mb-30 mb-md-40 wow ${index % 2 === 0 ? 'fadeInUp' : 'fadeInDown'} d-block w-100`}
