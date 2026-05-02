@@ -31,6 +31,7 @@ export interface HomeHeroSlide extends Struct.ComponentSchema {
     ctaLink: Schema.Attribute.String;
     ctaText: Schema.Attribute.String;
     image: Schema.Attribute.Media<'images'>;
+    mobileImage: Schema.Attribute.Media<'images'>;
     subtitle: Schema.Attribute.String;
     title: Schema.Attribute.String;
   };

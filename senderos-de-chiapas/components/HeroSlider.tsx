@@ -17,6 +17,15 @@ export interface HeroSlide {
     }
     url?: string
   } | string
+  mobileImage?: {
+    data?: {
+      attributes?: {
+        url: string
+        alternativeText?: string
+      }
+    }
+    url?: string
+  } | string
   buttonText?: string
   buttonLink?: string
   ctaText?: string
@@ -146,13 +155,18 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
                   </div>
                   <div className="col-xl-6">
                     <div className="hero-image" data-animation="fadeInRight">
-                      <img
-                        src={getImageUrl(slide.image)}
-                        alt={getImageAlt(slide.image, slide.title)}
-                        width={871}
-                        height={670}
-                        style={{ width: '871px', height: '670px', objectFit: 'cover' }}
-                      />
+                      <picture>
+                        {slide.mobileImage && (
+                          <source media="(max-width: 767px)" srcSet={getImageUrl(slide.mobileImage)} />
+                        )}
+                        <img
+                          src={getImageUrl(slide.image)}
+                          alt={getImageAlt(slide.image, slide.title)}
+                          width={871}
+                          height={670}
+                          style={{ width: '871px', height: '670px', objectFit: 'cover' }}
+                        />
+                      </picture>
                     </div>
                   </div>
                 </div>

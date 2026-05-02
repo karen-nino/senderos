@@ -542,6 +542,7 @@ export interface AdaptedHeroSlide {
   subtitle?: string;
   description?: string;
   image: string;
+  mobileImage?: string;
   buttonText?: string;
   buttonLink?: string;
   ctaText?: string;
@@ -574,43 +575,61 @@ export function parseHomeHeroSlides(homeData: unknown): AdaptedHeroSlide[] {
       ? buildFullImageUrl(imageUrl)
       : HERO_FALLBACK_IMAGE;
     const mediaId = getMediaId(s.image);
+
+    const mobileImageUrl = getImageUrl(s.mobileImage as StrapiDestinationItem["image"]);
+    const mobileFullUrl = mobileImageUrl ? buildFullImageUrl(mobileImageUrl) : undefined;
+    const mobileMediaId = getMediaId(s.mobileImage);
+
     return {
       id: (s.id as number) ?? i,
       title: (s.title as string) ?? "",
       subtitle: (s.subtitle as string) ?? undefined,
       description: (s.description as string) ?? undefined,
       image: fullUrl,
+      mobileImage: mobileFullUrl,
       buttonText: (s.buttonText as string) ?? undefined,
       buttonLink: (s.buttonLink as string) ?? undefined,
       ctaText: (s.ctaText as string) ?? undefined,
       ctaLink: (s.ctaLink as string) ?? undefined,
       _mediaId: mediaId,
-    } as AdaptedHeroSlide & { _mediaId?: number | null };
+      _mobileMediaId: mobileMediaId,
+    } as AdaptedHeroSlide & { _mediaId?: number | null; _mobileMediaId?: number | null };
   });
 }
 
 /** Resuelve imágenes de hero: si el slide tiene imagen fallback pero sí tiene mediaId, pide la URL a /api/upload/files/:id. */
 export async function fetchHomeHeroSlides(homeData: Record<string, unknown> | null): Promise<AdaptedHeroSlide[]> {
-  const slides = parseHomeHeroSlides(homeData) as (AdaptedHeroSlide & { _mediaId?: number | null })[];
+  const slides = parseHomeHeroSlides(homeData) as (AdaptedHeroSlide & { _mediaId?: number | null; _mobileMediaId?: number | null })[];
+
+  const resolveMediaUrl = async (id: number | null | undefined): Promise<string | undefined> => {
+    if (id == null) return undefined;
+    try {
+      const res = await fetchStrapi(`/api/upload/files/${id}`, { useToken: false });
+      const data = res?.data as { url?: string } | undefined;
+      const url = data?.url;
+      return url ? buildFullImageUrl(url) : undefined;
+    } catch {
+      return undefined;
+    }
+  };
+
   const resolved = await Promise.all(
     slides.map(async (slide) => {
-      const mediaId = slide._mediaId;
-      const isFallback = slide.image === HERO_FALLBACK_IMAGE;
-      if (mediaId == null || !isFallback) {
-        const { _mediaId: _, ...s } = slide;
-        return s as AdaptedHeroSlide;
-      }
-      try {
-        const res = await fetchStrapi(`/api/upload/files/${mediaId}`, { useToken: false });
-        const data = res?.data as { url?: string } | undefined;
-        const url = data?.url;
-        const fullUrl = url ? buildFullImageUrl(url) : HERO_FALLBACK_IMAGE;
-        const { _mediaId: _, ...rest } = slide;
-        return { ...rest, image: fullUrl } as AdaptedHeroSlide;
-      } catch {
-        const { _mediaId: _, ...rest } = slide;
-        return { ...rest, image: HERO_FALLBACK_IMAGE } as AdaptedHeroSlide;
-      }
+      const { _mediaId, _mobileMediaId, ...rest } = slide;
+
+      const needsImageFetch = _mediaId != null && slide.image === HERO_FALLBACK_IMAGE;
+      const needsMobileFetch = _mobileMediaId != null && !slide.mobileImage;
+
+      const [resolvedImage, resolvedMobile] = await Promise.all([
+        needsImageFetch ? resolveMediaUrl(_mediaId) : Promise.resolve(undefined),
+        needsMobileFetch ? resolveMediaUrl(_mobileMediaId) : Promise.resolve(undefined),
+      ]);
+
+      return {
+        ...rest,
+        image: resolvedImage ?? rest.image,
+        mobileImage: resolvedMobile ?? rest.mobileImage,
+      } as AdaptedHeroSlide;
     })
   );
   return resolved;
