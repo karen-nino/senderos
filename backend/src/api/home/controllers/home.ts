@@ -12,7 +12,7 @@ export default factories.createCoreController('api::home.home', ({ strapi }) => 
       populate: {
         ...(typeof ctx.query?.populate === 'object' && ctx.query.populate !== null ? ctx.query.populate : {}),
         heroSlides: {
-          populate: ['image'],
+          populate: ['image', 'mobileImage'],
         },
         services: { populate: ['image'] },
         testimonial: { populate: ['profilePhoto', 'photo'] },
