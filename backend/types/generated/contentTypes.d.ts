@@ -551,6 +551,7 @@ export interface ApiHolidayHoliday extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     mapItem: Schema.Attribute.Component<'map.map-item', true>;
     price: Schema.Attribute.String;
+    priceInternational: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     route: Schema.Attribute.Blocks;
     subtitle: Schema.Attribute.String;
@@ -733,6 +734,7 @@ export interface ApiPackagePackage extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     mapItem: Schema.Attribute.Component<'map.map-item', true>;
     price: Schema.Attribute.String;
+    priceInternational: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     route: Schema.Attribute.Blocks;
     subtitle: Schema.Attribute.String;

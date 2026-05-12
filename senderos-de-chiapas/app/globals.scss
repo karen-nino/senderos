@@ -868,6 +868,21 @@ ul.info-list.info-list--stack > li > span {
   line-height: 1.45;
 }
 
+/* info-list item con salto: si el valor no cabe en una línea, baja a la siguiente */
+ul.info-list > li.info-list__item--wrap > span {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.5rem;
+}
+ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
+  float: none;
+  margin-left: auto;
+  text-align: right;
+  min-width: 0;
+  word-break: break-word;
+}
+
 /* tour-title-wrapper - border-bottom solo en desktop */
 .tour-title-wrapper {
   border-bottom: none;

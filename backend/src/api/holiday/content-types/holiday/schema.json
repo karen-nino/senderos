@@ -44,6 +44,9 @@
     "price": {
       "type": "string"
     },
+    "priceInternational": {
+      "type": "string"
+    },
     "departureDate": {
       "type": "string"
     },

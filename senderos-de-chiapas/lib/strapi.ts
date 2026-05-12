@@ -807,6 +807,7 @@ export interface StrapiPackageItem {
   subtitle?: string;
   duration?: string;
   price?: string;
+  priceInternational?: string;
   type?: string;
   route?: StrapiBlock | StrapiBlock[];
   image?:
@@ -1083,6 +1084,7 @@ export interface AdaptedPackageDetail {
   /** URLs de imágenes para slider/detalle (como en tour-details) */
   imagesDetails?: string[];
   price: string;
+  priceInternational?: string;
   duration?: string;
   route?: string;
   /** Cada viñeta/bloque de route en Strapi como línea propia */
@@ -1167,6 +1169,7 @@ function adaptPackageOrHolidayToDetail(item: StrapiPackageItem): AdaptedPackageD
     image: adapted.image,
     imagesDetails: imagesDetails.length > 0 ? imagesDetails : undefined,
     price: adapted.price ?? "Consultar",
+    priceInternational: item.priceInternational?.trim() || undefined,
     duration: adapted.duration,
     route: adapted.route,
     routeList: routeList ?? undefined,
