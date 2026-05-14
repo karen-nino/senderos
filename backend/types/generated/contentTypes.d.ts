@@ -788,6 +788,7 @@ export interface ApiTourTour extends Struct.CollectionTypeSchema {
   };
   attributes: {
     accommodation: Schema.Attribute.String;
+    arrival: Schema.Attribute.String;
     badge: Schema.Attribute.Enumeration<
       ['nuevo', 'pocos_lugares', 'agotado', 'oculto']
     >;

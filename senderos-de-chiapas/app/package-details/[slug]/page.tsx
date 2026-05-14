@@ -252,7 +252,7 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                     <div className="col-lg-12">
                       <ul className="check-list">
                         {displayRouteItems.map((item: string, i: number) => (
-                          <li key={i}><i className="fas fa-badge-check"></i>{item}</li>
+                          <li key={i}><i className="fas fa-route"></i>{item}</li>
                         ))}
                       </ul>
                     </div>

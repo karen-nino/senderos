@@ -26,6 +26,9 @@
     "departure": {
       "type": "string"
     },
+    "arrival": {
+      "type": "string"
+    },
     "departureDate": {
       "type": "string"
     },

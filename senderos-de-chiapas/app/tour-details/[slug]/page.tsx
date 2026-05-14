@@ -42,6 +42,7 @@ const FALLBACK_DESTINATION = {
   accommodation: undefined as string | undefined,
   departureDate: undefined as string | undefined,
   departure: undefined as string | undefined,
+  arrival: undefined as string | undefined,
   transport: undefined as string | undefined,
   map: undefined as string | undefined,
   mapItem: undefined as Array<{ map?: string; title?: string }> | undefined,
@@ -118,6 +119,7 @@ export default async function TourDetailPage({ params }: PageProps) {
     destination.location ? `• Ubicación: ${destination.location}` : null,
     destination.accommodation ? `• Alojamiento: ${destination.accommodation}` : null,
     destination.departure ? `• Punto de salida: ${destination.departure}` : null,
+    destination.arrival ? `• Punto de regreso: ${destination.arrival}` : null,
     destination.transport ? `• Transporte: ${destination.transport}` : null,
     destination.departureDate ? `• Fecha de salida: ${destination.departureDate}` : null,
     routeList.length > 0 ? `• Ruta: ${routeList.join(' → ')}` : null,
@@ -197,18 +199,6 @@ export default async function TourDetailPage({ params }: PageProps) {
               <div className="sidebar-widget booking-info-widget wow fadeInUp mb-40">
                 <h4 className="widget-title">Detalles del tour</h4>
                 <ul className="info-list info-list--stack">
-                  {(destination.routeList?.length ?? (destination.route ? 1 : 0)) > 0 && (
-                    <li>
-                      <span>
-                        <i className="far fa-route"></i>Ruta
-                        <ul className="route-list mt-2">
-                          {(destination.routeList ?? (destination.route ? [destination.route] : [])).map((point: string, i: number) => (
-                            <li key={i}>{point}</li>
-                          ))}
-                        </ul>
-                      </span>
-                    </li>
-                  )}
                   <li><span><i className="fal fa-box-usd"></i>Precio<span>{destination.price}</span></span></li>
                   <li><span><i className="fal fa-clock"></i>Duración<span>{destination.duration}</span></span></li>
                   {destination.departure && <li><span><i className="far fa-map-marker-alt"></i>Punto de salida<span>{destination.departure}</span></span></li>}
@@ -242,21 +232,40 @@ export default async function TourDetailPage({ params }: PageProps) {
 
             <div className="row">
               <div className="col-xl-8">
-                {/* Descripción: bloque propio (mismo ritmo que package-details → Incluye) */}
-                {destination.description?.trim() && (
-                  <div className="place-content-wrap pt-45 wow fadeInUp mb-40">
-                    <h4 className="title pb-2">Descripción</h4>
-                    <div className="tour-description-text" style={{ lineHeight: 1.85 }}>
-                      {destination.description.split(/\n\n+/).map((para, idx) => (
-                        <p key={idx} className={idx > 0 ? 'mt-3' : ''} style={{ lineHeight: 'inherit' }}>
-                          {para.trim()}
-                        </p>
-                      ))}
-                    </div>
+                {/* Descripción + Ruta: mismo patrón que package-details */}
+                {(destination.description?.trim() || routeList.length > 0) && (
+                  <div className="package-description-route pt-45 wow fadeInUp mb-100">
+                    {destination.description?.trim() && (
+                      <>
+                        <h3 className="title">Descripción</h3>
+                        <div className="tour-description-text" style={{ lineHeight: 1.85 }}>
+                          {destination.description.split(/\n\n+/).map((para, idx) => (
+                            <p key={idx} className={idx > 0 ? 'mt-3' : ''} style={{ lineHeight: 'inherit' }}>
+                              {para.trim()}
+                            </p>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                    {routeList.length > 0 && (
+                      <>
+                        <h4 className="title">Ruta</h4>
+                        <p>Lugares que recorre este tour:</p>
+                        <div className="row align-items-lg-center">
+                          <div className="col-lg-12">
+                            <ul className="check-list">
+                              {routeList.map((item: string, i: number) => (
+                                <li key={i}><i className="fas fa-route"></i>{item}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </div>
                 )}
                 <div
-                  className={`${destination.description?.trim() ? 'package-includes' : 'place-content-wrap'} pt-45 wow fadeInUp mb-100`}
+                  className={`${(destination.description?.trim() || routeList.length > 0) ? 'package-includes' : 'place-content-wrap'} pt-45 wow fadeInUp mb-100`}
                 >
                   <h4 className="title pb-2">Incluye</h4>
                   <p>Este tour incluye los siguientes servicios:</p>
@@ -408,26 +417,18 @@ export default async function TourDetailPage({ params }: PageProps) {
                   {/* Booking Info Widget - Visible only on desktop (xl) */}
                   <div className="d-none d-xl-block">
                     <div className="sidebar-widget booking-info-widget wow fadeInUp mb-100">
-                      <h4 className="widget-title">Detalles del tour</h4>
-                      <ul className="info-list">
-                        {(destination.routeList?.length ?? (destination.route ? 1 : 0)) > 0 && (
-                          <li>
-                            <span>
-                              <i className="far fa-route"></i>Ruta
-                              <ul className="route-list mt-2">
-                                {(destination.routeList ?? (destination.route ? [destination.route] : [])).map((point: string, i: number) => (
-                                  <li key={i}>{point}</li>
-                                ))}
-                              </ul>
-                            </span>
-                          </li>
-                        )}
-                        <li><span><i className="fal fa-box-usd"></i>Precio<span>{destination.price}</span></span></li>
-                        <li><span><i className="fal fa-clock"></i>Duración<span>{destination.duration}</span></span></li>
-                        {destination.departure && <li><span><i className="far fa-map-marker-alt"></i>Punto de salida<span>{destination.departure}</span></span></li>}
+                      <div className="pb-2 border-bottom">
+                        <h4 className="">Detalles del Tour</h4>
+                        <h5 className="fw-light">Salida Tuxtla Gutiérrez</h5>
+                      </div>
+                      <ul className="info-list pt-3">
+                        <li><span><i className="fal fa-clock"></i>Horario de salida<span>{destination.duration}</span></span></li>
+                        {destination.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida<span>{destination.departure}</span></span></li>}
+                        {destination.arrival && <li><span><i className="far fa-map-marker-alt"></i>Regreso &#40;Opc. 1&#41;<span>{destination.arrival}</span></span></li>}
+                        {destination.arrival && <li><span><i className="far fa-map-marker-alt"></i>Regreso &#40;Opc. 2&#41;<span>{destination.arrival}</span></span></li>}
                         {destination.transport && <li><span><i className="fal fa-bus"></i>Transporte<span>{destination.transport}</span></span></li>}
                         {destination.accommodation && <li><span><i className="far fa-bed"></i>Alojamiento<span>{destination.accommodation}</span></span></li>}
-                        {destination.departureDate && <li><span><i className="far fa-calendar-alt"></i>Fecha de salida<span>{destination.departureDate}</span></span></li>}
+                        <li><span><i className="fal fa-box-usd"></i>Precio<span>{destination.price}</span></span></li>
                         <li>
                           <div className="submit-button">
                             <a
@@ -436,7 +437,7 @@ export default async function TourDetailPage({ params }: PageProps) {
                               rel="noopener noreferrer"
                               className="main-btn primary-btn"
                             >
-                              Cotizar por WhatsApp<WhatsAppIcon className="whatsapp-icon" />
+                              Consulta disponibilidad<WhatsAppIcon className="whatsapp-icon" />
                             </a>
                           </div>
                         </li>

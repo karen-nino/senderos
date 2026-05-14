@@ -313,6 +313,7 @@ export interface StrapiDestinationItem {
   route?: string | StrapiBlock | StrapiBlock[];
   transport?: string;
   departure?: string;
+  arrival?: string;
   includes?: StrapiBlock[];
   /** Itinerario por día (componente repeatable) */
   itineraryItem?: StrapiItineraryItem[];
@@ -1264,6 +1265,8 @@ export interface AdaptedDestinationDetail {
   duration: string;
   /** Punto de salida (Strapi tour.departure) */
   departure?: string;
+  /** Punto de regreso (Strapi tour.arrival) */
+  arrival?: string;
   transport?: string;
   link?: string;
   /** Ruta como texto único (para compatibilidad) */
@@ -1454,6 +1457,7 @@ function adaptToDestinationDetail(
     accommodation: d.accommodation,
     departureDate: d.departureDate,
     departure: d.departure?.trim() || undefined,
+    arrival: d.arrival?.trim() || undefined,
     transport: d.transport?.trim() || undefined,
     map:
       (Array.isArray(d.mapItem) ? d.mapItem[0]?.map : d.mapItem?.map) ?? d.map,
