@@ -1,5 +1,15 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface ArrivalArrivalOption extends Struct.ComponentSchema {
+  collectionName: 'components_arrival_arrival_options';
+  info: {
+    displayName: 'arrivalOption';
+  };
+  attributes: {
+    value: Schema.Attribute.String;
+  };
+}
+
 export interface FaqFaq extends Struct.ComponentSchema {
   collectionName: 'components_faq_faqs';
   info: {
@@ -104,6 +114,7 @@ export interface MapMapItem extends Struct.ComponentSchema {
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
+      'arrival.arrival-option': ArrivalArrivalOption;
       'faq.faq': FaqFaq;
       'gallery.gallery': GalleryGallery;
       'home.hero-slide': HomeHeroSlide;

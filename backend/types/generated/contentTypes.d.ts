@@ -788,7 +788,7 @@ export interface ApiTourTour extends Struct.CollectionTypeSchema {
   };
   attributes: {
     accommodation: Schema.Attribute.String;
-    arrival: Schema.Attribute.String;
+    arrival: Schema.Attribute.Component<'arrival.arrival-option', true>;
     badge: Schema.Attribute.Enumeration<
       ['nuevo', 'pocos_lugares', 'agotado', 'oculto']
     >;
@@ -798,9 +798,8 @@ export interface ApiTourTour extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     departure: Schema.Attribute.String;
-    departureDate: Schema.Attribute.String;
+    departureTime: Schema.Attribute.String;
     description: Schema.Attribute.Blocks;
-    duration: Schema.Attribute.String;
     home: Schema.Attribute.Boolean;
     image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     imagesDetails: Schema.Attribute.Media<

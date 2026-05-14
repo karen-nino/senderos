@@ -40,9 +40,8 @@ const FALLBACK_DESTINATION = {
   price: 'Consultar',
   duration: 'Consultar',
   accommodation: undefined as string | undefined,
-  departureDate: undefined as string | undefined,
   departure: undefined as string | undefined,
-  arrival: undefined as string | undefined,
+  arrival: undefined as string[] | undefined,
   transport: undefined as string | undefined,
   map: undefined as string | undefined,
   mapItem: undefined as Array<{ map?: string; title?: string }> | undefined,
@@ -119,9 +118,12 @@ export default async function TourDetailPage({ params }: PageProps) {
     destination.location ? `• Ubicación: ${destination.location}` : null,
     destination.accommodation ? `• Alojamiento: ${destination.accommodation}` : null,
     destination.departure ? `• Punto de salida: ${destination.departure}` : null,
-    destination.arrival ? `• Punto de regreso: ${destination.arrival}` : null,
+    destination.arrival && destination.arrival.length > 0
+      ? destination.arrival.length === 1
+        ? `• Punto de regreso: ${destination.arrival[0]}`
+        : destination.arrival.map((v, i) => `• Punto de regreso (Opc. ${i + 1}): ${v}`).join('\n')
+      : null,
     destination.transport ? `• Transporte: ${destination.transport}` : null,
-    destination.departureDate ? `• Fecha de salida: ${destination.departureDate}` : null,
     routeList.length > 0 ? `• Ruta: ${routeList.join(' → ')}` : null,
     destination.itinerary && destination.itinerary.length > 0
       ? `\n📅 *Itinerario:*\n${destination.itinerary.map((item) => `• ${item.dayTitle}${item.time ? ` (${item.time})` : ''}: ${item.activity}`).join('\n')}`
@@ -182,7 +184,7 @@ export default async function TourDetailPage({ params }: PageProps) {
                     </div>
                     <div className="info-box mb-20">
                       <div className="icon"><i className="fal fa-clock"></i></div>
-                      <div className="info"><h4><span>Duración</span>{destination.duration}</h4></div>
+                      <div className="info"><h4><span>Hora de Salida</span>{destination.duration}</h4></div>
                     </div>
                     {/* <div className="info-box mb-20">
                       <div className="submit-button">
@@ -197,14 +199,25 @@ export default async function TourDetailPage({ params }: PageProps) {
             {/* Booking Info + Calendar - Visible only on mobile/tablet, right after Tour Title (misma info que desktop) */}
             <div className="sidebar-widget-area d-block d-xl-none pb-30">
               <div className="sidebar-widget booking-info-widget wow fadeInUp mb-40">
-                <h4 className="widget-title">Detalles del tour</h4>
-                <ul className="info-list info-list--stack">
-                  <li><span><i className="fal fa-box-usd"></i>Precio<span>{destination.price}</span></span></li>
-                  <li><span><i className="fal fa-clock"></i>Duración<span>{destination.duration}</span></span></li>
-                  {destination.departure && <li><span><i className="far fa-map-marker-alt"></i>Punto de salida<span>{destination.departure}</span></span></li>}
-                  {destination.transport && <li><span><i className="fal fa-bus"></i>Transporte<span>{destination.transport}</span></span></li>}
-                  {destination.accommodation && <li><span><i className="far fa-bed"></i>Alojamiento<span>{destination.accommodation}</span></span></li>}
-                  {destination.departureDate && <li><span><i className="far fa-calendar-alt"></i>Fecha de salida<span>{destination.departureDate}</span></span></li>}
+                      <div className="pb-2 border-bottom">
+                        <h4 className="">Detalles del Tour</h4>
+                        <h5 className="fw-light">Salida Tuxtla Gutiérrez</h5>
+                      </div>
+                      <ul className="info-list pt-3">
+                        <li><span><i className="fal fa-clock"></i>Hora de salida<span>{destination.duration}</span></span></li>
+                        {destination.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida<span>{destination.departure}</span></span></li>}
+                        {destination.arrival && destination.arrival.length > 0 && (
+                          destination.arrival.length === 1 ? (
+                            <li><span><i className="far fa-map-marker-alt"></i>Regreso<span>{destination.arrival[0]}</span></span></li>
+                          ) : (
+                            destination.arrival.map((v, i) => (
+                              <li key={`arrival-${i}`}><span><i className="far fa-map-marker-alt"></i>{`Regreso (Opc. ${i + 1})`}<span>{v}</span></span></li>
+                            ))
+                          )
+                        )}
+                        {destination.transport && <li><span><i className="fal fa-bus"></i>Transporte<span>{destination.transport}</span></span></li>}
+                        {destination.accommodation && <li><span><i className="far fa-bed"></i>Alojamiento<span>{destination.accommodation}</span></span></li>}
+                        <li><span><i className="fal fa-box-usd"></i>Precio<span>{destination.price}</span></span></li>
                   <li className="tour-details-wa-cta-mobile">
                     <div className="submit-button">
                       <a
@@ -213,7 +226,7 @@ export default async function TourDetailPage({ params }: PageProps) {
                         rel="noopener noreferrer"
                         className="main-btn primary-btn"
                       >
-                        Cotizar por WhatsApp<WhatsAppIcon className="whatsapp-icon" />
+                        Consulta disponibilidad<WhatsAppIcon className="whatsapp-icon" />
                       </a>
                     </div>
                   </li>
@@ -422,10 +435,17 @@ export default async function TourDetailPage({ params }: PageProps) {
                         <h5 className="fw-light">Salida Tuxtla Gutiérrez</h5>
                       </div>
                       <ul className="info-list pt-3">
-                        <li><span><i className="fal fa-clock"></i>Horario de salida<span>{destination.duration}</span></span></li>
+                        <li><span><i className="fal fa-clock"></i>Hora de salida<span>{destination.duration}</span></span></li>
                         {destination.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida<span>{destination.departure}</span></span></li>}
-                        {destination.arrival && <li><span><i className="far fa-map-marker-alt"></i>Regreso &#40;Opc. 1&#41;<span>{destination.arrival}</span></span></li>}
-                        {destination.arrival && <li><span><i className="far fa-map-marker-alt"></i>Regreso &#40;Opc. 2&#41;<span>{destination.arrival}</span></span></li>}
+                        {destination.arrival && destination.arrival.length > 0 && (
+                          destination.arrival.length === 1 ? (
+                            <li><span><i className="far fa-map-marker-alt"></i>Regreso<span>{destination.arrival[0]}</span></span></li>
+                          ) : (
+                            destination.arrival.map((v, i) => (
+                              <li key={`arrival-${i}`}><span><i className="far fa-map-marker-alt"></i>{`Regreso (Opc. ${i + 1})`}<span>{v}</span></span></li>
+                            ))
+                          )
+                        )}
                         {destination.transport && <li><span><i className="fal fa-bus"></i>Transporte<span>{destination.transport}</span></span></li>}
                         {destination.accommodation && <li><span><i className="far fa-bed"></i>Alojamiento<span>{destination.accommodation}</span></span></li>}
                         <li><span><i className="fal fa-box-usd"></i>Precio<span>{destination.price}</span></span></li>

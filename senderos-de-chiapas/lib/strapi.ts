@@ -272,6 +272,8 @@ export interface StrapiDestinationItem {
   departureDate?: string;
   accommodation?: string;
   duration?: string;
+  /** Horario de salida (Strapi tour.departureTime). Reemplaza a `duration` para Tours. */
+  departureTime?: string;
   price?: string;
   link?: string;
   /** Slug del tour (Collection Type tour tiene uid slug). */
@@ -313,7 +315,11 @@ export interface StrapiDestinationItem {
   route?: string | StrapiBlock | StrapiBlock[];
   transport?: string;
   departure?: string;
-  arrival?: string;
+  /** Componente repetible: lista de opciones de regreso (cada item tiene `value`). */
+  arrival?:
+    | string
+    | { value?: string }
+    | Array<{ value?: string }>;
   includes?: StrapiBlock[];
   /** Itinerario por día (componente repeatable) */
   itineraryItem?: StrapiItineraryItem[];
@@ -718,7 +724,7 @@ export function adaptStrapiDestination(
     departureDate: d.departureDate,
     price: d.price,
     accommodation: d.accommodation,
-    duration: d.duration,
+    duration: d.departureTime ?? d.duration,
     badge: normalizeBadge(d.badge),
     route: routeToStr(d.route),
     transport: d.transport,
@@ -1265,8 +1271,8 @@ export interface AdaptedDestinationDetail {
   duration: string;
   /** Punto de salida (Strapi tour.departure) */
   departure?: string;
-  /** Punto de regreso (Strapi tour.arrival) */
-  arrival?: string;
+  /** Lista de puntos/horarios de regreso (Strapi tour.arrival, componente repetible). */
+  arrival?: string[];
   transport?: string;
   link?: string;
   /** Ruta como texto único (para compatibilidad) */
@@ -1445,7 +1451,7 @@ function adaptToDestinationDetail(
       d.location?.trim() ||
       "Chiapas, México",
     price: d.price ?? "Consultar",
-    duration: d.duration ?? "Variable",
+    duration: d.departureTime ?? d.duration ?? "Variable",
     link: d.link,
     route: routeToStr(d.route),
     routeList:
@@ -1457,7 +1463,21 @@ function adaptToDestinationDetail(
     accommodation: d.accommodation,
     departureDate: d.departureDate,
     departure: d.departure?.trim() || undefined,
-    arrival: d.arrival?.trim() || undefined,
+    arrival: (() => {
+      const raw = d.arrival;
+      if (raw == null) return undefined;
+      if (typeof raw === "string") {
+        const v = raw.trim();
+        return v ? [v] : undefined;
+      }
+      const arr = Array.isArray(raw) ? raw : [raw];
+      const values = arr
+        .map((item) =>
+          typeof item?.value === "string" ? item.value.trim() : "",
+        )
+        .filter(Boolean);
+      return values.length ? values : undefined;
+    })(),
     transport: d.transport?.trim() || undefined,
     map:
       (Array.isArray(d.mapItem) ? d.mapItem[0]?.map : d.mapItem?.map) ?? d.map,

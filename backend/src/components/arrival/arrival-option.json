@@ -1,0 +1,13 @@
+{
+  "collectionName": "components_arrival_arrival_options",
+  "info": {
+    "displayName": "arrivalOption"
+  },
+  "options": {},
+  "attributes": {
+    "value": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

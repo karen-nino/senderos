@@ -27,10 +27,9 @@
       "type": "string"
     },
     "arrival": {
-      "type": "string"
-    },
-    "departureDate": {
-      "type": "string"
+      "type": "component",
+      "component": "arrival.arrival-option",
+      "repeatable": true
     },
     "accommodation": {
       "type": "string"
@@ -38,7 +37,7 @@
     "transport": {
       "type": "string"
     },
-    "duration": {
+    "departureTime": {
       "type": "string"
     },
     "price": {
