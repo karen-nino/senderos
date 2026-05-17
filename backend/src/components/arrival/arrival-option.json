@@ -7,6 +7,9 @@
   "attributes": {
     "value": {
       "type": "string"
+    },
+    "arrivalPrice": {
+      "type": "string"
     }
   },
   "config": {}

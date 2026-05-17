@@ -6,6 +6,7 @@ export interface ArrivalArrivalOption extends Struct.ComponentSchema {
     displayName: 'arrivalOption';
   };
   attributes: {
+    arrivalPrice: Schema.Attribute.String;
     value: Schema.Attribute.String;
   };
 }

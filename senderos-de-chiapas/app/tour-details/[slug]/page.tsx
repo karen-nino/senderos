@@ -201,17 +201,17 @@ export default async function TourDetailPage({ params }: PageProps) {
               <div className="sidebar-widget booking-info-widget wow fadeInUp mb-40">
                       <div className="pb-2 border-bottom">
                         <h4 className="">Detalles del Tour</h4>
-                        <h5 className="fw-light">Salida Tuxtla Gutiérrez</h5>
+                        <h5 className="fw-light">Salida {destination.departure}</h5>
                       </div>
                       <ul className="info-list pt-3">
                         <li><span><i className="fal fa-clock"></i>Hora de salida<span>{destination.duration}</span></span></li>
                         {destination.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida<span>{destination.departure}</span></span></li>}
                         {destination.arrival && destination.arrival.length > 0 && (
                           destination.arrival.length === 1 ? (
-                            <li><span><i className="far fa-map-marker-alt"></i>Regreso<span>{destination.arrival[0]}</span></span></li>
+                            <li><span><i className="far fa-map-marker-alt"></i>Regreso<span style={{ float: 'none', display: 'block', textAlign: 'right' }}>{destination.arrival[0]}</span></span></li>
                           ) : (
                             destination.arrival.map((v, i) => (
-                              <li key={`arrival-${i}`}><span><i className="far fa-map-marker-alt"></i>{`Regreso (Opc. ${i + 1})`}<span>{v}</span></span></li>
+                              <li key={`arrival-${i}`}><span><i className="far fa-map-marker-alt"></i>{`Regreso (Opc. ${i + 1})`}<span style={{ float: 'none', display: 'block', textAlign: 'right' }}>{v}</span></span></li>
                             ))
                           )
                         )}
@@ -439,10 +439,10 @@ export default async function TourDetailPage({ params }: PageProps) {
                         {destination.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida<span>{destination.departure}</span></span></li>}
                         {destination.arrival && destination.arrival.length > 0 && (
                           destination.arrival.length === 1 ? (
-                            <li><span><i className="far fa-map-marker-alt"></i>Regreso<span>{destination.arrival[0]}</span></span></li>
+                            <li><span><i className="far fa-map-marker-alt"></i>Regreso<span style={{ float: 'none', display: 'block', textAlign: 'right' }}>{destination.arrival[0]}</span></span></li>
                           ) : (
                             destination.arrival.map((v, i) => (
-                              <li key={`arrival-${i}`}><span><i className="far fa-map-marker-alt"></i>{`Regreso (Opc. ${i + 1})`}<span>{v}</span></span></li>
+                              <li key={`arrival-${i}`}><span><i className="far fa-map-marker-alt"></i>{`Regreso (Opc. ${i + 1})`}<span style={{ float: 'none', display: 'block', textAlign: 'right' }}>{v}</span></span></li>
                             ))
                           )
                         )}
