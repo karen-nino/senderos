@@ -453,7 +453,7 @@ export default async function TourDetailPage({ params }: PageProps) {
                         {destination.arrival && destination.arrival.length > 0 && (
                           destination.arrival.length === 1 ? (
                             <React.Fragment>
-                              <li><span><i className="far fa-map-marker-alt"></i>Regreso<span style={{ float: 'none', display: 'block', textAlign: 'right' }}>{destination.arrival[0].value}</span></span></li>
+                              <li><span><i className="far fa-map-marker-alt"></i>Regreso<span style={{ float: 'none', display: 'block'}}>{destination.arrival[0].value}</span></span></li>
                               {destination.arrival[0].arrivalPrice && (
                                 <li><span><i className="fal fa-box-usd"></i>Precio<span style={{ float: 'none' }}>{destination.arrival[0].arrivalPrice}</span></span></li>
                               )}
