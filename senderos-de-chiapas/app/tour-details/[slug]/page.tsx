@@ -41,7 +41,7 @@ const FALLBACK_DESTINATION = {
   duration: 'Consultar',
   accommodation: undefined as string | undefined,
   departure: undefined as string | undefined,
-  arrival: undefined as Array<{ value: string; arrivalPrice?: string }> | undefined,
+  arrival: undefined as Array<{ value: string; arrivalPrice?: string; arrivalHour?: string }> | undefined,
   transport: undefined as string | undefined,
   map: undefined as string | undefined,
   mapItem: undefined as Array<{ map?: string; title?: string }> | undefined,
@@ -448,12 +448,11 @@ export default async function TourDetailPage({ params }: PageProps) {
                       </div>
                       <ul className="info-list pt-3">
                         {destination.transport && <li><span><i className="fal fa-bus"></i>Transporte<span style={{ float: 'none' }}>{destination.transport}</span></span></li>}
-                        {destination.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida<span style={{ float: 'none' }}>{destination.departure}</span></span></li>}
-                        <li><span><i className="fal fa-clock"></i>Hora de salida<span style={{ float: 'none' }}>{destination.duration}</span></span></li>
+                        {destination.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida desde<span style={{ float: 'none', display: 'block' }}>{destination.departure}</span><span style={{ float: 'none', display: 'block' }}>{destination.duration}</span></span></li>}
                         {destination.arrival && destination.arrival.length > 0 && (
                           destination.arrival.length === 1 ? (
                             <React.Fragment>
-                              <li><span><i className="far fa-map-marker-alt"></i>Regreso<span style={{ float: 'none', display: 'block'}}>{destination.arrival[0].value}</span></span></li>
+                              <li><span><i className="far fa-map-marker-alt"></i>Regreso hacia<span style={{ float: 'none', display: 'block'}}>{destination.arrival[0].value}</span><span style={{ float: 'none', display: 'block' }}>{destination.arrival[0].arrivalHour}</span></span></li>
                               {destination.arrival[0].arrivalPrice && (
                                 <li><span><i className="fal fa-box-usd"></i>Precio<span style={{ float: 'none' }}>{destination.arrival[0].arrivalPrice}</span></span></li>
                               )}
@@ -461,7 +460,7 @@ export default async function TourDetailPage({ params }: PageProps) {
                           ) : (
                             destination.arrival.map((a, i) => (
                               <React.Fragment key={`arrival-${i}`}>
-                                <li><span><i className="far fa-map-marker-alt pb-3"></i>{`Regreso (Opc. ${i + 1})`}<span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.value}</span><span style={{ float: 'none', display: 'block', fontSize: '22px' }}>{a.arrivalPrice}</span></span></li>
+                                <li><span><i className="far fa-map-marker-alt pb-3"></i>{`Regreso hacia`}<span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.value}</span><span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.arrivalHour}</span><span style={{ float: 'none', display: 'block', fontSize: '22px' }}>{a.arrivalPrice}</span></span></li>
                               </React.Fragment>
                             ))
                           )

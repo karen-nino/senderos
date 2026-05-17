@@ -10,6 +10,9 @@
     },
     "arrivalPrice": {
       "type": "string"
+    },
+    "arrivalHour": {
+      "type": "string"
     }
   },
   "config": {}

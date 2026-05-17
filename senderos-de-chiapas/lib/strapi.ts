@@ -315,11 +315,11 @@ export interface StrapiDestinationItem {
   route?: string | StrapiBlock | StrapiBlock[];
   transport?: string;
   departure?: string;
-  /** Componente repetible: lista de opciones de regreso (cada item tiene `value` y `arrivalPrice`). */
+  /** Componente repetible: lista de opciones de regreso (cada item tiene `value`, `arrivalPrice` y `arrivalHour`). */
   arrival?:
     | string
-    | { value?: string; arrivalPrice?: string }
-    | Array<{ value?: string; arrivalPrice?: string }>;
+    | { value?: string; arrivalPrice?: string; arrivalHour?: string }
+    | Array<{ value?: string; arrivalPrice?: string; arrivalHour?: string }>;
   includes?: StrapiBlock[];
   /** Itinerario por día (componente repeatable) */
   itineraryItem?: StrapiItineraryItem[];
@@ -1272,7 +1272,7 @@ export interface AdaptedDestinationDetail {
   /** Punto de salida (Strapi tour.departure) */
   departure?: string;
   /** Lista de puntos/horarios de regreso (Strapi tour.arrival, componente repetible). */
-  arrival?: Array<{ value: string; arrivalPrice?: string }>;
+  arrival?: Array<{ value: string; arrivalPrice?: string; arrivalHour?: string }>;
   transport?: string;
   link?: string;
   /** Ruta como texto único (para compatibilidad) */
@@ -1477,6 +1477,10 @@ function adaptToDestinationDetail(
           arrivalPrice:
             typeof item?.arrivalPrice === "string"
               ? item.arrivalPrice.trim() || undefined
+              : undefined,
+          arrivalHour:
+            typeof item?.arrivalHour === "string"
+              ? item.arrivalHour.trim() || undefined
               : undefined,
         }))
         .filter((item) => item.value);
