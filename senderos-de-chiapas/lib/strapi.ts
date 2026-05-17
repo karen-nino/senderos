@@ -315,11 +315,11 @@ export interface StrapiDestinationItem {
   route?: string | StrapiBlock | StrapiBlock[];
   transport?: string;
   departure?: string;
-  /** Componente repetible: lista de opciones de regreso (cada item tiene `value`). */
+  /** Componente repetible: lista de opciones de regreso (cada item tiene `value` y `arrivalPrice`). */
   arrival?:
     | string
-    | { value?: string }
-    | Array<{ value?: string }>;
+    | { value?: string; arrivalPrice?: string }
+    | Array<{ value?: string; arrivalPrice?: string }>;
   includes?: StrapiBlock[];
   /** Itinerario por día (componente repeatable) */
   itineraryItem?: StrapiItineraryItem[];
@@ -1272,7 +1272,7 @@ export interface AdaptedDestinationDetail {
   /** Punto de salida (Strapi tour.departure) */
   departure?: string;
   /** Lista de puntos/horarios de regreso (Strapi tour.arrival, componente repetible). */
-  arrival?: string[];
+  arrival?: Array<{ value: string; arrivalPrice?: string }>;
   transport?: string;
   link?: string;
   /** Ruta como texto único (para compatibilidad) */
@@ -1468,15 +1468,19 @@ function adaptToDestinationDetail(
       if (raw == null) return undefined;
       if (typeof raw === "string") {
         const v = raw.trim();
-        return v ? [v] : undefined;
+        return v ? [{ value: v }] : undefined;
       }
       const arr = Array.isArray(raw) ? raw : [raw];
-      const values = arr
-        .map((item) =>
-          typeof item?.value === "string" ? item.value.trim() : "",
-        )
-        .filter(Boolean);
-      return values.length ? values : undefined;
+      const items = arr
+        .map((item) => ({
+          value: typeof item?.value === "string" ? item.value.trim() : "",
+          arrivalPrice:
+            typeof item?.arrivalPrice === "string"
+              ? item.arrivalPrice.trim() || undefined
+              : undefined,
+        }))
+        .filter((item) => item.value);
+      return items.length ? items : undefined;
     })(),
     transport: d.transport?.trim() || undefined,
     map:

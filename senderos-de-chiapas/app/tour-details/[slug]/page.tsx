@@ -41,7 +41,7 @@ const FALLBACK_DESTINATION = {
   duration: 'Consultar',
   accommodation: undefined as string | undefined,
   departure: undefined as string | undefined,
-  arrival: undefined as string[] | undefined,
+  arrival: undefined as Array<{ value: string; arrivalPrice?: string }> | undefined,
   transport: undefined as string | undefined,
   map: undefined as string | undefined,
   mapItem: undefined as Array<{ map?: string; title?: string }> | undefined,
@@ -120,8 +120,8 @@ export default async function TourDetailPage({ params }: PageProps) {
     destination.departure ? `• Punto de salida: ${destination.departure}` : null,
     destination.arrival && destination.arrival.length > 0
       ? destination.arrival.length === 1
-        ? `• Punto de regreso: ${destination.arrival[0]}`
-        : destination.arrival.map((v, i) => `• Punto de regreso (Opc. ${i + 1}): ${v}`).join('\n')
+        ? `• Punto de regreso: ${destination.arrival[0].value}${destination.arrival[0].arrivalPrice ? `\n• Precio regreso: ${destination.arrival[0].arrivalPrice}` : ''}`
+        : destination.arrival.map((a, i) => `• Punto de regreso (Opc. ${i + 1}): ${a.value}${a.arrivalPrice ? `\n• Precio regreso (Opc. ${i + 1}): ${a.arrivalPrice}` : ''}`).join('\n')
       : null,
     destination.transport ? `• Transporte: ${destination.transport}` : null,
     routeList.length > 0 ? `• Ruta: ${routeList.join(' → ')}` : null,
@@ -208,16 +208,28 @@ export default async function TourDetailPage({ params }: PageProps) {
                         {destination.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida<span>{destination.departure}</span></span></li>}
                         {destination.arrival && destination.arrival.length > 0 && (
                           destination.arrival.length === 1 ? (
-                            <li><span><i className="far fa-map-marker-alt"></i>Regreso<span style={{ float: 'none', display: 'block', textAlign: 'right' }}>{destination.arrival[0]}</span></span></li>
+                            <React.Fragment>
+                              <li><span><i className="far fa-map-marker-alt"></i>Regreso<span style={{ float: 'none', display: 'block', textAlign: 'right' }}>{destination.arrival[0].value}</span></span></li>
+                              {destination.arrival[0].arrivalPrice && (
+                                <li><span><i className="fal fa-box-usd"></i>Precio regreso<span>{destination.arrival[0].arrivalPrice}</span></span></li>
+                              )}
+                            </React.Fragment>
                           ) : (
-                            destination.arrival.map((v, i) => (
-                              <li key={`arrival-${i}`}><span><i className="far fa-map-marker-alt"></i>{`Regreso (Opc. ${i + 1})`}<span style={{ float: 'none', display: 'block', textAlign: 'right' }}>{v}</span></span></li>
+                            destination.arrival.map((a, i) => (
+                              <React.Fragment key={`arrival-${i}`}>
+                                <li><span><i className="far fa-map-marker-alt"></i>{`Regreso (Opc. ${i + 1})`}<span style={{ float: 'none', display: 'block', textAlign: 'right' }}>{a.value}</span></span></li>
+                                {a.arrivalPrice && (
+                                  <li><span><i className="fal fa-box-usd"></i>{`Precio regreso (Opc. ${i + 1})`}<span>{a.arrivalPrice}</span></span></li>
+                                )}
+                              </React.Fragment>
                             ))
                           )
                         )}
                         {destination.transport && <li><span><i className="fal fa-bus"></i>Transporte<span>{destination.transport}</span></span></li>}
                         {destination.accommodation && <li><span><i className="far fa-bed"></i>Alojamiento<span>{destination.accommodation}</span></span></li>}
-                        <li><span><i className="fal fa-box-usd"></i>Precio<span>{destination.price}</span></span></li>
+                        {destination.price && destination.price !== 'Consultar' && (
+                          <li><span><i className="fal fa-box-usd"></i>Precio<span>{destination.price}</span></span></li>
+                        )}
                   <li className="tour-details-wa-cta-mobile">
                     <div className="submit-button">
                       <a
@@ -435,20 +447,29 @@ export default async function TourDetailPage({ params }: PageProps) {
                         <h5 className="fw-light">Salida Tuxtla Gutiérrez</h5>
                       </div>
                       <ul className="info-list pt-3">
-                        <li><span><i className="fal fa-clock"></i>Hora de salida<span>{destination.duration}</span></span></li>
-                        {destination.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida<span>{destination.departure}</span></span></li>}
+                        {destination.transport && <li><span><i className="fal fa-bus"></i>Transporte<span style={{ float: 'none' }}>{destination.transport}</span></span></li>}
+                        {destination.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida<span style={{ float: 'none' }}>{destination.departure}</span></span></li>}
+                        <li><span><i className="fal fa-clock"></i>Hora de salida<span style={{ float: 'none' }}>{destination.duration}</span></span></li>
                         {destination.arrival && destination.arrival.length > 0 && (
                           destination.arrival.length === 1 ? (
-                            <li><span><i className="far fa-map-marker-alt"></i>Regreso<span style={{ float: 'none', display: 'block', textAlign: 'right' }}>{destination.arrival[0]}</span></span></li>
+                            <React.Fragment>
+                              <li><span><i className="far fa-map-marker-alt"></i>Regreso<span style={{ float: 'none', display: 'block', textAlign: 'right' }}>{destination.arrival[0].value}</span></span></li>
+                              {destination.arrival[0].arrivalPrice && (
+                                <li><span><i className="fal fa-box-usd"></i>Precio<span style={{ float: 'none' }}>{destination.arrival[0].arrivalPrice}</span></span></li>
+                              )}
+                            </React.Fragment>
                           ) : (
-                            destination.arrival.map((v, i) => (
-                              <li key={`arrival-${i}`}><span><i className="far fa-map-marker-alt"></i>{`Regreso (Opc. ${i + 1})`}<span style={{ float: 'none', display: 'block', textAlign: 'right' }}>{v}</span></span></li>
+                            destination.arrival.map((a, i) => (
+                              <React.Fragment key={`arrival-${i}`}>
+                                <li><span><i className="far fa-map-marker-alt pb-3"></i>{`Regreso (Opc. ${i + 1})`}<span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.value}</span><span style={{ float: 'none', display: 'block', fontSize: '22px' }}>{a.arrivalPrice}</span></span></li>
+                              </React.Fragment>
                             ))
                           )
                         )}
-                        {destination.transport && <li><span><i className="fal fa-bus"></i>Transporte<span>{destination.transport}</span></span></li>}
-                        {destination.accommodation && <li><span><i className="far fa-bed"></i>Alojamiento<span>{destination.accommodation}</span></span></li>}
-                        <li><span><i className="fal fa-box-usd"></i>Precio<span>{destination.price}</span></span></li>
+                        {destination.accommodation && <li><span><i className="far fa-bed"></i>Alojamiento<span style={{ float: 'none' }}>{destination.accommodation}</span></span></li>}
+                        {destination.price && destination.price !== 'Consultar' && (
+                          <li><span><i className="fal fa-box-usd"></i>Precio<span style={{ float: 'none' }}>{destination.price}</span></span></li>
+                        )}
                         <li>
                           <div className="submit-button">
                             <a
