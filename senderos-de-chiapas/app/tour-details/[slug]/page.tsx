@@ -37,11 +37,10 @@ const FALLBACK_DESTINATION = {
   image: '/assets/images/place/single-place-1.jpg',
   imagesDetails: [] as string[],
   location: 'Chiapas, México',
-  price: 'Consultar',
   duration: 'Consultar',
-  accommodation: undefined as string | undefined,
   departure: undefined as string | undefined,
-  arrival: undefined as Array<{ value: string; arrivalNationalPrice?: string; arrivalInternationalPrice?: string; arrivalHour?: string }> | undefined,
+  arrival: undefined as Array<{ value: string; arrivalNationalPrice?: string; arrivalInternationalPrice?: string; arrivalHour?: string; arrivalAccommodation?: string }> | undefined,
+  minimumParticipants: undefined as string | undefined,
   transport: undefined as string | undefined,
   map: undefined as string | undefined,
   mapItem: undefined as Array<{ map?: string; title?: string }> | undefined,
@@ -49,8 +48,6 @@ const FALLBACK_DESTINATION = {
   route: undefined as string | undefined,
   routeList: undefined as string[] | undefined,
   itinerary: undefined as Array<{ dayTitle: string; time?: string; activity: string; routeItinerary?: string; accommodation?: string }> | undefined,
-  calendarStart: undefined as string | undefined,
-  calendarEnd: undefined as string | undefined,
 }
 
 interface PageProps {
@@ -65,7 +62,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const title = destination?.title ?? 'Tour en Chiapas'
   const description =
     destination?.description?.replace(/\s+/g, ' ').trim().slice(0, 160) ||
-    `Tour ${title} en Chiapas. Precio: ${destination?.price ?? 'Consultar'}. Duración: ${destination?.duration ?? 'Consultar'}. Reserva con Senderos de Chiapas.`
+    `Tour ${title} en Chiapas. Duración: ${destination?.duration ?? 'Consultar'}. Reserva con Senderos de Chiapas.`
   const canonical = `${SITE_URL}/tour-detalles/${slug}`
   const image = destination?.imagesDetails?.[0] ?? destination?.image
   const ogImage = image ? (image.startsWith('http') ? image : `${SITE_URL}${image.startsWith('/') ? image : `/${image}`}`) : undefined
@@ -113,10 +110,8 @@ export default async function TourDetailPage({ params }: PageProps) {
     `*${destination.title}*`,
     ``,
     `*Detalles:*`,
-    `• Precio: ${destination.price}`,
     `• Duración: ${destination.duration}`,
     destination.location ? `• Ubicación: ${destination.location}` : null,
-    destination.accommodation ? `• Alojamiento: ${destination.accommodation}` : null,
     destination.departure ? `• Punto de salida: ${destination.departure}` : null,
     destination.arrival && destination.arrival.length > 0
       ? destination.arrival.length === 1
@@ -133,10 +128,9 @@ export default async function TourDetailPage({ params }: PageProps) {
 
   const tourJsonLd = buildProductJsonLd({
     name: destination.title,
-    description: destination.description?.replace(/\s+/g, ' ').trim() || `Tour ${destination.title} en Chiapas. ${destination.price}. ${destination.duration}.`,
+    description: destination.description?.replace(/\s+/g, ' ').trim() || `Tour ${destination.title} en Chiapas. ${destination.duration}.`,
     image: destination.imagesDetails?.length ? destination.imagesDetails : [destination.image],
     url: `${SITE_URL}/tour-detalles/${slug}`,
-    price: destination.price,
     duration: destination.duration,
     providerName: 'Senderos de Chiapas',
   })
@@ -178,10 +172,6 @@ export default async function TourDetailPage({ params }: PageProps) {
                 </div>
                 <div className="col-xl-6 d-none d-xl-block">
                   <div className="tour-widget-info">
-                    <div className="info-box mb-20">
-                      <div className="icon"><i className="fal fa-box-usd"></i></div>
-                      <div className="info"><h4><span>Desde</span>{destination.price}</h4></div>
-                    </div>
                     <div className="info-box mb-20">
                       <div className="icon"><i className="fal fa-clock"></i></div>
                       <div className="info"><h4><span>Hora de Salida</span>{destination.duration}</h4></div>
@@ -225,11 +215,8 @@ export default async function TourDetailPage({ params }: PageProps) {
                             ))
                           )
                         )}
+                        {destination.minimumParticipants && <li><span><i className="fal fa-users"></i>Mínimo de participantes<span>{destination.minimumParticipants}</span></span></li>}
                         {destination.transport && <li><span><i className="fal fa-bus"></i>Transporte<span>{destination.transport}</span></span></li>}
-                        {destination.accommodation && <li><span><i className="far fa-bed"></i>Alojamiento<span>{destination.accommodation}</span></span></li>}
-                        {destination.price && destination.price !== 'Consultar' && (
-                          <li><span><i className="fal fa-box-usd"></i>Precio<span>{destination.price}</span></span></li>
-                        )}
                   <li className="tour-details-wa-cta-mobile">
                     <div className="submit-button">
                       <a
@@ -244,15 +231,6 @@ export default async function TourDetailPage({ params }: PageProps) {
                   </li>
                 </ul>
               </div>
-              {(destination.calendarStart || destination.calendarEnd) && (
-                <div className="calendar-wrapper calendar-wrapper--mobile-stack wow fadeInUp mb-40">
-                  <div
-                    className="calendar-container"
-                    data-calendar-date={destination.calendarStart ?? ''}
-                    data-calendar-end={destination.calendarEnd ?? ''}
-                  />
-                </div>
-              )}
             </div>
 
             <div className="row">
@@ -447,6 +425,7 @@ export default async function TourDetailPage({ params }: PageProps) {
                         <h5 className="fw-light">Salida Tuxtla Gutiérrez</h5>
                       </div>
                       <ul className="info-list pt-3">
+                        {destination.minimumParticipants && <li><span><i className="fal fa-users"></i>Mínimo de participantes<span style={{ float: 'none' }}>{destination.minimumParticipants}</span></span></li>}
                         {destination.transport && <li><span><i className="fal fa-bus"></i>Transporte<span style={{ float: 'none' }}>{destination.transport}</span></span></li>}
                         {destination.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida desde<span style={{ float: 'none', display: 'block' }}>{destination.departure}</span><span style={{ float: 'none', display: 'block' }}>{destination.duration}</span></span></li>}
                         {destination.arrival && destination.arrival.length > 0 && (
@@ -463,14 +442,10 @@ export default async function TourDetailPage({ params }: PageProps) {
                           ) : (
                             destination.arrival.map((a, i) => (
                               <React.Fragment key={`arrival-${i}`}>
-                                <li><span><i className="far fa-map-marker-alt pb-3"></i>{`Regreso hacia`}<span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.value}</span><span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.arrivalHour}</span><span className='pt-3' style={{ float: 'none', display: 'block'}}>Precio Nacional desde</span><span style={{ float: 'none', display: 'block', fontSize: '22px' }}>{a.arrivalNationalPrice}</span><span className='pt-3' style={{ float: 'none', display: 'block'}}>Precio Internacional desde</span><span style={{ float: 'none', display: 'block', fontSize: '22px' }}>{a.arrivalInternationalPrice}</span></span></li>
+                                <li><span><i className="far fa-map-marker-alt pb-3"></i>{`Regreso hacia`}<span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.value}</span><span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.arrivalHour}</span><span className='pt-3' style={{ float: 'none', display: 'block'}}>Alojamiento</span><span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.arrivalAccommodation}</span><span className='pt-3' style={{ float: 'none', display: 'block'}}>Precio Nacional desde</span><span style={{ float: 'none', display: 'block', fontSize: '22px' }}>{a.arrivalNationalPrice}</span><span className='pt-3' style={{ float: 'none', display: 'block'}}>Precio Internacional desde</span><span style={{ float: 'none', display: 'block', fontSize: '22px' }}>{a.arrivalInternationalPrice}</span></span></li>
                               </React.Fragment>
                             ))
                           )
-                        )}
-                        {destination.accommodation && <li><span><i className="far fa-bed"></i>Alojamiento<span style={{ float: 'none' }}>{destination.accommodation}</span></span></li>}
-                        {destination.price && destination.price !== 'Consultar' && (
-                          <li><span><i className="fal fa-box-usd"></i>Precio<span style={{ float: 'none' }}>{destination.price}</span></span></li>
                         )}
                         <li>
                           <div className="submit-button">
@@ -486,15 +461,6 @@ export default async function TourDetailPage({ params }: PageProps) {
                         </li>
                       </ul>
                     </div>
-                    {(destination.calendarStart || destination.calendarEnd) && (
-                      <div className="calendar-wrapper wow fadeInUp mb-100">
-                        <div
-                          className="calendar-container"
-                          data-calendar-date={destination.calendarStart ?? ''}
-                          data-calendar-end={destination.calendarEnd ?? ''}
-                        />
-                      </div>
-                    )}
                   </div>
                   {/* Recent Place Widget - hasta 4 tours aleatorios (TourItem) */}
                   <div className="sidebar-widget recent-place-widget mb-160 wow fadeInUp">
@@ -506,10 +472,9 @@ export default async function TourDetailPage({ params }: PageProps) {
                             <img src={tour.image} alt={tour.title} width={100} height={74} />
                             <div className="place-content">
                               <h5><Link href={tour.slug ? `/tour-detalles/${tour.slug}` : (tour.link || '/tour-detalles/chiapas')} className="recent-place-title-link">{tour.title}</Link></h5>
-                              {(tour.duration || tour.price) && (
+                              {tour.duration && (
                                 <ul className="place-meta recent-place-meta list-unstyled mt-1 mb-0 small">
-                                  {tour.duration && <li><i className="fal fa-clock me-1"></i>{tour.duration}</li>}
-                                  {tour.price && <li><i className="fal fa-box-usd me-1"></i>{tour.price}</li>}
+                                  <li><i className="fal fa-clock me-1"></i>{tour.duration}</li>
                                 </ul>
                               )}
                             </div>

@@ -315,11 +315,13 @@ export interface StrapiDestinationItem {
   route?: string | StrapiBlock | StrapiBlock[];
   transport?: string;
   departure?: string;
-  /** Componente repetible: lista de opciones de regreso (cada item tiene `value`, `arrivalNationalPrice`, `arrivalInternationalPrice` y `arrivalHour`). */
+  /** Mínimo de participantes para que el tour se realice. */
+  minimumParticipants?: string;
+  /** Componente repetible: lista de opciones de regreso (cada item tiene `value`, `arrivalNationalPrice`, `arrivalInternationalPrice`, `arrivalHour` y `arrivalAccommodation`). */
   arrival?:
     | string
-    | { value?: string; arrivalNationalPrice?: string; arrivalInternationalPrice?: string; arrivalHour?: string }
-    | Array<{ value?: string; arrivalNationalPrice?: string; arrivalInternationalPrice?: string; arrivalHour?: string }>;
+    | { value?: string; arrivalNationalPrice?: string; arrivalInternationalPrice?: string; arrivalHour?: string; arrivalAccommodation?: string }
+    | Array<{ value?: string; arrivalNationalPrice?: string; arrivalInternationalPrice?: string; arrivalHour?: string; arrivalAccommodation?: string }>;
   includes?: StrapiBlock[];
   /** Itinerario por día (componente repeatable) */
   itineraryItem?: StrapiItineraryItem[];
@@ -1272,7 +1274,9 @@ export interface AdaptedDestinationDetail {
   /** Punto de salida (Strapi tour.departure) */
   departure?: string;
   /** Lista de puntos/horarios de regreso (Strapi tour.arrival, componente repetible). */
-  arrival?: Array<{ value: string; arrivalNationalPrice?: string; arrivalInternationalPrice?: string; arrivalHour?: string }>;
+  arrival?: Array<{ value: string; arrivalNationalPrice?: string; arrivalInternationalPrice?: string; arrivalHour?: string; arrivalAccommodation?: string }>;
+  /** Mínimo de participantes (Strapi tour.minimumParticipants). */
+  minimumParticipants?: string;
   transport?: string;
   link?: string;
   /** Ruta como texto único (para compatibilidad) */
@@ -1486,11 +1490,16 @@ function adaptToDestinationDetail(
             typeof item?.arrivalHour === "string"
               ? item.arrivalHour.trim() || undefined
               : undefined,
+          arrivalAccommodation:
+            typeof item?.arrivalAccommodation === "string"
+              ? item.arrivalAccommodation.trim() || undefined
+              : undefined,
         }))
         .filter((item) => item.value);
       return items.length ? items : undefined;
     })(),
     transport: d.transport?.trim() || undefined,
+    minimumParticipants: d.minimumParticipants?.trim() || undefined,
     map:
       (Array.isArray(d.mapItem) ? d.mapItem[0]?.map : d.mapItem?.map) ?? d.map,
     mapItem: (() => {

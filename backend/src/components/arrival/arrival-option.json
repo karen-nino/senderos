@@ -16,6 +16,9 @@
     },
     "arrivalInternationalPrice": {
       "type": "string"
+    },
+    "arrivalAccommodation": {
+      "type": "string"
     }
   },
   "config": {}

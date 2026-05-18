@@ -6,10 +6,24 @@ export interface ArrivalArrivalOption extends Struct.ComponentSchema {
     displayName: 'arrivalOption';
   };
   attributes: {
+    arrivalAccommodation: Schema.Attribute.String;
     arrivalHour: Schema.Attribute.String;
     arrivalInternationalPrice: Schema.Attribute.String;
     arrivalNationalPrice: Schema.Attribute.String;
     value: Schema.Attribute.String;
+  };
+}
+
+export interface DepartureDepartureOption extends Struct.ComponentSchema {
+  collectionName: 'components_departure_departure_options';
+  info: {
+    displayName: 'departureOption';
+  };
+  attributes: {
+    arrival: Schema.Attribute.Component<'arrival.arrival-option', true>;
+    departure: Schema.Attribute.String;
+    minimumParticipants: Schema.Attribute.String;
+    transport: Schema.Attribute.String;
   };
 }
 
@@ -118,6 +132,7 @@ declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
       'arrival.arrival-option': ArrivalArrivalOption;
+      'departure.departure-option': DepartureDepartureOption;
       'faq.faq': FaqFaq;
       'gallery.gallery': GalleryGallery;
       'home.hero-slide': HomeHeroSlide;

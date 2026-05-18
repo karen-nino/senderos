@@ -787,18 +787,14 @@ export interface ApiTourTour extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    accommodation: Schema.Attribute.String;
     arrival: Schema.Attribute.Component<'arrival.arrival-option', true>;
     badge: Schema.Attribute.Enumeration<
       ['nuevo', 'pocos_lugares', 'agotado', 'oculto']
     >;
-    calendarEnd: Schema.Attribute.Date;
-    calendarStart: Schema.Attribute.Date;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    departure: Schema.Attribute.String;
-    departureTime: Schema.Attribute.String;
+    departure: Schema.Attribute.Component<'departure.departure-option', true>;
     description: Schema.Attribute.Blocks;
     home: Schema.Attribute.Boolean;
     image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
@@ -812,12 +808,10 @@ export interface ApiTourTour extends Struct.CollectionTypeSchema {
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::tour.tour'> &
       Schema.Attribute.Private;
     mapItem: Schema.Attribute.Component<'map.map-item', true>;
-    price: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     route: Schema.Attribute.Blocks;
     subtitle: Schema.Attribute.String;
     title: Schema.Attribute.String;
-    transport: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

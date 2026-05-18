@@ -24,24 +24,14 @@
       "type": "blocks"
     },
     "departure": {
-      "type": "string"
+      "type": "component",
+      "component": "departure.departure-option",
+      "repeatable": true
     },
     "arrival": {
       "type": "component",
       "component": "arrival.arrival-option",
       "repeatable": true
-    },
-    "accommodation": {
-      "type": "string"
-    },
-    "transport": {
-      "type": "string"
-    },
-    "departureTime": {
-      "type": "string"
-    },
-    "price": {
-      "type": "string"
     },
     "image": {
       "type": "media",
@@ -77,12 +67,6 @@
     },
     "route": {
       "type": "blocks"
-    },
-    "calendarStart": {
-      "type": "date"
-    },
-    "calendarEnd": {
-      "type": "date"
     },
     "itineraryItem": {
       "type": "component",

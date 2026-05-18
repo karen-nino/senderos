@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_departure_departure_options",
+  "info": {
+    "displayName": "departureOption"
+  },
+  "options": {},
+  "attributes": {
+    "departure": {
+      "type": "string"
+    },
+    "minimumParticipants": {
+      "type": "string"
+    },
+    "transport": {
+      "type": "string"
+    },
+    "arrival": {
+      "type": "component",
+      "component": "arrival.arrival-option",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}
