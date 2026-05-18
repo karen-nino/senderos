@@ -414,7 +414,7 @@ export default async function TourDetailPage({ params }: PageProps) {
                     <div className="sidebar-widget booking-info-widget wow fadeInUp mb-100">
                       <div className="pb-2 border-bottom">
                         <h4 className="">Detalles del Tour</h4>
-                        <h5 className="fw-light">Salida Tuxtla Gutiérrez</h5>
+                        <h5 className="fw-light">Salida {destination.departure}</h5>
                       </div>
                       <ul className="info-list pt-3">
                         {destination.minimumParticipants && <li><span><i className="fal fa-users"></i>Mínimo de participantes<span style={{ float: 'none' }}>{destination.minimumParticipants}</span></span></li>}
