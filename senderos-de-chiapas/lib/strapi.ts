@@ -9,9 +9,10 @@ const STRAPI_TOURS_URL = `/api/tours?${STRAPI_TOURS_POPULATE}`;
 /**
  * Strapi 5: populate=* NO rellena componentes anidados. itineraryItem.activity (repeatable)
  * solo llega con populate explícito; sin esto el itinerario sale vacío en el detalle.
+ * También expande departure[].arrival y el arrival top-level para que sus sub-campos lleguen.
  */
 const STRAPI_TOUR_ITINERARY_POPULATE =
-  "populate[itineraryItem][populate][activity]=*&populate[image]=true&populate[imagesDetails]=true&populate[mapItem]=true";
+  "populate[itineraryItem][populate][activity]=*&populate[image]=true&populate[imagesDetails]=true&populate[mapItem]=true&populate[departure][populate][arrival]=*&populate[arrival]=*";
 /** Single type Tours-Page: banner (imageBanner). Sin populate[imageBanner]=* para evitar ValidationError "Invalid key related at imageBanner.related". */
 const STRAPI_TOURS_PAGE_URLS = [
   "/api/tours-page?populate=imageBanner&status=published",
@@ -137,6 +138,14 @@ async function fetchTourWithItineraryPopulated(
           one.mapItem !== undefined && one.mapItem !== null
             ? one.mapItem
             : item.mapItem,
+        departure:
+          one.departure !== undefined && one.departure !== null
+            ? one.departure
+            : item.departure,
+        arrival:
+          one.arrival !== undefined && one.arrival !== null
+            ? one.arrival
+            : item.arrival,
       };
     } catch {
       /* probar siguiente URL */
@@ -312,7 +321,21 @@ export interface StrapiDestinationItem {
   /** Ruta: en Destinations (tours) es Blocks; en International puede ser String */
   route?: string | StrapiBlock | StrapiBlock[];
   transport?: string;
-  departure?: string;
+  /** En Tour es ahora un componente repetible (`departure.departure-option`); en otros content-types sigue siendo string. */
+  departure?:
+    | string
+    | Array<{
+        departure?: string;
+        minimumParticipants?: string;
+        transport?: string;
+        arrival?: Array<{
+          value?: string;
+          arrivalNationalPrice?: string;
+          arrivalInternationalPrice?: string;
+          arrivalHour?: string;
+          arrivalAccommodation?: string;
+        }>;
+      }>;
   /** Mínimo de participantes para que el tour se realice. */
   minimumParticipants?: string;
   /** Componente repetible: lista de opciones de regreso (cada item tiene `value`, `arrivalNationalPrice`, `arrivalInternationalPrice`, `arrivalHour` y `arrivalAccommodation`). */
@@ -704,6 +727,16 @@ export function parseHomeServices(homeData: unknown): AdaptedHomeService[] {
   });
 }
 
+/** Extrae el string `departure` desde Tour (componente repetible) o desde otros tipos donde es string plano. */
+function extractDepartureString(
+  raw: StrapiDestinationItem["departure"],
+): string | undefined {
+  if (raw == null) return undefined;
+  if (typeof raw === "string") return raw.trim() || undefined;
+  const first = Array.isArray(raw) ? raw[0] : undefined;
+  return first?.departure?.trim() || undefined;
+}
+
 /** Adapta un item de Strapi al formato de DestinationItem / InternationalItem */
 export function adaptStrapiDestination(
   d: StrapiDestinationItem,
@@ -724,7 +757,7 @@ export function adaptStrapiDestination(
     badge: normalizeBadge(d.badge),
     route: routeToStr(d.route),
     transport: d.transport,
-    departure: d.departure,
+    departure: extractDepartureString(d.departure),
     includes: blocksToList(d.includes),
     slug:
       d.slug ??
@@ -1263,8 +1296,7 @@ export interface AdaptedDestinationDetail {
   image: string;
   imagesDetails: string[];
   location: string;
-  duration: string;
-  /** Punto de salida (Strapi tour.departure) */
+  /** Punto de salida (Strapi tour.departure[0].departure) */
   departure?: string;
   /** Lista de puntos/horarios de regreso (Strapi tour.arrival, componente repetible). */
   arrival?: Array<{ value: string; arrivalNationalPrice?: string; arrivalInternationalPrice?: string; arrivalHour?: string; arrivalAccommodation?: string }>;
@@ -1432,6 +1464,22 @@ function adaptToDestinationDetail(
   const fullImageUrl = buildFullImageUrl(imageUrl);
   const imagesDetails = getImagesDetailsUrls(d.imagesDetails);
   const itinerary = parseTourItinerary(d);
+  const firstDeparture =
+    Array.isArray(d.departure) ? d.departure[0] : undefined;
+  const departureStr =
+    firstDeparture?.departure?.trim() ||
+    (typeof d.departure === "string" ? d.departure.trim() : undefined) ||
+    undefined;
+  const transportStr =
+    firstDeparture?.transport?.trim() || d.transport?.trim() || undefined;
+  const minimumParticipantsStr =
+    firstDeparture?.minimumParticipants?.trim() ||
+    d.minimumParticipants?.trim() ||
+    undefined;
+  const arrivalSource =
+    (firstDeparture?.arrival && firstDeparture.arrival.length > 0
+      ? firstDeparture.arrival
+      : undefined) ?? d.arrival;
   return {
     title: d.title ?? "",
     description: descriptionFromBlocks(d.description),
@@ -1439,10 +1487,9 @@ function adaptToDestinationDetail(
     image: fullImageUrl,
     imagesDetails,
     location:
-      d.departure?.trim() ||
+      departureStr ||
       d.location?.trim() ||
       "Chiapas, México",
-    duration: d.duration ?? "Variable",
     link: d.link,
     route: routeToStr(d.route),
     routeList:
@@ -1452,9 +1499,9 @@ function adaptToDestinationDetail(
           : undefined
         : blocksToList(d.route as StrapiDestinationItem["includes"]),
     departureDate: d.departureDate,
-    departure: d.departure?.trim() || undefined,
+    departure: departureStr,
     arrival: (() => {
-      const raw = d.arrival;
+      const raw = arrivalSource;
       if (raw == null) return undefined;
       if (typeof raw === "string") {
         const v = raw.trim();
@@ -1484,8 +1531,8 @@ function adaptToDestinationDetail(
         .filter((item) => item.value);
       return items.length ? items : undefined;
     })(),
-    transport: d.transport?.trim() || undefined,
-    minimumParticipants: d.minimumParticipants?.trim() || undefined,
+    transport: transportStr,
+    minimumParticipants: minimumParticipantsStr,
     map:
       (Array.isArray(d.mapItem) ? d.mapItem[0]?.map : d.mapItem?.map) ?? d.map,
     mapItem: (() => {
@@ -1523,9 +1570,9 @@ function adaptToInternationalDetail(
     map: d.map,
     route: routeToStr(d.route),
     transport: d.transport,
-    departure: d.departure,
+    departure: extractDepartureString(d.departure),
     includes: blocksToList(d.includes),
-    location: routeToStr(d.route) ?? d.departure ?? undefined,
+    location: routeToStr(d.route) ?? extractDepartureString(d.departure) ?? undefined,
   };
 }
 

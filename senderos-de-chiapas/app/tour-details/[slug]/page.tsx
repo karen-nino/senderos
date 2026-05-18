@@ -37,7 +37,6 @@ const FALLBACK_DESTINATION = {
   image: '/assets/images/place/single-place-1.jpg',
   imagesDetails: [] as string[],
   location: 'Chiapas, México',
-  duration: 'Consultar',
   departure: undefined as string | undefined,
   arrival: undefined as Array<{ value: string; arrivalNationalPrice?: string; arrivalInternationalPrice?: string; arrivalHour?: string; arrivalAccommodation?: string }> | undefined,
   minimumParticipants: undefined as string | undefined,
@@ -62,7 +61,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const title = destination?.title ?? 'Tour en Chiapas'
   const description =
     destination?.description?.replace(/\s+/g, ' ').trim().slice(0, 160) ||
-    `Tour ${title} en Chiapas. Duración: ${destination?.duration ?? 'Consultar'}. Reserva con Senderos de Chiapas.`
+    `Tour ${title} en Chiapas. Reserva con Senderos de Chiapas.`
   const canonical = `${SITE_URL}/tour-detalles/${slug}`
   const image = destination?.imagesDetails?.[0] ?? destination?.image
   const ogImage = image ? (image.startsWith('http') ? image : `${SITE_URL}${image.startsWith('/') ? image : `/${image}`}`) : undefined
@@ -110,7 +109,6 @@ export default async function TourDetailPage({ params }: PageProps) {
     `*${destination.title}*`,
     ``,
     `*Detalles:*`,
-    `• Duración: ${destination.duration}`,
     destination.location ? `• Ubicación: ${destination.location}` : null,
     destination.departure ? `• Punto de salida: ${destination.departure}` : null,
     destination.arrival && destination.arrival.length > 0
@@ -128,10 +126,9 @@ export default async function TourDetailPage({ params }: PageProps) {
 
   const tourJsonLd = buildProductJsonLd({
     name: destination.title,
-    description: destination.description?.replace(/\s+/g, ' ').trim() || `Tour ${destination.title} en Chiapas. ${destination.duration}.`,
+    description: destination.description?.replace(/\s+/g, ' ').trim() || `Tour ${destination.title} en Chiapas.`,
     image: destination.imagesDetails?.length ? destination.imagesDetails : [destination.image],
     url: `${SITE_URL}/tour-detalles/${slug}`,
-    duration: destination.duration,
     providerName: 'Senderos de Chiapas',
   })
 
@@ -172,10 +169,6 @@ export default async function TourDetailPage({ params }: PageProps) {
                 </div>
                 <div className="col-xl-6 d-none d-xl-block">
                   <div className="tour-widget-info">
-                    <div className="info-box mb-20">
-                      <div className="icon"><i className="fal fa-clock"></i></div>
-                      <div className="info"><h4><span>Hora de Salida</span>{destination.duration}</h4></div>
-                    </div>
                     {/* <div className="info-box mb-20">
                       <div className="submit-button">
                         <button type="submit" className="main-btn primary-btn">Reservar<WhatsAppIcon className="whatsapp-icon" /></button>
@@ -194,7 +187,6 @@ export default async function TourDetailPage({ params }: PageProps) {
                         <h5 className="fw-light">Salida {destination.departure}</h5>
                       </div>
                       <ul className="info-list pt-3">
-                        <li><span><i className="fal fa-clock"></i>Hora de salida<span>{destination.duration}</span></span></li>
                         {destination.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida<span>{destination.departure}</span></span></li>}
                         {destination.arrival && destination.arrival.length > 0 && (
                           destination.arrival.length === 1 ? (
@@ -427,7 +419,7 @@ export default async function TourDetailPage({ params }: PageProps) {
                       <ul className="info-list pt-3">
                         {destination.minimumParticipants && <li><span><i className="fal fa-users"></i>Mínimo de participantes<span style={{ float: 'none' }}>{destination.minimumParticipants}</span></span></li>}
                         {destination.transport && <li><span><i className="fal fa-bus"></i>Transporte<span style={{ float: 'none' }}>{destination.transport}</span></span></li>}
-                        {destination.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida desde<span style={{ float: 'none', display: 'block' }}>{destination.departure}</span><span style={{ float: 'none', display: 'block' }}>{destination.duration}</span></span></li>}
+                        {destination.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida desde<span style={{ float: 'none', display: 'block' }}>{destination.departure}</span></span></li>}
                         {destination.arrival && destination.arrival.length > 0 && (
                           destination.arrival.length === 1 ? (
                             <React.Fragment>
@@ -472,11 +464,6 @@ export default async function TourDetailPage({ params }: PageProps) {
                             <img src={tour.image} alt={tour.title} width={100} height={74} />
                             <div className="place-content">
                               <h5><Link href={tour.slug ? `/tour-detalles/${tour.slug}` : (tour.link || '/tour-detalles/chiapas')} className="recent-place-title-link">{tour.title}</Link></h5>
-                              {tour.duration && (
-                                <ul className="place-meta recent-place-meta list-unstyled mt-1 mb-0 small">
-                                  <li><i className="fal fa-clock me-1"></i>{tour.duration}</li>
-                                </ul>
-                              )}
                             </div>
                           </li>
                         ))
