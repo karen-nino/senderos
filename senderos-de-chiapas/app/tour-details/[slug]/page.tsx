@@ -41,7 +41,7 @@ const FALLBACK_DESTINATION = {
   duration: 'Consultar',
   accommodation: undefined as string | undefined,
   departure: undefined as string | undefined,
-  arrival: undefined as Array<{ value: string; arrivalPrice?: string; arrivalHour?: string }> | undefined,
+  arrival: undefined as Array<{ value: string; arrivalNationalPrice?: string; arrivalInternationalPrice?: string; arrivalHour?: string }> | undefined,
   transport: undefined as string | undefined,
   map: undefined as string | undefined,
   mapItem: undefined as Array<{ map?: string; title?: string }> | undefined,
@@ -120,8 +120,8 @@ export default async function TourDetailPage({ params }: PageProps) {
     destination.departure ? `• Punto de salida: ${destination.departure}` : null,
     destination.arrival && destination.arrival.length > 0
       ? destination.arrival.length === 1
-        ? `• Punto de regreso: ${destination.arrival[0].value}${destination.arrival[0].arrivalPrice ? `\n• Precio regreso: ${destination.arrival[0].arrivalPrice}` : ''}`
-        : destination.arrival.map((a, i) => `• Punto de regreso (Opc. ${i + 1}): ${a.value}${a.arrivalPrice ? `\n• Precio regreso (Opc. ${i + 1}): ${a.arrivalPrice}` : ''}`).join('\n')
+        ? `• Punto de regreso: ${destination.arrival[0].value}${destination.arrival[0].arrivalNationalPrice ? `\n• Precio regreso: ${destination.arrival[0].arrivalNationalPrice}` : ''}`
+        : destination.arrival.map((a, i) => `• Punto de regreso (Opc. ${i + 1}): ${a.value}${a.arrivalNationalPrice ? `\n• Precio regreso (Opc. ${i + 1}): ${a.arrivalNationalPrice}` : ''}`).join('\n')
       : null,
     destination.transport ? `• Transporte: ${destination.transport}` : null,
     routeList.length > 0 ? `• Ruta: ${routeList.join(' → ')}` : null,
@@ -210,16 +210,16 @@ export default async function TourDetailPage({ params }: PageProps) {
                           destination.arrival.length === 1 ? (
                             <React.Fragment>
                               <li><span><i className="far fa-map-marker-alt"></i>Regreso<span style={{ float: 'none', display: 'block', textAlign: 'right' }}>{destination.arrival[0].value}</span></span></li>
-                              {destination.arrival[0].arrivalPrice && (
-                                <li><span><i className="fal fa-box-usd"></i>Precio regreso<span>{destination.arrival[0].arrivalPrice}</span></span></li>
+                              {destination.arrival[0].arrivalNationalPrice && (
+                                <li><span><i className="fal fa-box-usd"></i>Precio regreso<span>{destination.arrival[0].arrivalNationalPrice}</span></span></li>
                               )}
                             </React.Fragment>
                           ) : (
                             destination.arrival.map((a, i) => (
                               <React.Fragment key={`arrival-${i}`}>
                                 <li><span><i className="far fa-map-marker-alt"></i>{`Regreso (Opc. ${i + 1})`}<span style={{ float: 'none', display: 'block', textAlign: 'right' }}>{a.value}</span></span></li>
-                                {a.arrivalPrice && (
-                                  <li><span><i className="fal fa-box-usd"></i>{`Precio regreso (Opc. ${i + 1})`}<span>{a.arrivalPrice}</span></span></li>
+                                {a.arrivalNationalPrice && (
+                                  <li><span><i className="fal fa-box-usd"></i>{`Precio regreso (Opc. ${i + 1})`}<span>{a.arrivalNationalPrice}</span></span></li>
                                 )}
                               </React.Fragment>
                             ))
@@ -453,14 +453,17 @@ export default async function TourDetailPage({ params }: PageProps) {
                           destination.arrival.length === 1 ? (
                             <React.Fragment>
                               <li><span><i className="far fa-map-marker-alt"></i>Regreso hacia<span style={{ float: 'none', display: 'block'}}>{destination.arrival[0].value}</span><span style={{ float: 'none', display: 'block' }}>{destination.arrival[0].arrivalHour}</span></span></li>
-                              {destination.arrival[0].arrivalPrice && (
-                                <li><span><i className="fal fa-box-usd"></i>Precio<span style={{ float: 'none' }}>{destination.arrival[0].arrivalPrice}</span></span></li>
+                              {destination.arrival[0].arrivalNationalPrice && (
+                                <li><span><i className="fal fa-box-usd"></i>Precio Nacional desde<span style={{ float: 'none' }}>{destination.arrival[0].arrivalNationalPrice}</span></span></li>
+                              )}
+                              {destination.arrival[0].arrivalInternationalPrice && (
+                                <li><span><i className="fal fa-box-usd"></i>Precio Internacional desde<span style={{ float: 'none' }}>{destination.arrival[0].arrivalInternationalPrice}</span></span></li>
                               )}
                             </React.Fragment>
                           ) : (
                             destination.arrival.map((a, i) => (
                               <React.Fragment key={`arrival-${i}`}>
-                                <li><span><i className="far fa-map-marker-alt pb-3"></i>{`Regreso hacia`}<span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.value}</span><span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.arrivalHour}</span><span style={{ float: 'none', display: 'block', fontSize: '22px' }}>{a.arrivalPrice}</span></span></li>
+                                <li><span><i className="far fa-map-marker-alt pb-3"></i>{`Regreso hacia`}<span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.value}</span><span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.arrivalHour}</span><span style={{ float: 'none', display: 'block', fontSize: '22px' }}>{a.arrivalNationalPrice}</span></span></li>
                               </React.Fragment>
                             ))
                           )

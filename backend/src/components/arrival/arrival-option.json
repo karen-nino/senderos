@@ -8,10 +8,13 @@
     "value": {
       "type": "string"
     },
-    "arrivalPrice": {
+    "arrivalNationalPrice": {
       "type": "string"
     },
     "arrivalHour": {
+      "type": "string"
+    },
+    "arrivalInternationalPrice": {
       "type": "string"
     }
   },

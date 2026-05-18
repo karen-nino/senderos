@@ -7,7 +7,8 @@ export interface ArrivalArrivalOption extends Struct.ComponentSchema {
   };
   attributes: {
     arrivalHour: Schema.Attribute.String;
-    arrivalPrice: Schema.Attribute.String;
+    arrivalInternationalPrice: Schema.Attribute.String;
+    arrivalNationalPrice: Schema.Attribute.String;
     value: Schema.Attribute.String;
   };
 }

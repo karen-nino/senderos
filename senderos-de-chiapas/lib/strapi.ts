@@ -315,11 +315,11 @@ export interface StrapiDestinationItem {
   route?: string | StrapiBlock | StrapiBlock[];
   transport?: string;
   departure?: string;
-  /** Componente repetible: lista de opciones de regreso (cada item tiene `value`, `arrivalPrice` y `arrivalHour`). */
+  /** Componente repetible: lista de opciones de regreso (cada item tiene `value`, `arrivalNationalPrice`, `arrivalInternationalPrice` y `arrivalHour`). */
   arrival?:
     | string
-    | { value?: string; arrivalPrice?: string; arrivalHour?: string }
-    | Array<{ value?: string; arrivalPrice?: string; arrivalHour?: string }>;
+    | { value?: string; arrivalNationalPrice?: string; arrivalInternationalPrice?: string; arrivalHour?: string }
+    | Array<{ value?: string; arrivalNationalPrice?: string; arrivalInternationalPrice?: string; arrivalHour?: string }>;
   includes?: StrapiBlock[];
   /** Itinerario por día (componente repeatable) */
   itineraryItem?: StrapiItineraryItem[];
@@ -1272,7 +1272,7 @@ export interface AdaptedDestinationDetail {
   /** Punto de salida (Strapi tour.departure) */
   departure?: string;
   /** Lista de puntos/horarios de regreso (Strapi tour.arrival, componente repetible). */
-  arrival?: Array<{ value: string; arrivalPrice?: string; arrivalHour?: string }>;
+  arrival?: Array<{ value: string; arrivalNationalPrice?: string; arrivalInternationalPrice?: string; arrivalHour?: string }>;
   transport?: string;
   link?: string;
   /** Ruta como texto único (para compatibilidad) */
@@ -1474,9 +1474,13 @@ function adaptToDestinationDetail(
       const items = arr
         .map((item) => ({
           value: typeof item?.value === "string" ? item.value.trim() : "",
-          arrivalPrice:
-            typeof item?.arrivalPrice === "string"
-              ? item.arrivalPrice.trim() || undefined
+          arrivalNationalPrice:
+            typeof item?.arrivalNationalPrice === "string"
+              ? item.arrivalNationalPrice.trim() || undefined
+              : undefined,
+          arrivalInternationalPrice:
+            typeof item?.arrivalInternationalPrice === "string"
+              ? item.arrivalInternationalPrice.trim() || undefined
               : undefined,
           arrivalHour:
             typeof item?.arrivalHour === "string"
