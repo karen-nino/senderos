@@ -47,7 +47,7 @@ const FALLBACK_DESTINATION = {
   includes: undefined as string[] | undefined,
   route: undefined as string | undefined,
   routeList: undefined as string[] | undefined,
-  itinerary: undefined as Array<{ dayTitle: string; time?: string; activity: string; routeItinerary?: string; accommodation?: string }> | undefined,
+  itinerary: undefined as Array<{ dayTitle: string; time?: string; activity: string; routeItinerary?: string; accommodation?: string; note?: string }> | undefined,
 }
 
 interface PageProps {
@@ -234,41 +234,37 @@ export default async function TourDetailPage({ params }: PageProps) {
             <div className="row">
               <div className="col-xl-8">
                 {/* Descripción + Ruta: mismo patrón que package-details */}
-                {(destination.description?.trim() || routeList.length > 0) && (
-                  <div className="package-description-route pt-45 wow fadeInUp mb-100">
-                    {destination.description?.trim() && (
-                      <>
-                        <h3 className="title">Descripción</h3>
-                        <div className="tour-description-text" style={{ lineHeight: 1.85 }}>
-                          {destination.description.split(/\n\n+/).map((para, idx) => (
-                            <p key={idx} className={idx > 0 ? 'mt-3' : ''} style={{ lineHeight: 'inherit' }}>
-                              {para.trim()}
-                            </p>
+                {destination.description?.trim() && (
+                  <div className="package-description pt-45 wow fadeInUp mb-40">
+                    <h3 className="title">Descripción</h3>
+                    <div className="tour-description-text" style={{ lineHeight: 1.85 }}>
+                      {destination.description.split(/\n\n+/).map((para, idx) => (
+                        <p key={idx} className={idx > 0 ? 'mt-3' : ''} style={{ lineHeight: 'inherit' }}>
+                          {para.trim()}
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {routeList.length > 0 && (
+                  <div className="package-route pt-45 wow fadeInUp mb-40">
+                    <h4 className="title">Ruta</h4>
+                    <p>Lugares que recorre este tour:</p>
+                    <div className="row align-items-lg-center">
+                      <div className="col-lg-12">
+                        <ul className="check-list">
+                          {routeList.map((item: string, i: number) => (
+                            <li key={i}><i className="fas fa-route"></i>{item}</li>
                           ))}
-                        </div>
-                      </>
-                    )}
-                    {routeList.length > 0 && (
-                      <>
-                        <h4 className="title">Ruta</h4>
-                        <p>Lugares que recorre este tour:</p>
-                        <div className="row align-items-lg-center">
-                          <div className="col-lg-12">
-                            <ul className="check-list">
-                              {routeList.map((item: string, i: number) => (
-                                <li key={i}><i className="fas fa-route"></i>{item}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        </div>
-                      </>
-                    )}
+                        </ul>
+                      </div>
+                    </div>
                   </div>
                 )}
                 <div
-                  className={`${(destination.description?.trim() || routeList.length > 0) ? 'package-includes' : 'place-content-wrap'} pt-45 wow fadeInUp mb-100`}
+                  className={`${(destination.description?.trim() || routeList.length > 0) ? 'package-includes' : 'place-content-wrap'} pt-45 wow fadeInUp mb-80`}
                 >
-                  <h4 className="title pb-2">Incluye</h4>
+                  <h4 className="title">Incluye</h4>
                   <p>Este tour incluye los siguientes servicios:</p>
                   <div className="row align-items-lg-center">
                     <div className="col-lg-12">
@@ -290,7 +286,7 @@ export default async function TourDetailPage({ params }: PageProps) {
                 {/* Days Area - Itinerario desde Strapi (solo se muestra si hay datos) */}
                 {destination.itinerary && destination.itinerary.length > 0 && (
                   <div className="days-area mb-140 wow fadeInUp">
-                    <h4 className="title pb-2">Itinerario</h4>
+                    <h4 className="title">Itinerario</h4>
                     <p className="pb-4">Cronograma de actividades del tour:</p>
                     {(() => {
                       const items = destination.itinerary!;
@@ -307,24 +303,26 @@ export default async function TourDetailPage({ params }: PageProps) {
                       const dayIds = dayOrder.map((_, i) => `itinerary-day-${i}`);
                       return (
                         <>
-                          <ul className="nav nav-tabs mb-35 flex-wrap" role="tablist">
-                            {dayOrder.map((day, i) => (
-                              <li key={dayIds[i]} className="nav-item" role="presentation">
-                                <button
-                                  className={`nav-link ${i === 0 ? "active" : ""}`}
-                                  id={`${dayIds[i]}-tab`}
-                                  data-bs-toggle="tab"
-                                  data-bs-target={`#${dayIds[i]}`}
-                                  type="button"
-                                  role="tab"
-                                  aria-controls={dayIds[i]}
-                                  aria-selected={i === 0}
-                                >
-                                  {day}
-                                </button>
-                              </li>
-                            ))}
-                          </ul>
+                          {dayOrder.length > 1 && (
+                            <ul className="nav nav-tabs mb-35 flex-wrap" role="tablist">
+                              {dayOrder.map((day, i) => (
+                                <li key={dayIds[i]} className="nav-item" role="presentation">
+                                  <button
+                                    className={`nav-link ${i === 0 ? "active" : ""}`}
+                                    id={`${dayIds[i]}-tab`}
+                                    data-bs-toggle="tab"
+                                    data-bs-target={`#${dayIds[i]}`}
+                                    type="button"
+                                    role="tab"
+                                    aria-controls={dayIds[i]}
+                                    aria-selected={i === 0}
+                                  >
+                                    {day}
+                                  </button>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
                           <div className="tab-content">
                             {dayOrder.map((day, i) => (
                               <div
@@ -335,7 +333,7 @@ export default async function TourDetailPage({ params }: PageProps) {
                                 aria-labelledby={`${dayIds[i]}-tab`}
                               >
                                 <div className="content-box">
-                                  <ul className="check-list">
+                                  <ul className="check-list pb-4">
                                     {daysMap.get(day)!.map(
                                       (
                                         item: {
@@ -345,6 +343,7 @@ export default async function TourDetailPage({ params }: PageProps) {
                                           description?: string;
                                           routeItinerary?: string;
                                           accommodation?: string;
+                                          note?: string;
                                         },
                                         j: number,
                                       ) => (
@@ -373,6 +372,11 @@ export default async function TourDetailPage({ params }: PageProps) {
                                       ),
                                     )}
                                   </ul>
+                                  {daysMap.get(day)![0]?.note ? (
+                                    <p className="mt-3 mb-0 text-muted fst-italic" style={{ paddingLeft: '2rem' }}>
+                                      <i className="fas fa-info-circle me-2"></i>{daysMap.get(day)![0].note}
+                                    </p>
+                                  ) : null}
                                 </div>
                               </div>
                             ))}

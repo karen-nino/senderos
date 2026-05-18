@@ -268,6 +268,7 @@ export interface StrapiItineraryItem {
   text?: string | StrapiBlock | StrapiBlock[] | Array<Record<string, unknown>>;
   routeItinerary?: string | StrapiBlock | StrapiBlock[];
   accommodation?: string | StrapiBlock | StrapiBlock[];
+  note?: string | StrapiBlock | StrapiBlock[];
 }
 
 /** Formato de destino desde Strapi API /api/tours (Collection Type) y /api/international */
@@ -1328,6 +1329,8 @@ export interface AdaptedDestinationDetail {
     description?: string;
     routeItinerary?: string;
     accommodation?: string;
+    /** Nota libre por día (rich text → plain). Se repite en cada fila del mismo día. */
+    note?: string;
   }>;
 }
 
@@ -1402,6 +1405,7 @@ function parseTourItinerary(
     const i = flattenStrapiComponent(raw);
     const dayTitle =
       (typeof i.dayTitle === "string" && i.dayTitle.trim()) || "Día";
+    const note = richTextToPlainString((i as StrapiItineraryItem).note);
     const activities = unwrapStrapiRelationArray(i.activity);
     if (activities.length > 0) {
       const first = activities[0];
@@ -1440,6 +1444,7 @@ function parseTourItinerary(
               activity: actText || "—",
               description: desc,
               accommodation: acc,
+              note,
             });
           }
         }
@@ -1458,6 +1463,7 @@ function parseTourItinerary(
         activity,
         routeItinerary: richTextToPlainString(legacy.routeItinerary),
         accommodation: richTextToPlainString(legacy.accommodation),
+        note,
       });
     }
   }

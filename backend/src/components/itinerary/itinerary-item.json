@@ -14,7 +14,7 @@
       "repeatable": true
     },
     "note": {
-      "type": "blocks"
+      "type": "text"
     }
   },
   "config": {}
