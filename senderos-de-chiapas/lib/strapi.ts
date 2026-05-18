@@ -272,8 +272,6 @@ export interface StrapiDestinationItem {
   departureDate?: string;
   accommodation?: string;
   duration?: string;
-  /** Horario de salida (Strapi tour.departureTime). Reemplaza a `duration` para Tours. */
-  departureTime?: string;
   price?: string;
   link?: string;
   /** Slug del tour (Collection Type tour tiene uid slug). */
@@ -325,10 +323,6 @@ export interface StrapiDestinationItem {
   includes?: StrapiBlock[];
   /** Itinerario por día (componente repeatable) */
   itineraryItem?: StrapiItineraryItem[];
-  /** Fecha inicio para calendario (ej. YYYY-MM-DD o ISO) */
-  calendarStart?: string;
-  /** Fecha fin para calendario (ej. YYYY-MM-DD o ISO) */
-  calendarEnd?: string;
 }
 
 /** Formato adaptado para DestinationItem / InternationalItem */
@@ -726,7 +720,7 @@ export function adaptStrapiDestination(
     departureDate: d.departureDate,
     price: d.price,
     accommodation: d.accommodation,
-    duration: d.departureTime ?? d.duration,
+    duration: d.duration,
     badge: normalizeBadge(d.badge),
     route: routeToStr(d.route),
     transport: d.transport,
@@ -1269,7 +1263,6 @@ export interface AdaptedDestinationDetail {
   image: string;
   imagesDetails: string[];
   location: string;
-  price: string;
   duration: string;
   /** Punto de salida (Strapi tour.departure) */
   departure?: string;
@@ -1283,7 +1276,6 @@ export interface AdaptedDestinationDetail {
   route?: string;
   /** Ruta como lista de puntos para mostrar en lista vertical */
   routeList?: string[];
-  accommodation?: string;
   departureDate?: string;
   map?: string;
   /** Lista de bloques de mapa desde Strapi (mapItem[].map, mapItem[].title) */
@@ -1298,10 +1290,6 @@ export interface AdaptedDestinationDetail {
     routeItinerary?: string;
     accommodation?: string;
   }>;
-  /** Fecha inicio para marcar en el calendario (ej. YYYY-MM-DD) */
-  calendarStart?: string;
-  /** Fecha fin para marcar en el calendario (ej. YYYY-MM-DD) */
-  calendarEnd?: string;
 }
 
 /** Formato para página de detalle de destino internacional */
@@ -1454,8 +1442,7 @@ function adaptToDestinationDetail(
       d.departure?.trim() ||
       d.location?.trim() ||
       "Chiapas, México",
-    price: d.price ?? "Consultar",
-    duration: d.departureTime ?? d.duration ?? "Variable",
+    duration: d.duration ?? "Variable",
     link: d.link,
     route: routeToStr(d.route),
     routeList:
@@ -1464,7 +1451,6 @@ function adaptToDestinationDetail(
           ? [d.route.trim()]
           : undefined
         : blocksToList(d.route as StrapiDestinationItem["includes"]),
-    accommodation: d.accommodation,
     departureDate: d.departureDate,
     departure: d.departure?.trim() || undefined,
     arrival: (() => {
@@ -1516,8 +1502,6 @@ function adaptToDestinationDetail(
     })(),
     includes: blocksToList(d.includes),
     itinerary: itinerary?.length ? itinerary : undefined,
-    calendarStart: d.calendarStart,
-    calendarEnd: d.calendarEnd,
   };
 }
 
