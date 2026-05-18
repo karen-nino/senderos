@@ -12,6 +12,9 @@
       "type": "component",
       "component": "itinerary.activity-item",
       "repeatable": true
+    },
+    "note": {
+      "type": "blocks"
     }
   },
   "config": {}

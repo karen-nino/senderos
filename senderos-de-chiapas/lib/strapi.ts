@@ -1303,6 +1303,13 @@ export interface AdaptedDestinationDetail {
   /** Mínimo de participantes (Strapi tour.minimumParticipants). */
   minimumParticipants?: string;
   transport?: string;
+  /** Cada opción de salida con su info de transporte, mínimo y regresos. Desde Strapi tour.departure[]. */
+  departures?: Array<{
+    departure?: string;
+    transport?: string;
+    minimumParticipants?: string;
+    arrival?: Array<{ value: string; arrivalNationalPrice?: string; arrivalInternationalPrice?: string; arrivalHour?: string; arrivalAccommodation?: string }>;
+  }>;
   link?: string;
   /** Ruta como texto único (para compatibilidad) */
   route?: string;
@@ -1457,6 +1464,41 @@ function parseTourItinerary(
   return rows.length ? rows : undefined;
 }
 
+type AdaptedArrival = NonNullable<AdaptedDestinationDetail["arrival"]>;
+
+function mapArrivalList(
+  raw: StrapiDestinationItem["arrival"],
+): AdaptedArrival | undefined {
+  if (raw == null) return undefined;
+  if (typeof raw === "string") {
+    const v = raw.trim();
+    return v ? [{ value: v }] : undefined;
+  }
+  const arr = Array.isArray(raw) ? raw : [raw];
+  const items = arr
+    .map((item) => ({
+      value: typeof item?.value === "string" ? item.value.trim() : "",
+      arrivalNationalPrice:
+        typeof item?.arrivalNationalPrice === "string"
+          ? item.arrivalNationalPrice.trim() || undefined
+          : undefined,
+      arrivalInternationalPrice:
+        typeof item?.arrivalInternationalPrice === "string"
+          ? item.arrivalInternationalPrice.trim() || undefined
+          : undefined,
+      arrivalHour:
+        typeof item?.arrivalHour === "string"
+          ? item.arrivalHour.trim() || undefined
+          : undefined,
+      arrivalAccommodation:
+        typeof item?.arrivalAccommodation === "string"
+          ? item.arrivalAccommodation.trim() || undefined
+          : undefined,
+    }))
+    .filter((item) => item.value);
+  return items.length ? items : undefined;
+}
+
 function adaptToDestinationDetail(
   d: StrapiDestinationItem,
 ): AdaptedDestinationDetail {
@@ -1464,8 +1506,22 @@ function adaptToDestinationDetail(
   const fullImageUrl = buildFullImageUrl(imageUrl);
   const imagesDetails = getImagesDetailsUrls(d.imagesDetails);
   const itinerary = parseTourItinerary(d);
-  const firstDeparture =
-    Array.isArray(d.departure) ? d.departure[0] : undefined;
+  const departureArr = Array.isArray(d.departure) ? d.departure : [];
+  const departures = departureArr
+    .map((dep) => ({
+      departure: dep?.departure?.trim() || undefined,
+      transport: dep?.transport?.trim() || undefined,
+      minimumParticipants: dep?.minimumParticipants?.trim() || undefined,
+      arrival: mapArrivalList(dep?.arrival),
+    }))
+    .filter(
+      (dep) =>
+        dep.departure ||
+        dep.transport ||
+        dep.minimumParticipants ||
+        (dep.arrival && dep.arrival.length > 0),
+    );
+  const firstDeparture = departureArr[0];
   const departureStr =
     firstDeparture?.departure?.trim() ||
     (typeof d.departure === "string" ? d.departure.trim() : undefined) ||
@@ -1500,37 +1556,8 @@ function adaptToDestinationDetail(
         : blocksToList(d.route as StrapiDestinationItem["includes"]),
     departureDate: d.departureDate,
     departure: departureStr,
-    arrival: (() => {
-      const raw = arrivalSource;
-      if (raw == null) return undefined;
-      if (typeof raw === "string") {
-        const v = raw.trim();
-        return v ? [{ value: v }] : undefined;
-      }
-      const arr = Array.isArray(raw) ? raw : [raw];
-      const items = arr
-        .map((item) => ({
-          value: typeof item?.value === "string" ? item.value.trim() : "",
-          arrivalNationalPrice:
-            typeof item?.arrivalNationalPrice === "string"
-              ? item.arrivalNationalPrice.trim() || undefined
-              : undefined,
-          arrivalInternationalPrice:
-            typeof item?.arrivalInternationalPrice === "string"
-              ? item.arrivalInternationalPrice.trim() || undefined
-              : undefined,
-          arrivalHour:
-            typeof item?.arrivalHour === "string"
-              ? item.arrivalHour.trim() || undefined
-              : undefined,
-          arrivalAccommodation:
-            typeof item?.arrivalAccommodation === "string"
-              ? item.arrivalAccommodation.trim() || undefined
-              : undefined,
-        }))
-        .filter((item) => item.value);
-      return items.length ? items : undefined;
-    })(),
+    departures: departures.length ? departures : undefined,
+    arrival: mapArrivalList(arrivalSource),
     transport: transportStr,
     minimumParticipants: minimumParticipantsStr,
     map:

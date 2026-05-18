@@ -114,6 +114,7 @@ export interface ItineraryItineraryItem extends Struct.ComponentSchema {
   attributes: {
     activity: Schema.Attribute.Component<'itinerary.activity-item', true>;
     dayTitle: Schema.Attribute.String;
+    note: Schema.Attribute.Blocks;
   };
 }
 
