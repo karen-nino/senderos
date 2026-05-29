@@ -456,7 +456,7 @@ export default async function TourDetailPage({ params }: PageProps) {
                           <li>
                             <div className="submit-button">
                               <a
-                                href={`https://wa.me/529615791159?text=${encodeURIComponent(whatsappMessage)}`}
+                                href={`https://wa.me/529612980999?text=${encodeURIComponent(whatsappMessage)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="main-btn primary-btn"
