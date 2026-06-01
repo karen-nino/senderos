@@ -2518,7 +2518,7 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   padding: clamp(9rem, 18vh, 16rem) 0 clamp(5rem, 11vh, 9rem);
 }
 .hero-section .hero-wrapper .container-fluid {
-  max-width: 1480px;
+  max-width: 1640px;
   padding-inline: clamp(1rem, 3vw, 3rem);
   margin-inline: auto;
 }
@@ -2526,11 +2526,12 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   max-width: clamp(480px, 38vw, 680px);
   margin-left: auto;
   padding-left: 0;
-  padding-right: clamp(2rem, 4vw, 4.5rem);
+  padding-right: clamp(1rem, 2vw, 2.5rem);
   min-width: 0;
 }
 .hero-section .hero-image {
-  padding-left: clamp(2rem, 4vw, 4.5rem);
+  padding-left: clamp(1rem, 2vw, 2.5rem);
+  padding-right: clamp(2.5rem, 5vw, 5.5rem);
   min-width: 0;
 }
 .hero-section .hero-content h1 {
@@ -2565,7 +2566,7 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
 .hero-section .hero-image img {
   display: block;
   width: 100%;
-  max-width: clamp(540px, 44vw, 832px);
+  max-width: clamp(640px, 52vw, 980px);
   height: auto;
   aspect-ratio: 871 / 670;
   object-fit: cover;
@@ -2582,6 +2583,7 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   .hero-section .hero-image {
     margin-top: clamp(2rem, 5vh, 3.5rem);
     padding-left: 0;
+    padding-right: 0;
   }
   .hero-section .hero-content {
     padding-right: 0;
