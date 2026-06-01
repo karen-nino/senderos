@@ -2528,8 +2528,10 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   hyphens: manual;
 }
 .hero-section .hero-content .text-button {
-  flex-wrap: wrap;
-  gap: clamp(1rem, 2vw, 2.5rem);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(1.25rem, 0.75rem + 1.2vw, 2rem);
   max-width: 600px;
 }
 .hero-section .hero-content .text-button p {
@@ -2540,6 +2542,7 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
 }
 .hero-section .hero-content .text-button .hero-button {
   margin-left: 0;
+  margin-top: 0;
 }
 .hero-section .hero-image picture {
   display: block;
@@ -2572,19 +2575,19 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
     text-align: center;
   }
   .hero-section .hero-content .text-button {
+    align-items: center;
     justify-content: center;
     margin-inline: auto;
   }
   .hero-section .hero-content .text-button p {
     margin-inline: auto;
+    text-align: center;
   }
 }
 
-/* Móvil pequeño: párrafo arriba, botón debajo */
+/* Móvil pequeño: gap más compacto */
 @media (max-width: 575.98px) {
   .hero-section .hero-content .text-button {
-    flex-direction: column;
-    align-items: center;
     gap: 1.25rem;
   }
 }

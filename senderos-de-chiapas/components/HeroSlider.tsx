@@ -139,7 +139,7 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
                       <h1 data-animation="fadeInDown" data-delay=".4s">
                         {slide.title}
                       </h1>
-                      <div className="text-button d-flex flex-wrap align-items-center">
+                      <div className="text-button d-flex flex-wrap">
                         <p data-animation="fadeInLeft" data-delay=".5s">
                           {slide.subtitle || slide.description || ''}
                         </p>
