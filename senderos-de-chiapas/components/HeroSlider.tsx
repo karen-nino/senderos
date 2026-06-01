@@ -127,11 +127,11 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
   }
 
   return (
-    <section className="hero-section" style={{ minHeight: '100svh' }}>
+    <section className="hero-section">
       <div className="hero-wrapper bg-light">
         <div className="hero-slider-one">
           {slides.map((slide, index) => (
-            <div key={slide.id || index} className="single-slider" style={{ minHeight: '100svh', display: 'flex', alignItems: 'center' }}>
+            <div key={slide.id || index} className="single-slider">
               <div className="container-fluid w-100">
                 <div className="row align-items-center">
                   <div className="col-xl-6">
@@ -139,7 +139,7 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
                       <h1 data-animation="fadeInDown" data-delay=".4s">
                         {slide.title}
                       </h1>
-                      <div className="text-button d-flex align-items-center">
+                      <div className="text-button d-flex flex-wrap align-items-center">
                         <p data-animation="fadeInLeft" data-delay=".5s">
                           {slide.subtitle || slide.description || ''}
                         </p>
@@ -164,7 +164,6 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
                           alt={getImageAlt(slide.image, slide.title)}
                           width={871}
                           height={670}
-                          style={{ width: '100%', maxWidth: '871px', height: 'auto', objectFit: 'cover' }}
                         />
                       </picture>
                     </div>

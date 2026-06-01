@@ -2507,3 +2507,84 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
     min-height: 14rem;
   }
 }
+
+/* Hero slider — proporciones responsive (UX) */
+.hero-section .hero-wrapper {
+  width: 100%;
+}
+.hero-section .single-slider {
+  width: 100%;
+  padding: clamp(7rem, 14vh, 12rem) 0 clamp(3rem, 7vh, 5.5rem);
+}
+.hero-section .hero-content {
+  max-width: 560px;
+}
+.hero-section .hero-content h1 {
+  font-size: clamp(2.25rem, 1rem + 2.4vw, 4.5rem);
+  line-height: 1.08;
+  margin-bottom: clamp(0.875rem, 0.5rem + 0.6vw, 1.5rem);
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: manual;
+}
+.hero-section .hero-content .text-button {
+  flex-wrap: wrap;
+  gap: clamp(1rem, 2vw, 2.5rem);
+  max-width: 600px;
+}
+.hero-section .hero-content .text-button p {
+  font-size: clamp(1.125rem, 1rem + 0.5vw, 1.5rem);
+  line-height: 1.55;
+  max-width: 380px;
+  margin: 0;
+}
+.hero-section .hero-content .text-button .hero-button {
+  margin-left: 0;
+}
+.hero-section .hero-image picture {
+  display: block;
+  width: 100%;
+}
+.hero-section .hero-image img {
+  display: block;
+  width: 100%;
+  max-width: 871px;
+  height: auto;
+  aspect-ratio: 871 / 670;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-left: auto;
+}
+
+/* < 1200px: el grid de Bootstrap apila col-xl-6 — ajustamos padding y centrado */
+@media (max-width: 1199.98px) {
+  .hero-section .single-slider {
+    padding: clamp(7rem, 14vh, 10rem) 0 clamp(3rem, 7vh, 5rem);
+  }
+  .hero-section .hero-image {
+    margin-top: clamp(2rem, 5vh, 3.5rem);
+  }
+  .hero-section .hero-image img {
+    margin-inline: auto;
+  }
+  .hero-section .hero-content {
+    margin-inline: auto;
+    text-align: center;
+  }
+  .hero-section .hero-content .text-button {
+    justify-content: center;
+    margin-inline: auto;
+  }
+  .hero-section .hero-content .text-button p {
+    margin-inline: auto;
+  }
+}
+
+/* Móvil pequeño: párrafo arriba, botón debajo */
+@media (max-width: 575.98px) {
+  .hero-section .hero-content .text-button {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+  }
+}
