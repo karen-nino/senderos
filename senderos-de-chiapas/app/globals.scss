@@ -2514,15 +2514,29 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
 }
 .hero-section .single-slider {
   width: 100%;
-  padding: clamp(7rem, 14vh, 12rem) 0 clamp(3rem, 7vh, 5.5rem);
+  min-height: 70vh;
+  padding: clamp(9rem, 18vh, 16rem) 0 clamp(5rem, 11vh, 9rem);
+}
+.hero-section .hero-wrapper .container-fluid {
+  max-width: 1480px;
+  padding-inline: clamp(1rem, 3vw, 3rem);
+  margin-inline: auto;
 }
 .hero-section .hero-content {
-  max-width: 560px;
+  max-width: clamp(480px, 38vw, 680px);
+  margin-left: auto;
+  padding-left: 0;
+  padding-right: clamp(2rem, 4vw, 4.5rem);
+  min-width: 0;
+}
+.hero-section .hero-image {
+  padding-left: clamp(2rem, 4vw, 4.5rem);
+  min-width: 0;
 }
 .hero-section .hero-content h1 {
-  font-size: clamp(2.25rem, 1rem + 2.4vw, 4.5rem);
-  line-height: 1.08;
-  margin-bottom: clamp(0.875rem, 0.5rem + 0.6vw, 1.5rem);
+  font-size: clamp(2.9rem, 1rem + 3.12vw, 5.2rem);
+  line-height: 1.05;
+  margin-bottom: clamp(1rem, 0.5rem + 0.9vw, 2rem);
   word-break: normal;
   overflow-wrap: normal;
   hyphens: manual;
@@ -2535,9 +2549,9 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   max-width: 600px;
 }
 .hero-section .hero-content .text-button p {
-  font-size: clamp(1.125rem, 1rem + 0.5vw, 1.5rem);
-  line-height: 1.55;
-  max-width: 380px;
+  font-size: clamp(1.25rem, 1rem + 0.8vw, 1.75rem);
+  line-height: 1.5;
+  max-width: clamp(320px, 26vw, 420px);
   margin: 0;
 }
 .hero-section .hero-content .text-button .hero-button {
@@ -2551,21 +2565,26 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
 .hero-section .hero-image img {
   display: block;
   width: 100%;
-  max-width: 871px;
+  max-width: clamp(540px, 44vw, 832px);
   height: auto;
   aspect-ratio: 871 / 670;
   object-fit: cover;
   border-radius: 12px;
-  margin-left: auto;
+  margin-right: auto;
+  margin-left: 0;
 }
 
 /* < 1200px: el grid de Bootstrap apila col-xl-6 — ajustamos padding y centrado */
 @media (max-width: 1199.98px) {
   .hero-section .single-slider {
-    padding: clamp(7rem, 14vh, 10rem) 0 clamp(3rem, 7vh, 5rem);
+    padding: clamp(8rem, 16vh, 12rem) 0 clamp(4rem, 9vh, 7rem);
   }
   .hero-section .hero-image {
     margin-top: clamp(2rem, 5vh, 3.5rem);
+    padding-left: 0;
+  }
+  .hero-section .hero-content {
+    padding-right: 0;
   }
   .hero-section .hero-image img {
     margin-inline: auto;
