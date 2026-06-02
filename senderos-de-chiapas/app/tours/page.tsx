@@ -2,9 +2,10 @@ import type { Metadata } from 'next'
 import React from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import ToursListWithFilters from '@/components/ToursListWithFilters'
+import FilteredCardsList from '@/components/FilteredCardsList'
+import TourItem from '@/components/TourItem'
 import Link from 'next/link'
-import { fetchTourPageData, STRAPI_REVALIDATE_SECONDS, type AdaptedDestination } from '@/lib/strapi'
+import { fetchTourPageData, STRAPI_REVALIDATE_SECONDS, getTourDetailHref, tourCardSubtitle, type AdaptedDestination } from '@/lib/strapi'
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
 
@@ -55,7 +56,28 @@ export default async function ToursPage() {
 
       {hasDataFromStrapi ? (
         <section className="places-section pt-80 pb-180">
-          <ToursListWithFilters destinations={displayDestinations} />
+          <div className="places-section__container">
+            <FilteredCardsList
+              items={displayDestinations.map((d, i) => ({
+                title: d.title,
+                key: String(d.link || d.title || i),
+                content: (
+                  <TourItem
+                    title={d.title}
+                    subtitle={tourCardSubtitle(d)}
+                    image={d.image}
+                    link={getTourDetailHref(d)}
+                    departureDate={d.departureDate}
+                    duration={d.duration}
+                    price={d.price}
+                    badge={d.badge}
+                  />
+                ),
+              }))}
+              searchPlaceholder="Buscar tour por nombre"
+              emptyMessage="No encontramos tours que coincidan con tu búsqueda."
+            />
+          </div>
           <div className="container text-center mt-50">
             <Link
               href="/"

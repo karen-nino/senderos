@@ -1,15 +1,18 @@
 'use client'
 
-import { useMemo, useState } from 'react'
-import TourItem from '@/components/TourItem'
-import {
-  type AdaptedDestination,
-  getTourDetailHref,
-  tourCardSubtitle,
-} from '@/lib/strapi'
+import { useMemo, useState, type ReactNode } from 'react'
 
-interface ToursListWithFiltersProps {
-  destinations: AdaptedDestination[]
+export interface FilteredCardItem {
+  title: string
+  key: string
+  content: ReactNode
+}
+
+interface FilteredCardsListProps {
+  items: FilteredCardItem[]
+  searchPlaceholder?: string
+  emptyMessage?: string
+  gridClassName?: string
 }
 
 const ALPHABET = 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ'.split('')
@@ -30,31 +33,32 @@ function titleInitials(title: string): Set<string> {
   return set
 }
 
-export default function ToursListWithFilters({ destinations }: ToursListWithFiltersProps) {
+export default function FilteredCardsList({
+  items,
+  searchPlaceholder = 'Buscar por nombre',
+  emptyMessage = 'No encontramos resultados que coincidan con tu búsqueda.',
+  gridClassName = 'places-section__grid',
+}: FilteredCardsListProps) {
   const [query, setQuery] = useState('')
   const [letter, setLetter] = useState<string | null>(null)
 
-  const selectLetter = (next: string | null) => {
-    setLetter(next)
-  }
-
   const availableLetters = useMemo(() => {
     const set = new Set<string>()
-    for (const d of destinations) for (const i of titleInitials(d.title)) set.add(i)
+    for (const it of items) for (const i of titleInitials(it.title)) set.add(i)
     return set
-  }, [destinations])
+  }, [items])
 
   const filtered = useMemo(() => {
     const queryTokens = normalize(query).split(/\s+/).filter(Boolean)
-    return destinations.filter((d) => {
-      const words = titleWords(d.title)
+    return items.filter((it) => {
+      const words = titleWords(it.title)
       const matchesQuery =
         queryTokens.length === 0 ||
         queryTokens.every((token) => words.some((w) => w.includes(token)))
-      const matchesLetter = !letter || titleInitials(d.title).has(letter)
+      const matchesLetter = !letter || titleInitials(it.title).has(letter)
       return matchesQuery && matchesLetter
     })
-  }, [destinations, query, letter])
+  }, [items, query, letter])
 
   return (
     <>
@@ -65,8 +69,8 @@ export default function ToursListWithFilters({ destinations }: ToursListWithFilt
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Buscar tour por nombre"
-            aria-label="Buscar tour por nombre"
+            placeholder={searchPlaceholder}
+            aria-label={searchPlaceholder}
             className="tours-filters__input"
           />
           {query && (
@@ -82,12 +86,11 @@ export default function ToursListWithFilters({ destinations }: ToursListWithFilt
         </div>
 
         <div className="tours-filters__alphabet-wrap">
-          {/* Mobile/tablet: select nativo */}
           <div className="tours-filters__alphabet-select-wrap">
             <select
               className="tours-filters__alphabet-select"
               value={letter ?? ''}
-              onChange={(e) => selectLetter(e.target.value || null)}
+              onChange={(e) => setLetter(e.target.value || null)}
               aria-label="Filtrar por letra inicial"
             >
               <option value="">Todos</option>
@@ -103,7 +106,6 @@ export default function ToursListWithFilters({ destinations }: ToursListWithFilt
             <i className="far fa-chevron-down tours-filters__alphabet-select-icon" aria-hidden />
           </div>
 
-          {/* Desktop: fila de letras */}
           <div
             className="tours-filters__alphabet"
             role="group"
@@ -111,7 +113,7 @@ export default function ToursListWithFilters({ destinations }: ToursListWithFilt
           >
             <button
               type="button"
-              onClick={() => selectLetter(null)}
+              onClick={() => setLetter(null)}
               className={`tours-filters__letter${letter === null ? ' is-active' : ''}`}
               aria-pressed={letter === null}
             >
@@ -123,7 +125,7 @@ export default function ToursListWithFilters({ destinations }: ToursListWithFilt
                 <button
                   key={l}
                   type="button"
-                  onClick={() => enabled && selectLetter(letter === l ? null : l)}
+                  onClick={() => enabled && setLetter(letter === l ? null : l)}
                   className={`tours-filters__letter${letter === l ? ' is-active' : ''}${enabled ? '' : ' is-disabled'}`}
                   aria-pressed={letter === l}
                   disabled={!enabled}
@@ -136,35 +138,17 @@ export default function ToursListWithFilters({ destinations }: ToursListWithFilt
         </div>
       </div>
 
-      <div className="places-section__container">
-        {filtered.length > 0 ? (
-          <div className="places-section__grid">
-            {filtered.map((destination, index) => (
-              <div
-                key={destination.link || destination.title || index}
-                className="places-section__item"
-              >
-                <div className="wow fadeInUp">
-                  <TourItem
-                    title={destination.title}
-                    subtitle={tourCardSubtitle(destination)}
-                    image={destination.image}
-                    link={getTourDetailHref(destination)}
-                    departureDate={destination.departureDate}
-                    duration={destination.duration}
-                    price={destination.price}
-                    badge={destination.badge}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="tours-filters__empty container text-center">
-            No encontramos tours que coincidan con tu búsqueda.
-          </p>
-        )}
-      </div>
+      {filtered.length > 0 ? (
+        <div className={gridClassName}>
+          {filtered.map((it) => (
+            <div key={it.key} className="places-section__item">
+              <div className="wow fadeInUp">{it.content}</div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="tours-filters__empty container text-center">{emptyMessage}</p>
+      )}
     </>
   )
 }

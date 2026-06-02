@@ -3,6 +3,7 @@ import React from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import InternationalItem from '@/components/InternationalItem'
+import FilteredCardsList from '@/components/FilteredCardsList'
 import Link from 'next/link'
 import { fetchInternationalPageData, STRAPI_REVALIDATE_SECONDS, type AdaptedDestination } from '@/lib/strapi'
 
@@ -56,25 +57,27 @@ export default async function InternationalPage() {
       {hasDataFromStrapi ? (
         <section className="places-section pt-80 pb-180">
           <div className="places-section__container">
-            <div className="places-section__grid">
-              {displayDestinations.map((destination, index) => (
-                <div key={destination.slug || destination.title || index} className="places-section__item">
-                  <div className="wow fadeInUp">
-                    <InternationalItem
-                      title={destination.title}
-                      description={destination.subtitle ?? destination.description}
-                      image={destination.image}
-                      departureDate={destination.departureDate}
-                      duration={destination.duration}
-                      price={destination.price}
-                      badge={destination.badge === 'oculto' ? undefined : destination.badge}
-                      route={destination.route}
-                      includes={destination.includes}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
+            <FilteredCardsList
+              items={displayDestinations.map((destination, i) => ({
+                title: destination.title,
+                key: String(destination.slug || destination.title || i),
+                content: (
+                  <InternationalItem
+                    title={destination.title}
+                    description={destination.subtitle ?? destination.description}
+                    image={destination.image}
+                    departureDate={destination.departureDate}
+                    duration={destination.duration}
+                    price={destination.price}
+                    badge={destination.badge === 'oculto' ? undefined : destination.badge}
+                    route={destination.route}
+                    includes={destination.includes}
+                  />
+                ),
+              }))}
+              searchPlaceholder="Buscar destino por nombre"
+              emptyMessage="No encontramos destinos que coincidan con tu búsqueda."
+            />
           </div>
           <div className="container text-center mt-50">
             <Link

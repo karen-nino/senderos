@@ -4,6 +4,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import PackageItem from '@/components/PackageItem'
 import SeasonPackageItem from '@/components/SeasonPackageItem'
+import FilteredCardsList from '@/components/FilteredCardsList'
 import Link from 'next/link'
 import { fetchPackagesPageData, fetchSeasonsForPackagesPage, STRAPI_REVALIDATE_SECONDS, type AdaptedDestination, type AdaptedSeason } from '@/lib/strapi'
 
@@ -109,24 +110,26 @@ export default async function PackagesPage() {
                     </p>
                   </>
                 )}
-                <div className="places-section__grid">
-                  {displayPackages.map((pkg, index) => (
-                    <div key={pkg.slug || pkg.title || index} className="places-section__item">
-                      <div className="wow fadeInUp">
-                        <PackageItem
-                          title={pkg.title}
-                          description={pkg.description}
-                          image={pkg.image && !pkg.image.includes('las-tres-tzimoleras') ? pkg.image : DEFAULT_IMAGE}
-                          link={pkg.slug ? `/paquete-detalles/${pkg.slug}` : (pkg.link || '/paquetes')}
-                          departureDate={pkg.departureDate}
-                          duration={pkg.duration}
-                          price={pkg.price}
-                          badge={pkg.badge}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <FilteredCardsList
+                  items={displayPackages.map((pkg, i) => ({
+                    title: pkg.title,
+                    key: String(pkg.slug || pkg.title || i),
+                    content: (
+                      <PackageItem
+                        title={pkg.title}
+                        description={pkg.description}
+                        image={pkg.image && !pkg.image.includes('las-tres-tzimoleras') ? pkg.image : DEFAULT_IMAGE}
+                        link={pkg.slug ? `/paquete-detalles/${pkg.slug}` : (pkg.link || '/paquetes')}
+                        departureDate={pkg.departureDate}
+                        duration={pkg.duration}
+                        price={pkg.price}
+                        badge={pkg.badge}
+                      />
+                    ),
+                  }))}
+                  searchPlaceholder="Buscar paquete por nombre"
+                  emptyMessage="No encontramos paquetes que coincidan con tu búsqueda."
+                />
               </div>
             )}
           </div>
