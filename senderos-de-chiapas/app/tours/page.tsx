@@ -2,9 +2,9 @@ import type { Metadata } from 'next'
 import React from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import TourItem from '@/components/TourItem'
+import ToursListWithFilters from '@/components/ToursListWithFilters'
 import Link from 'next/link'
-import { fetchTourPageData, STRAPI_REVALIDATE_SECONDS, getTourDetailHref, tourCardSubtitle, type AdaptedDestination } from '@/lib/strapi'
+import { fetchTourPageData, STRAPI_REVALIDATE_SECONDS, type AdaptedDestination } from '@/lib/strapi'
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
 
@@ -55,26 +55,7 @@ export default async function ToursPage() {
 
       {hasDataFromStrapi ? (
         <section className="places-section pt-80 pb-180">
-          <div className="places-section__container">
-            <div className="places-section__grid">
-              {displayDestinations.map((destination, index) => (
-                <div key={destination.link || destination.title || index} className="places-section__item">
-                  <div className="wow fadeInUp">
-                    <TourItem
-                      title={destination.title}
-                      subtitle={tourCardSubtitle(destination)}
-                      image={destination.image}
-                      link={getTourDetailHref(destination)}
-                      departureDate={destination.departureDate}
-                      duration={destination.duration}
-                      price={destination.price}
-                      badge={destination.badge}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <ToursListWithFilters destinations={displayDestinations} />
           <div className="container text-center mt-50">
             <Link
               href="/"

@@ -1657,7 +1657,7 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   position: relative;
 }
 
-/* Imágenes fijas 370x250 — mismo tamaño en todas las pantallas, sin recortar */
+/* Imágenes 370x250 fijas en desktop; responsive sin recortar en mobile/tablet */
 .places-section .destination-img-wrapper,
 .places-section .international-img-wrapper {
   width: 370px;
@@ -1674,6 +1674,20 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
     max-width: 100%;
     object-fit: contain;
     display: block;
+  }
+}
+
+/* Mobile/tablet: ajustar al ancho de la tarjeta manteniendo proporción 370/250 */
+@media (max-width: 575.98px) {
+  .places-section .destination-img-wrapper,
+  .places-section .international-img-wrapper {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    aspect-ratio: 370 / 250;
   }
 }
 
@@ -2586,5 +2600,165 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
 @media (max-width: 575.98px) {
   .hero-section .hero-content .text-button {
     gap: 1.25rem;
+  }
+}
+
+/* Tours — buscador + filtro de letras */
+.tours-filters {
+  margin-bottom: 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.tours-filters__search {
+  position: relative;
+  max-width: 480px;
+  width: 100%;
+  margin: 0 auto;
+}
+.tours-filters__search-icon {
+  position: absolute;
+  top: 50%;
+  left: 18px;
+  transform: translateY(-50%);
+  color: #8b9085;
+  font-size: 16px;
+  pointer-events: none;
+}
+.tours-filters__input {
+  width: 100%;
+  height: 48px;
+  padding: 0 44px 0 44px;
+  border: 1px solid #e0e2dd;
+  border-radius: 999px;
+  background-color: #fff;
+  font-size: 15px;
+  color: #1c231f;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.tours-filters__input::placeholder {
+  color: #8b9085;
+}
+.tours-filters__input:focus {
+  border-color: #63ab45;
+  box-shadow: 0 0 0 3px rgba(99, 171, 69, 0.15);
+}
+.tours-filters__clear {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background-color: #e8eae5;
+  color: #1c231f;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tours-filters__clear:hover {
+  background-color: #63ab45;
+  color: #fff;
+}
+.tours-filters__alphabet-wrap {
+  position: relative;
+}
+.tours-filters__alphabet-select-wrap {
+  display: none;
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.tours-filters__alphabet-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 100%;
+  height: 48px;
+  padding: 0 44px 0 18px;
+  border: 1px solid #e0e2dd;
+  border-radius: 999px;
+  background-color: #fff;
+  color: #1c231f;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.tours-filters__alphabet-select:focus {
+  outline: none;
+  border-color: #63ab45;
+  box-shadow: 0 0 0 3px rgba(99, 171, 69, 0.15);
+}
+.tours-filters__alphabet-select-icon {
+  position: absolute;
+  top: 50%;
+  right: 18px;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: #63ab45;
+  pointer-events: none;
+}
+.tours-filters__alphabet {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+.tours-filters__letter {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid #e0e2dd;
+  background-color: #fff;
+  color: #1c231f;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.tours-filters__letter:hover:not(.is-disabled):not(.is-active) {
+  border-color: #63ab45;
+  color: #63ab45;
+}
+.tours-filters__letter.is-active {
+  background-color: #63ab45;
+  border-color: #63ab45;
+  color: #fff;
+}
+.tours-filters__letter.is-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.tours-filters__empty {
+  padding: 60px 20px;
+  color: #6f756d;
+  font-size: 16px;
+}
+
+@media (max-width: 575.98px) {
+  .tours-filters__letter {
+    min-width: 32px;
+    height: 32px;
+    font-size: 13px;
+    padding: 0 8px;
+  }
+}
+
+/* Tablet y mobile: usar select nativo en lugar de la fila de letras */
+@media (max-width: 991.98px) {
+  .tours-filters__alphabet-select-wrap {
+    display: block;
+  }
+  .tours-filters__alphabet {
+    display: none;
   }
 }
