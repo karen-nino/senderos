@@ -1657,7 +1657,7 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   position: relative;
 }
 
-/* Imágenes fijas 370x250 solo en destinations e international */
+/* Imágenes fijas 370x250 — mismo tamaño en todas las pantallas, sin recortar */
 .places-section .destination-img-wrapper,
 .places-section .international-img-wrapper {
   width: 370px;
@@ -1672,32 +1672,8 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
     width: 100%;
     height: 100%;
     max-width: 100%;
-    object-fit: cover;
+    object-fit: contain;
     display: block;
-  }
-}
-
-/* Tablet: imagen al 100% del item para que no se desborde */
-@media (max-width: 991px) {
-  .places-section .destination-img-wrapper,
-  .places-section .international-img-wrapper {
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-    height: 220px;
-    min-height: 220px;
-  }
-}
-
-/* Mobile: imagen al 100% del contenedor */
-@media (max-width: 480px) {
-  .places-section .destination-img-wrapper,
-  .places-section .international-img-wrapper {
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-    height: 200px;
-    min-height: 200px;
   }
 }
 

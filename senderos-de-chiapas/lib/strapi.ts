@@ -5,7 +5,7 @@ export const STRAPI_REVALIDATE_SECONDS = 60;
 
 /** Collection Type Tour (Strapi v5: GET /api/tours). Evitar populate[image]=* porque Strapi devuelve ValidationError "Invalid key related at image.related". */
 const STRAPI_TOURS_POPULATE = "populate=*";
-const STRAPI_TOURS_URL = `/api/tours?${STRAPI_TOURS_POPULATE}`;
+const STRAPI_TOURS_URL = `/api/tours?${STRAPI_TOURS_POPULATE}&sort=updatedAt:desc`;
 /**
  * Strapi 5: populate=* NO rellena componentes anidados. itineraryItem.activity (repeatable)
  * solo llega con populate explícito; sin esto el itinerario sale vacío en el detalle.
