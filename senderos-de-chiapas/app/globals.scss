@@ -826,6 +826,17 @@ button {
   color: #fff; /* white-color */
 }
 
+/* Imagen de servicios (Nuestros Servicios) - 390x545 manteniendo proporción */
+.activity-image-box img {
+  width: 100%;
+  max-width: 390px;
+  height: auto;
+  aspect-ratio: 390 / 545;
+  object-fit: cover;
+  display: block;
+  margin-inline: auto;
+}
+
 /* Iconos de reloj del itinerario - verde primary del proyecto */
 .days-area .check-list li i {
   color: #63ab45; /* primary-color */
