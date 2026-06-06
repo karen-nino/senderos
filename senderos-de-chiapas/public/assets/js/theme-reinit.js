@@ -6,6 +6,10 @@
 (function () {
     'use strict';
 
+    // Nota: .place-slider y .slider-active-5-item NO se incluyen aquí porque sus
+    // componentes React (PlaceSlider.tsx y GallerySlider.tsx) gestionan su propio
+    // ciclo de vida (init + unslick en useEffect). Tocarlos desde aquí causa una
+    // race condition que produce el error "e.$slides is null".
     var SLIDER_SELECTORS = [
         '.hero-slider-one',
         '.hero-slider-two',
@@ -14,8 +18,6 @@
         '.slider-destinations-grid',
         '.slider-active-3-item-dot',
         '.slider-active-4-item',
-        '.slider-active-5-item',
-        '.place-slider',
         '.recent-place-slider',
         '.testimonial-slider-one',
         '.product-big-slider',
@@ -113,25 +115,11 @@
                 ]
             });
         }
-        if ($('.slider-active-5-item').length) {
-            $('.slider-active-5-item').slick({
-                dots: false, arrows: false, infinite: true, speed: 800, autoplay: true,
-                slidesToShow: 5, slidesToScroll: 1,
-                prevArrow: '<div class="prev"><i class="far fa-arrow-left"></i></div>',
-                nextArrow: '<div class="next"><i class="far fa-arrow-right"></i></div>',
-                responsive: [
-                    { breakpoint: 1400, settings: { slidesToShow: 4 } },
-                    { breakpoint: 1199, settings: { slidesToShow: 3 } },
-                    { breakpoint: 991, settings: { slidesToShow: 2 } },
-                    { breakpoint: 575, settings: { slidesToShow: 1 } }
-                ]
-            });
-        }
+        // .slider-active-5-item: gestionado por GallerySlider.tsx (init + unslick).
         // Importante: no inicializar Slick en elementos ocultos (display:none),
         // porque calcula anchos en 0 y el slider queda roto en mobile / navegación SPA.
         //
-        // place-slider: ahora se inicializa desde el componente React PlaceSlider.tsx
-        // (useEffect con reintentos) para evitar problemas de timing en deploy.
+        // place-slider: gestionado por PlaceSlider.tsx (useEffect con reintentos).
         if ($('.recent-place-slider').length) {
             var placeArrows = $('.place-arrows');
             $('.recent-place-slider').slick({
