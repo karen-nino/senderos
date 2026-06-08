@@ -1,25 +1,52 @@
 /**
  * Plugins configuration.
  * - SEO: plugin oficial para meta tags y análisis SEO en el Content Manager.
- * - Upload: provider local, límite 5MB, breakpoints para imágenes responsivas (thumbnails).
- * No se modifican configuraciones sensibles (auth, transfer, etc.); eso sigue en config/admin.ts.
+ * - Upload: Cloudinary cuando hay credenciales (prod en Fly), local en caso contrario (dev).
+ *   Esto evita que las fotos se pierdan en cada deploy a Fly (filesystem efímero).
  */
-export default ({ env }) => ({
-  seo: {
-    enabled: true,
-  },
-  upload: {
-    config: {
-      provider: 'local',
-      providerOptions: {
-        sizeLimit: 5 * 1024 * 1024, // 5MB (local provider)
-      },
-      sizeLimit: 5 * 1024 * 1024, // 5MB (límite del plugin Upload)
-      breakpoints: {
-        large: 1000,
-        medium: 750,
-        small: 500,
-      },
+export default ({ env }) => {
+  const cloudinaryName = env('CLOUDINARY_NAME');
+  const useCloudinary = Boolean(
+    cloudinaryName && env('CLOUDINARY_KEY') && env('CLOUDINARY_SECRET'),
+  );
+
+  return {
+    seo: {
+      enabled: true,
     },
-  },
-});
+    upload: {
+      config: useCloudinary
+        ? {
+            provider: 'cloudinary',
+            providerOptions: {
+              cloud_name: cloudinaryName,
+              api_key: env('CLOUDINARY_KEY'),
+              api_secret: env('CLOUDINARY_SECRET'),
+            },
+            actionOptions: {
+              upload: {},
+              uploadStream: {},
+              delete: {},
+            },
+            sizeLimit: 5 * 1024 * 1024,
+            breakpoints: {
+              large: 1000,
+              medium: 750,
+              small: 500,
+            },
+          }
+        : {
+            provider: 'local',
+            providerOptions: {
+              sizeLimit: 5 * 1024 * 1024,
+            },
+            sizeLimit: 5 * 1024 * 1024,
+            breakpoints: {
+              large: 1000,
+              medium: 750,
+              small: 500,
+            },
+          },
+    },
+  };
+};
