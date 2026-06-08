@@ -93,9 +93,9 @@ export default function Header() {
                     <li className="menu-item">
                       <Link href="/paquetes" onClick={closeMenu}>Paquetes</Link>
                     </li>
-                    <li className="menu-item">
+                    {/* <li className="menu-item">
                       <Link href="/internacional" onClick={closeMenu}>Internacional</Link>
-                    </li>
+                    </li> */}
                     {/* <li className="menu-item has-children">
                       <a href="#">Destinos Info</a>
                       <ul className="sub-menu">
