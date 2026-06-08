@@ -102,6 +102,14 @@ export default async function TourDetailPage({ params }: PageProps) {
   const shuffled = [...otherTours].sort(() => Math.random() - 0.5)
   const randomTours = shuffled.slice(0, 4)
 
+  // Imágenes únicas para la sección Galería (mismas que alimentaban al PlaceSlider)
+  const galleryImages = (() => {
+    const raw = destination.imagesDetails?.filter(Boolean) ?? []
+    if (raw.length === 0) return destination.image ? [destination.image] : []
+    const seen = new Set<string>()
+    return raw.filter((u) => (seen.has(u) ? false : (seen.add(u), true)))
+  })()
+
   // Mensaje de WhatsApp con todos los detalles del tour
   const routeList = destination.routeList ?? (destination.route ? [destination.route] : [])
   const whatsappLines = [
@@ -181,6 +189,16 @@ export default async function TourDetailPage({ params }: PageProps) {
               </div>
             </div>
 
+            {/* Galería - Visible only on mobile/tablet, antes de los Detalles del Tour */}
+            {galleryImages.length > 0 && (
+              <div className="d-block d-xl-none">
+                <div className="package-description wow fadeInUp mb-40">
+                  <h3 className="title">Galería</h3>
+                  <GallerySlider images={galleryImages} embed />
+                </div>
+              </div>
+            )}
+
             {/* Booking Info + Calendar - Visible only on mobile/tablet, right after Tour Title (misma info que desktop) */}
             <div className="sidebar-widget-area d-block d-xl-none pb-30">
               {(destination.departures && destination.departures.length > 0
@@ -234,21 +252,15 @@ export default async function TourDetailPage({ params }: PageProps) {
 
             <div className="row">
               <div className="col-xl-8">
-                {/* Galería */}
-                {(() => {
-                  const raw = destination.imagesDetails?.filter(Boolean) ?? []
-                  const seen = new Set<string>()
-                  const galleryImages = raw.length > 0
-                    ? raw.filter((u) => (seen.has(u) ? false : (seen.add(u), true)))
-                    : [destination.image]
-                  if (galleryImages.length === 0) return null
-                  return (
+                {/* Galería - sólo desktop (en mobile se muestra arriba, antes de los Detalles) */}
+                {galleryImages.length > 0 && (
+                  <div className="d-none d-xl-block">
                     <div className="package-description pt-45 wow fadeInUp mb-40">
                       <h3 className="title">Galería</h3>
                       <GallerySlider images={galleryImages} embed />
                     </div>
-                  )
-                })()}
+                  </div>
+                )}
                 {/* Descripción + Ruta: mismo patrón que package-details */}
                 {destination.description?.trim() && (
                   <div className="package-description pt-45 wow fadeInUp mb-40">
