@@ -1,13 +1,15 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 
 interface GallerySliderProps {
   images: string[]
+  embed?: boolean
 }
 
-export default function GallerySlider({ images }: GallerySliderProps) {
+export default function GallerySlider({ images, embed = false }: GallerySliderProps) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
+  const sliderRef = useRef<HTMLDivElement>(null)
   const list = images || []
 
   const openLightbox = useCallback((e: React.MouseEvent, index: number) => {
@@ -41,38 +43,55 @@ export default function GallerySlider({ images }: GallerySliderProps) {
 
   useEffect(() => {
     if (typeof window === 'undefined') return
+    const el = sliderRef.current
+    if (!el) return
+
+    const settings = embed
+      ? {
+          dots: false,
+          arrows: true,
+          infinite: true,
+          speed: 600,
+          autoplay: false,
+          slidesToShow: 1,
+          slidesToScroll: 1,
+          prevArrow: '<button type="button" class="prev slick-arrow gallery-embed-arrow" aria-label="Anterior"><i class="far fa-angle-left"></i></button>',
+          nextArrow: '<button type="button" class="next slick-arrow gallery-embed-arrow" aria-label="Siguiente"><i class="far fa-angle-right"></i></button>',
+        }
+      : {
+          dots: false,
+          arrows: false,
+          infinite: true,
+          speed: 800,
+          autoplay: true,
+          slidesToShow: 5,
+          slidesToScroll: 1,
+          prevArrow: '<div class="prev"><i class="far fa-arrow-left"></i></div>',
+          nextArrow: '<div class="next"><i class="far fa-arrow-right"></i></div>',
+          responsive: [
+            { breakpoint: 1400, settings: { slidesToShow: 4 } },
+            { breakpoint: 1199, settings: { slidesToShow: 3 } },
+            { breakpoint: 991, settings: { slidesToShow: 2 } },
+            { breakpoint: 575, settings: { slidesToShow: 1 } },
+          ],
+        }
 
     const initSlider = () => {
       const $ = (window as any).jQuery
-      if (!$ || !$('.slider-active-5-item').length || typeof $.fn.slick === 'undefined') return false
-      if ($('.slider-active-5-item').hasClass('slick-initialized')) {
-        try { $('.slider-active-5-item').slick('unslick') } catch (_) { /* ignore */ }
+      if (!$ || typeof $.fn.slick === 'undefined') return false
+      const $el = $(el)
+      if ($el.hasClass('slick-initialized')) {
+        try { $el.slick('unslick') } catch (_) { /* ignore */ }
       }
-      $('.slider-active-5-item').slick({
-        dots: false,
-        arrows: false,
-        infinite: true,
-        speed: 800,
-        autoplay: true,
-        slidesToShow: 5,
-        slidesToScroll: 1,
-        prevArrow: '<div class="prev"><i class="far fa-arrow-left"></i></div>',
-        nextArrow: '<div class="next"><i class="far fa-arrow-right"></i></div>',
-        responsive: [
-          { breakpoint: 1400, settings: { slidesToShow: 4 } },
-          { breakpoint: 1199, settings: { slidesToShow: 3 } },
-          { breakpoint: 991, settings: { slidesToShow: 2 } },
-          { breakpoint: 575, settings: { slidesToShow: 1 } },
-        ],
-      })
+      $el.slick(settings)
       return true
     }
 
     if (initSlider()) {
       return () => {
         const $ = (window as any).jQuery
-        if ($ && $('.slider-active-5-item').hasClass('slick-initialized')) {
-          try { $('.slider-active-5-item').slick('unslick') } catch (_) { /* ignore */ }
+        if ($ && $(el).hasClass('slick-initialized')) {
+          try { $(el).slick('unslick') } catch (_) { /* ignore */ }
         }
       }
     }
@@ -87,37 +106,46 @@ export default function GallerySlider({ images }: GallerySliderProps) {
     return () => {
       clearInterval(id)
       const $ = (window as any).jQuery
-      if ($ && $('.slider-active-5-item').hasClass('slick-initialized')) {
-        try { $('.slider-active-5-item').slick('unslick') } catch (_) { /* ignore */ }
+      if ($ && $(el).hasClass('slick-initialized')) {
+        try { $(el).slick('unslick') } catch (_) { /* ignore */ }
       }
     }
-  }, [images])
+  }, [images, embed])
+
+  const sliderMarkup = (
+    <div
+      ref={sliderRef}
+      className={`slider-active-5-item wow fadeInUp${embed ? ' gallery-embed-slider' : ''}`}
+    >
+      {list.map((src, i) => (
+        <div key={i} className="single-gallery-item">
+          <div className="gallery-img">
+            <img src={src} alt={`Gallery Image ${i + 1}`} />
+            <div className="hover-overlay">
+              <a
+                href={src}
+                className="icon-btn"
+                onClick={(e) => openLightbox(e, i)}
+                aria-label="Ver imagen ampliada"
+              >
+                <i className="far fa-plus"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
 
   return (
     <>
-      <section className="gallery-section pt-200 mbm-150">
-        <div className="container-fluid">
-          <div className="slider-active-5-item wow fadeInUp">
-            {list.map((src, i) => (
-              <div key={i} className="single-gallery-item">
-                <div className="gallery-img">
-                  <img src={src} alt={`Gallery Image ${i + 1}`} />
-                  <div className="hover-overlay">
-                    <a
-                      href={src}
-                      className="icon-btn"
-                      onClick={(e) => openLightbox(e, i)}
-                      aria-label="Ver imagen ampliada"
-                    >
-                      <i className="far fa-plus"></i>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {embed ? (
+        sliderMarkup
+      ) : (
+        <section className="gallery-section pt-200 mbm-150">
+          <div className="container-fluid">{sliderMarkup}</div>
+        </section>
+      )}
 
       {lightboxIndex !== null && (
         <div

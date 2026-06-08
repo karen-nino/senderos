@@ -5,6 +5,7 @@ import Footer from '@/components/Footer'
 import Link from 'next/link'
 import { WhatsAppIcon } from '@/components/WhatsAppIcon'
 import PlaceSlider from '@/components/PlaceSlider'
+import GallerySlider from '@/components/GallerySlider'
 import { JsonLd, buildProductJsonLd } from '@/components/JsonLd'
 import { fetchTourBySlug, fetchTourPageData, STRAPI_REVALIDATE_SECONDS } from '@/lib/strapi'
 
@@ -233,6 +234,21 @@ export default async function TourDetailPage({ params }: PageProps) {
 
             <div className="row">
               <div className="col-xl-8">
+                {/* Galería */}
+                {(() => {
+                  const raw = destination.imagesDetails?.filter(Boolean) ?? []
+                  const seen = new Set<string>()
+                  const galleryImages = raw.length > 0
+                    ? raw.filter((u) => (seen.has(u) ? false : (seen.add(u), true)))
+                    : [destination.image]
+                  if (galleryImages.length === 0) return null
+                  return (
+                    <div className="package-description pt-45 wow fadeInUp mb-40">
+                      <h3 className="title">Galería</h3>
+                      <GallerySlider images={galleryImages} embed />
+                    </div>
+                  )
+                })()}
                 {/* Descripción + Ruta: mismo patrón que package-details */}
                 {destination.description?.trim() && (
                   <div className="package-description pt-45 wow fadeInUp mb-40">
