@@ -4,7 +4,8 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
 import { WhatsAppIcon } from '@/components/WhatsAppIcon'
-import PlaceSlider from '@/components/PlaceSlider'
+// import PlaceSlider from '@/components/PlaceSlider'
+import GallerySlider from '@/components/GallerySlider'
 import { JsonLd, buildProductJsonLd } from '@/components/JsonLd'
 import { fetchPackageBySlug, fetchHolidayBySlug, fetchPackages, STRAPI_REVALIDATE_SECONDS } from '@/lib/strapi'
 
@@ -113,11 +114,14 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
         ? fallbackRouteItems
         : [locationLabel]
 
-  // Para el slider: igual que tour-details, usar imagesDetails y fallback a image
-  const defaultImage = FALLBACK.image
-  const img1 = pkg.imagesDetails?.[0] ?? pkg.image ?? defaultImage
-  const img2 = pkg.imagesDetails?.[1] ?? pkg.image ?? defaultImage
-  const images = [img1, img2, img1, img2]
+  // Imágenes únicas para la sección Galería
+  const galleryImages = (() => {
+    const raw = (pkg.imagesDetails?.filter(Boolean) ?? []) as string[]
+    const base = (pkg.image ? [pkg.image] : []) as string[]
+    const list = raw.length > 0 ? raw : base.length > 0 ? base : [FALLBACK.image]
+    const seen = new Set<string>()
+    return list.filter((u) => (seen.has(u) ? false : (seen.add(u), true)))
+  })()
 
   // Mensaje de WhatsApp con todos los detalles del paquete
   const whatsappLines = [
@@ -156,8 +160,8 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
 
       {/* ====== Start Place Details Section (basado en destination-details) ====== */}
       <section className="place-details-section">
-        {/* Place Slider - mosaico horizontal */}
-        {(() => {
+        {/* Place Slider - mosaico horizontal (oculto por el momento) */}
+        {/* {(() => {
           const gallery = (() => {
             const raw = (pkg.imagesDetails?.filter(Boolean) ?? []) as string[]
             const base = (pkg.image ? [pkg.image] : []) as string[]
@@ -171,7 +175,7 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
           })()
 
           return <PlaceSlider images={images} alt={pkg.title} />
-        })()}
+        })()} */}
 
         <div className="container">
           <div className="tour-details-wrapper pt-80">
@@ -198,6 +202,16 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                 </div>
               </div>
             </div>
+
+            {/* Galería - Visible only on mobile/tablet, antes de los Detalles del paquete */}
+            {galleryImages.length > 0 && (
+              <div className="d-block d-xl-none">
+                <div className="package-description wow fadeInUp mb-40">
+                  <h3 className="title">Galería</h3>
+                  <GallerySlider images={galleryImages} embed />
+                </div>
+              </div>
+            )}
 
             {/* Booking Info + Calendar - Visible only on mobile/tablet */}
             <div className="sidebar-widget-area d-block d-xl-none pb-30">
@@ -237,6 +251,15 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
 
             <div className="row">
               <div className="col-xl-8">
+                {/* Galería - sólo desktop (en mobile se muestra arriba, antes de los Detalles) */}
+                {galleryImages.length > 0 && (
+                  <div className="d-none d-xl-block">
+                    <div className="package-description pt-45 wow fadeInUp mb-40">
+                      <h3 className="title">Galería</h3>
+                      <GallerySlider images={galleryImages} embed />
+                    </div>
+                  </div>
+                )}
 
                 {/* Bloque: descripción del paquete y lista de lugares de la ruta */}
                 <div className="package-description-route pt-45 wow fadeInUp mb-100">
