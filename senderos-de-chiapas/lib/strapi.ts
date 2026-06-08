@@ -761,9 +761,9 @@ export function adaptStrapiDestination(
     departure: extractDepartureString(d.departure),
     includes: blocksToList(d.includes),
     slug:
-      d.slug ??
-      getSlugFromLink(d.link) ??
-      (d.title ? slugify(d.title) : undefined) ??
+      (d.slug && d.slug.trim()) ||
+      getSlugFromLink(d.link) ||
+      (d.title ? slugify(d.title) : "") ||
       (d.documentId ? String(d.documentId) : undefined),
     documentId: d.documentId ? String(d.documentId) : undefined,
   };
