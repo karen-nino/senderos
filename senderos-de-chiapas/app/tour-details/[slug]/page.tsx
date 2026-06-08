@@ -4,7 +4,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
 import { WhatsAppIcon } from '@/components/WhatsAppIcon'
-import PlaceSlider from '@/components/PlaceSlider'
+// import PlaceSlider from '@/components/PlaceSlider'
 import GallerySlider from '@/components/GallerySlider'
 import { JsonLd, buildProductJsonLd } from '@/components/JsonLd'
 import { fetchTourBySlug, fetchTourPageData, STRAPI_REVALIDATE_SECONDS } from '@/lib/strapi'
@@ -141,8 +141,8 @@ export default async function TourDetailPage({ params }: PageProps) {
 
       {/* ====== Start Place Details Section (tour-details.html) ====== */}
       <section className="place-details-section">
-        {/* Place Slider - mosaico horizontal */}
-        {(() => {
+        {/* Place Slider - mosaico horizontal (oculto por el momento) */}
+        {/* {(() => {
           const gallery = (() => {
             const raw = destination.imagesDetails?.filter(Boolean) ?? [];
             if (raw.length === 0) return [destination.image];
@@ -154,7 +154,7 @@ export default async function TourDetailPage({ params }: PageProps) {
             return [0, 1, 2, 3].map((i) => list[i % list.length]);
           })();
           return <PlaceSlider images={images} alt={destination.title} />;
-        })()}
+        })()} */}
 
         <div className="container">
           <div className="tour-details-wrapper pt-80">
