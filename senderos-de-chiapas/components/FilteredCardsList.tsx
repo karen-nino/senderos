@@ -89,10 +89,13 @@ export default function FilteredCardsList({
 
       {filtered.length > 0 ? (
         groups ? (
-          groups.map((group) => (
-            <div key={group.key} className="tours-group mb-60">
+          groups.map((group, idx) => (
+            <div
+              key={group.key}
+              className={`tours-group ${idx === groups.length - 1 ? '' : 'mb-120'} ${idx === 0 ? '' : 'pt-60'}`.trim()}
+            >
               {group.label && (
-                <div className="section-title text-center mb-30 wow fadeInDown">
+                <div className="section-title text-center pt-40 mb-60 wow fadeInDown">
                   <span className="sub-title">{group.label}</span>
                 </div>
               )}
