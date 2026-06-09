@@ -343,7 +343,7 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                                     {daysMap.get(day)!.map((item: { dayTitle: string; time?: string; activity: string; description?: string; routeItinerary?: string; accommodation?: string }, j: number) => (
                                       <React.Fragment key={j}>
                                         <li>
-                                          <i className="fas fa-clock"></i>
+                                          <i className="fas fa-map-marker-alt"></i>
                                           {item.time ? `${item.time} - ` : ''}
                                           {item.activity}
                                         </li>
