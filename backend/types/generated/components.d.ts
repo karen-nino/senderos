@@ -71,7 +71,6 @@ export interface HomeServices extends Struct.ComponentSchema {
   };
   attributes: {
     description: Schema.Attribute.Text;
-    icon: Schema.Attribute.String;
     image: Schema.Attribute.Media<'images', true>;
     list: Schema.Attribute.Blocks;
     subtitle: Schema.Attribute.String;

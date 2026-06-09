@@ -227,9 +227,6 @@ export default async function Home() {
                         <div className="row pt-50">
                           <div className="col-md-6">
                             <div className="activity-content-box pl-lg-40">
-                              {/* <div className="icon">
-                                <i className={svc.icon || 'flaticon-camp'}></i>
-                              </div> */}
                               <h3 className="title">{svc.title || svc.subtitle || 'Servicio'}</h3>
                               {svc.description && (
                                 <p>{svc.description}</p>
@@ -263,9 +260,6 @@ export default async function Home() {
                       <div className="row align-items-center">
                         <div className="col-md-6">
                           <div className="activity-content-box pl-lg-40">
-                            {/* <div className="icon">
-                              <i className="flaticon-camp"></i>
-                            </div> */}
                             <h3 className="title">Tu próxima aventura, empezando aquí y ahora</h3>
                             <ul className="check-list">
                               <li><i className="fas fa-badge-check"></i>Tours Diarios</li>
