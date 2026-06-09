@@ -193,7 +193,6 @@ export default async function TourDetailPage({ params }: PageProps) {
             {galleryImages.length > 0 && (
               <div className="d-block d-xl-none">
                 <div className="package-description wow fadeInUp mb-40">
-                  <h3 className="title">Galería</h3>
                   <GallerySlider images={galleryImages} embed />
                 </div>
               </div>
@@ -256,7 +255,6 @@ export default async function TourDetailPage({ params }: PageProps) {
                 {galleryImages.length > 0 && (
                   <div className="d-none d-xl-block">
                     <div className="package-description pt-45 wow fadeInUp mb-40">
-                      <h3 className="title">Galería</h3>
                       <GallerySlider images={galleryImages} embed />
                     </div>
                   </div>
