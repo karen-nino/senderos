@@ -105,7 +105,7 @@ export default async function About() {
   const whatWeSubTitle = data.whatWeSubTitle ?? 'Beneficios'
   const whatWeTitle = data.whatWeTitle ?? 'Razones para viajar con nosotros'
 
-  const ctaTitle = data.cta?.title ?? data.ctaTitle ?? 'Listo para una auténtica aventura en cualquier rincón del mundo'
+  const ctaTitle = data.cta?.title ?? data.ctaTitle ?? '¿Listo para una auténtica aventura en cualquier rincón de Chiapas?'
   const ctaButtonText = data.cta?.buttonText ?? data.ctaButtonText ?? 'Explora Destinos'
   const ctaButtonLink = data.cta?.buttonLink ?? data.ctaButtonLink ?? '/tours'
 
