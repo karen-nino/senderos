@@ -223,7 +223,7 @@ export default async function Home() {
                         className={`tab-pane fade ${idx === 0 ? 'show active' : ''}`}
                         id={`tab${idx + 1}`}
                       >
-                        <div className="row align-items-center">
+                        <div className="row pt-50">
                           <div className="col-md-6">
                             <div className="activity-content-box pl-lg-40">
                               {/* <div className="icon">
