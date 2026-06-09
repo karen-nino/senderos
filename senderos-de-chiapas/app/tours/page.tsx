@@ -58,22 +58,27 @@ export default async function ToursPage() {
         <section className="places-section pt-80 pb-180">
           <div className="places-section__container">
             <FilteredCardsList
-              items={displayDestinations.map((d, i) => ({
-                title: d.title,
-                key: String(d.link || d.title || i),
-                content: (
-                  <TourItem
-                    title={d.title}
-                    subtitle={tourCardSubtitle(d)}
-                    image={d.image}
-                    link={getTourDetailHref(d)}
-                    departureDate={d.departureDate}
-                    duration={d.duration}
-                    price={d.price}
-                    badge={d.badge}
-                  />
-                ),
-              }))}
+              items={displayDestinations.map((d, i) => {
+                const departure = d.departure?.trim()
+                return {
+                  title: d.title,
+                  key: String(d.link || d.title || i),
+                  groupKey: departure || '__sin_departure__',
+                  groupLabel: departure ? `Saliendo de ${departure}` : '',
+                  content: (
+                    <TourItem
+                      title={d.title}
+                      subtitle={tourCardSubtitle(d)}
+                      image={d.image}
+                      link={getTourDetailHref(d)}
+                      departureDate={d.departureDate}
+                      duration={d.duration}
+                      price={d.price}
+                      badge={d.badge}
+                    />
+                  ),
+                }
+              })}
               searchPlaceholder="Buscar tour por nombre"
               emptyMessage="No encontramos tours que coincidan con tu búsqueda."
             />

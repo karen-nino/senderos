@@ -6,6 +6,8 @@ export interface FilteredCardItem {
   title: string
   key: string
   content: ReactNode
+  groupKey?: string
+  groupLabel?: string
 }
 
 interface FilteredCardsListProps {
@@ -42,6 +44,23 @@ export default function FilteredCardsList({
     })
   }, [items, query])
 
+  const hasGroups = useMemo(
+    () => items.some((it) => it.groupKey),
+    [items],
+  )
+
+  const groups = useMemo(() => {
+    if (!hasGroups) return null
+    const map = new Map<string, { label: string; items: FilteredCardItem[] }>()
+    for (const it of filtered) {
+      const key = it.groupKey || '__ungrouped__'
+      const label = it.groupLabel || ''
+      if (!map.has(key)) map.set(key, { label, items: [] })
+      map.get(key)!.items.push(it)
+    }
+    return Array.from(map.entries()).map(([key, value]) => ({ key, ...value }))
+  }, [filtered, hasGroups])
+
   return (
     <>
       <div className="tours-filters container">
@@ -69,13 +88,32 @@ export default function FilteredCardsList({
       </div>
 
       {filtered.length > 0 ? (
-        <div className={gridClassName}>
-          {filtered.map((it) => (
-            <div key={it.key} className="places-section__item">
-              <div className="wow fadeInUp">{it.content}</div>
+        groups ? (
+          groups.map((group) => (
+            <div key={group.key} className="tours-group mb-60">
+              {group.label && (
+                <div className="section-title text-center mb-30 wow fadeInDown">
+                  <span className="sub-title">{group.label}</span>
+                </div>
+              )}
+              <div className={gridClassName}>
+                {group.items.map((it) => (
+                  <div key={it.key} className="places-section__item">
+                    <div className="wow fadeInUp">{it.content}</div>
+                  </div>
+                ))}
+              </div>
             </div>
-          ))}
-        </div>
+          ))
+        ) : (
+          <div className={gridClassName}>
+            {filtered.map((it) => (
+              <div key={it.key} className="places-section__item">
+                <div className="wow fadeInUp">{it.content}</div>
+              </div>
+            ))}
+          </div>
+        )
       ) : (
         <p className="tours-filters__empty container text-center">{emptyMessage}</p>
       )}

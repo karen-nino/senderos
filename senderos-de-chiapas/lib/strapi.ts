@@ -728,14 +728,40 @@ export function parseHomeServices(homeData: unknown): AdaptedHomeService[] {
   });
 }
 
+/** Mapa de variantes (sin acentos / minúsculas) a su forma canónica con acentos. */
+const DEPARTURE_CANONICAL: Record<string, string> = {
+  "tuxtla gutierrez": "Tuxtla Gutiérrez",
+  "san cristobal de las casas": "San Cristóbal de las Casas",
+};
+
+/** Normaliza un texto a clave sin acentos y en minúsculas para comparar variantes. */
+function normalizeDepartureKey(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** Si la cadena coincide con una variante conocida, devuelve la forma canónica con acentos. */
+function canonicalizeDeparture(value: string): string {
+  const key = normalizeDepartureKey(value);
+  return DEPARTURE_CANONICAL[key] ?? value.trim();
+}
+
 /** Extrae el string `departure` desde Tour (componente repetible) o desde otros tipos donde es string plano. */
 function extractDepartureString(
   raw: StrapiDestinationItem["departure"],
 ): string | undefined {
   if (raw == null) return undefined;
-  if (typeof raw === "string") return raw.trim() || undefined;
+  if (typeof raw === "string") {
+    const trimmed = raw.trim();
+    return trimmed ? canonicalizeDeparture(trimmed) : undefined;
+  }
   const first = Array.isArray(raw) ? raw[0] : undefined;
-  return first?.departure?.trim() || undefined;
+  const trimmed = first?.departure?.trim();
+  return trimmed ? canonicalizeDeparture(trimmed) : undefined;
 }
 
 /** Adapta un item de Strapi al formato de DestinationItem / InternationalItem */
@@ -1215,7 +1241,10 @@ function adaptPackageOrHolidayToDetail(item: StrapiPackageItem): AdaptedPackageD
     calendarStart: item.calendarStart,
     calendarEnd: item.calendarEnd,
     accommodation: item.accommodation,
-    departure: item.departure,
+    departure:
+      typeof item.departure === "string" && item.departure.trim()
+        ? canonicalizeDeparture(item.departure)
+        : item.departure,
     transport: item.transport,
     mapItem: (() => {
       const raw = item.mapItem;
@@ -1514,12 +1543,15 @@ function adaptToDestinationDetail(
   const itinerary = parseTourItinerary(d);
   const departureArr = Array.isArray(d.departure) ? d.departure : [];
   const departures = departureArr
-    .map((dep) => ({
-      departure: dep?.departure?.trim() || undefined,
-      transport: dep?.transport?.trim() || undefined,
-      minimumParticipants: dep?.minimumParticipants?.trim() || undefined,
-      arrival: mapArrivalList(dep?.arrival),
-    }))
+    .map((dep) => {
+      const trimmed = dep?.departure?.trim();
+      return {
+        departure: trimmed ? canonicalizeDeparture(trimmed) : undefined,
+        transport: dep?.transport?.trim() || undefined,
+        minimumParticipants: dep?.minimumParticipants?.trim() || undefined,
+        arrival: mapArrivalList(dep?.arrival),
+      };
+    })
     .filter(
       (dep) =>
         dep.departure ||
@@ -1528,10 +1560,13 @@ function adaptToDestinationDetail(
         (dep.arrival && dep.arrival.length > 0),
     );
   const firstDeparture = departureArr[0];
-  const departureStr =
+  const rawDepartureStr =
     firstDeparture?.departure?.trim() ||
     (typeof d.departure === "string" ? d.departure.trim() : undefined) ||
     undefined;
+  const departureStr = rawDepartureStr
+    ? canonicalizeDeparture(rawDepartureStr)
+    : undefined;
   const transportStr =
     firstDeparture?.transport?.trim() || d.transport?.trim() || undefined;
   const minimumParticipantsStr =
