@@ -300,21 +300,7 @@
             ]
         });
     }
-    if ($('.slider-destinations-grid').length) {
-        $('.slider-destinations-grid').slick({
-            dots: false,
-            arrows: true,
-            infinite: true,
-            speed: 800,
-            autoplay: true,
-            variableWidth: true,
-            centerMode: true,
-            centerPadding: '0px',
-            slidesToScroll: 1,
-            prevArrow: '<div class="prev slick-arrow"><i class="far fa-angle-left"></i></div>',
-            nextArrow: '<div class="next slick-arrow"><i class="far fa-angle-right"></i></div>'
-        });
-    }
+    // .slider-destinations-grid: gestionado por ToursHomeSlider.tsx.
     if ($('.slider-active-3-item-dot').length) {
         $('.slider-active-3-item-dot').slick({
             dots: true,

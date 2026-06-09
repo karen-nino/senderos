@@ -6,16 +6,16 @@
 (function () {
     'use strict';
 
-    // Nota: .place-slider y .slider-active-5-item NO se incluyen aquí porque sus
-    // componentes React (PlaceSlider.tsx y GallerySlider.tsx) gestionan su propio
-    // ciclo de vida (init + unslick en useEffect). Tocarlos desde aquí causa una
-    // race condition que produce el error "e.$slides is null".
+    // Nota: .place-slider, .slider-active-5-item y .slider-destinations-grid NO se
+    // incluyen aquí porque sus componentes React (PlaceSlider.tsx, GallerySlider.tsx,
+    // ToursHomeSlider.tsx) gestionan su propio ciclo de vida (init + unslick en
+    // useEffect). Tocarlos desde aquí causa una race condition que produce el error
+    // "e.$slides is null" o que slick no se inicialice en deploy.
     var SLIDER_SELECTORS = [
         '.hero-slider-one',
         '.hero-slider-two',
         '.hero-slider-three',
         '.slider-active-3-item',
-        '.slider-destinations-grid',
         '.slider-active-3-item-dot',
         '.slider-active-4-item',
         '.recent-place-slider',
@@ -80,15 +80,7 @@
                 ]
             });
         }
-        if ($('.slider-destinations-grid').length) {
-            $('.slider-destinations-grid').slick({
-                dots: false, arrows: true, infinite: true, speed: 800, autoplay: true,
-                variableWidth: true, centerMode: true, centerPadding: '0px',
-                slidesToScroll: 1,
-                prevArrow: '<div class="prev slick-arrow"><i class="far fa-angle-left"></i></div>',
-                nextArrow: '<div class="next slick-arrow"><i class="far fa-angle-right"></i></div>'
-            });
-        }
+        // .slider-destinations-grid: gestionado por ToursHomeSlider.tsx.
         if ($('.slider-active-3-item-dot').length) {
             $('.slider-active-3-item-dot').slick({
                 dots: true, arrows: false, infinite: true, speed: 800, autoplay: true,

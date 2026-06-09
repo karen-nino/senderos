@@ -4,6 +4,7 @@ import TourItem from '@/components/TourItem'
 import SeasonPackageItem from '@/components/SeasonPackageItem'
 import HeroSlider from '@/components/HeroSlider'
 import GallerySlider from '@/components/GallerySlider'
+import ToursHomeSlider from '@/components/ToursHomeSlider'
 import Link from 'next/link'
 import { fetchHome, fetchHomeHeroSlides, fetchDestinationsForHome, fetchPackages, fetchSeasonsForHome, parseHomeServices, parseHomeTestimonial, parseHomeGallery, GALLERY_FALLBACK_IMAGES, STRAPI_REVALIDATE_SECONDS, getTourDetailHref, tourCardSubtitle, type AdaptedDestination, type AdaptedHomeService, type AdaptedSeason } from '@/lib/strapi'
 
@@ -153,8 +154,8 @@ export default async function Home() {
                 </div>
               </div>
             </div>
-            <div className="places-section__container">
-              <div className="places-section__grid slider-destinations-grid wow fadeInUp">
+            <div className="places-section__container wow fadeInUp">
+              <ToursHomeSlider>
                 {destinations.map((destination: AdaptedDestination, index: number) => (
                   <div key={index} className="places-section__item">
                     <TourItem
@@ -169,7 +170,7 @@ export default async function Home() {
                     />
                   </div>
                 ))}
-              </div>
+              </ToursHomeSlider>
             </div>
           </div>
         </section>
