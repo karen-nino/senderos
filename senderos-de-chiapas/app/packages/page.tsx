@@ -6,7 +6,7 @@ import PackageItem from '@/components/PackageItem'
 import SeasonPackageItem from '@/components/SeasonPackageItem'
 import FilteredCardsList from '@/components/FilteredCardsList'
 import Link from 'next/link'
-import { fetchPackagesPageData, fetchSeasonsForPackagesPage, STRAPI_REVALIDATE_SECONDS, type AdaptedDestination, type AdaptedSeason } from '@/lib/strapi'
+import { fetchPackagesPageData, fetchSeasonsForPackagesPage, fetchAdventuresForPackagesPage, STRAPI_REVALIDATE_SECONDS, type AdaptedDestination, type AdaptedSeason } from '@/lib/strapi'
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
 
@@ -20,16 +20,19 @@ const DEFAULT_IMAGE = '/assets/images/place/single-place-1.jpg'
 export default async function PackagesPage() {
   let packagesList: AdaptedDestination[] = []
   let seasons: AdaptedSeason[] = []
+  let adventures: AdaptedSeason[] = []
   let imageBannerUrl: string | null = null
 
   try {
-    const [data, seasonsData] = await Promise.all([
+    const [data, seasonsData, adventuresData] = await Promise.all([
       fetchPackagesPageData(),
       fetchSeasonsForPackagesPage(),
+      fetchAdventuresForPackagesPage(),
     ])
     packagesList = data.packages
     imageBannerUrl = data.imageBannerUrl
     seasons = seasonsData
+    adventures = adventuresData
   } catch (error) {
     console.error('Error fetching packages from Strapi:', error)
   }
@@ -37,7 +40,8 @@ export default async function PackagesPage() {
   const displayPackages = packagesList.filter(
     (pkg) => (pkg.badge || '') !== 'oculto'
   )
-  const hasDataFromStrapi = displayPackages.length > 0 || seasons.length > 0
+  const hasDataFromStrapi =
+    displayPackages.length > 0 || seasons.length > 0 || adventures.length > 0
   const bannerBg = imageBannerUrl || '/assets/images/bg/page-bg.jpg'
 
   return (
@@ -97,10 +101,42 @@ export default async function PackagesPage() {
               </div>
             )}
 
-            {/* Grupo 2: Todos los paquetes — título y subtítulo solo si hay paquetes de temporada */}
+            {/* Grupo 2: Paquetes de aventura — solo se muestra si hay datos (no mostrar sección vacía) */}
+            {adventures.length > 0 && (
+              <div className="packages-group packages-group--adventure pb-80">
+                <h2 className="packages-group__title">
+                  Paquetes de Aventura
+                </h2>
+                <p className="packages-group__subtitle pb-60">
+                  Rutas llenas de adrenalina para los más aventureros
+                </p>
+                <div className="places-section__grid places-section__grid--seasonal">
+                  {adventures.map((adventure, index) => (
+                    <div key={adventure.link || index} className="places-section__item">
+                      <div className="wow fadeInUp">
+                        <SeasonPackageItem
+                          variant="card"
+                          title={adventure.title}
+                          image={adventure.image}
+                          link={adventure.link}
+                          category={adventure.category}
+                          dateFormatted={adventure.dateFormatted}
+                          description={adventure.description}
+                          duration={adventure.duration}
+                          price={adventure.price}
+                          badge={adventure.badge}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Grupo 3: Todos los paquetes — título y subtítulo solo si hay otra sección arriba */}
             {displayPackages.length > 0 && (
               <div className="packages-group packages-group--all">
-                {seasons.length > 0 && (
+                {(seasons.length > 0 || adventures.length > 0) && (
                   <>
                     <h2 className="packages-group__title">
                       Todos los paquetes

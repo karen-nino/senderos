@@ -1101,6 +1101,33 @@ export async function fetchSeasonsForPackagesPage(): Promise<AdaptedSeason[]> {
   }
 }
 
+/** Collection Type Adventure (paquetes de aventura): GET /api/adventures. Mismo populate profundo que holidays. */
+const STRAPI_ADVENTURES_POPULATE =
+  "populate[itineraryItem][populate][activity]=*&populate[image]=true&populate[imagesDetails]=true&populate[mapItem]=true";
+const STRAPI_ADVENTURES_URL = `/api/adventures?${STRAPI_ADVENTURES_POPULATE}`;
+
+/** Obtiene los paquetes de aventura desde Strapi Collection Type /api/adventures (Adventure). Mismo shape que Holiday. */
+async function fetchRawAdventuresFromStrapi(): Promise<StrapiSeasonItem[]> {
+  const response = await fetchStrapi(STRAPI_ADVENTURES_URL, STRAPI_TOURS_FETCH_OPTIONS);
+  if (response?.error) return [];
+  const items = getToursArrayFromResponse(response as Record<string, unknown>);
+  return items as StrapiSeasonItem[];
+}
+
+/** Obtiene los paquetes de aventura para la página de Paquetes. */
+export async function fetchAdventuresForPackagesPage(): Promise<AdaptedSeason[]> {
+  try {
+    const rawAdventures = await fetchRawAdventuresFromStrapi();
+    const all = rawAdventures.map((s, i) => adaptStrapiSeasonItem(s, i));
+    return all.filter(
+      (s) => (s.title || s.category) && s.badge !== "oculto",
+    );
+  } catch (error) {
+    console.error("Error fetching adventures from Strapi:", error);
+    return [];
+  }
+}
+
 /** Obtiene los paquetes desde Strapi Collection Type /api/packages */
 export async function fetchPackages(): Promise<AdaptedDestination[]> {
   const result = await fetchPackagesPageData();
