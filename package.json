@@ -3,13 +3,13 @@
   "private": true,
   "description": "Senderos de Chiapas — Next.js frontend + Strapi backend",
   "scripts": {
-    "install:all": "npm install --prefix senderos-de-chiapas && npm install --prefix backend",
-    "dev": "concurrently -n backend,frontend -c blue,green \"npm run dev --prefix backend\" \"npm run dev --prefix senderos-de-chiapas\"",
-    "dev:backend": "npm run dev --prefix backend",
-    "dev:frontend": "npm run dev --prefix senderos-de-chiapas",
-    "build": "npm run build --prefix backend && npm run build --prefix senderos-de-chiapas",
-    "build:backend": "npm run build --prefix backend",
-    "build:frontend": "npm run build --prefix senderos-de-chiapas"
+    "install:all": "pnpm -C senderos-de-chiapas install && pnpm -C backend install",
+    "dev": "concurrently -n backend,frontend -c blue,green \"pnpm -C backend dev\" \"pnpm -C senderos-de-chiapas dev\"",
+    "dev:backend": "pnpm -C backend dev",
+    "dev:frontend": "pnpm -C senderos-de-chiapas dev",
+    "build": "pnpm -C backend build && pnpm -C senderos-de-chiapas build",
+    "build:backend": "pnpm -C backend build",
+    "build:frontend": "pnpm -C senderos-de-chiapas build"
   },
   "devDependencies": {
     "concurrently": "^9.1.0"
