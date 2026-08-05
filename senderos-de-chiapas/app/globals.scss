@@ -1842,16 +1842,12 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   align-items: center;
   gap: 8px;
 }
+.single-service-item .seasonal-pill,
 .single-service-item--seasonal .seasonal-pill {
   display: inline-block;
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #63ab45;
-  background: rgba(99, 171, 69, 0.12);
-  padding: 2px 8px;
-  border-radius: 20px;
+  font-style: italic;
+  color: #6c757d;
+  margin-bottom: 4px;
 }
 .single-service-item--seasonal .seasonal-date {
   font-size: 11px;
