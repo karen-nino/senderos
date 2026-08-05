@@ -34,12 +34,12 @@ function SeasonPackageCardBody({
   return (
     <div className="single-service-item mb-40">
       <div className="content">
+        <h3 className="title">{title}</h3>
         {category ? (
           <div className="mb-10">
             <span className="seasonal-pill">{category}</span>
           </div>
         ) : null}
-        <h3 className="title">{title}</h3>
         {description ? <p className="pb-2">{description}</p> : null}
         {(dateFormatted || duration || price) && (
           <div className="destination-info mb-15">

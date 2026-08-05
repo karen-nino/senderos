@@ -457,6 +457,59 @@ export interface ApiAboutAbout extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiAdventureAdventure extends Struct.CollectionTypeSchema {
+  collectionName: 'adventures';
+  info: {
+    displayName: 'Paquetes de Aventura';
+    pluralName: 'adventures';
+    singularName: 'adventure';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    accommodation: Schema.Attribute.String;
+    badge: Schema.Attribute.Enumeration<
+      ['nuevo', 'pocos_lugares', 'agotado', 'oculto']
+    >;
+    calendarEnd: Schema.Attribute.Date;
+    calendarStart: Schema.Attribute.Date;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    departure: Schema.Attribute.String;
+    departureDate: Schema.Attribute.String;
+    description: Schema.Attribute.Blocks;
+    duration: Schema.Attribute.String;
+    home: Schema.Attribute.Boolean;
+    image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    imagesDetails: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
+    includes: Schema.Attribute.Blocks;
+    itineraryItem: Schema.Attribute.Component<'itinerary.itinerary-item', true>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::adventure.adventure'
+    > &
+      Schema.Attribute.Private;
+    mapItem: Schema.Attribute.Component<'map.map-item', true>;
+    noIncludes: Schema.Attribute.Blocks;
+    price: Schema.Attribute.String;
+    priceInternational: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    route: Schema.Attribute.Blocks;
+    subtitle: Schema.Attribute.String;
+    title: Schema.Attribute.String;
+    transport: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiFaqFaq extends Struct.SingleTypeSchema {
   collectionName: 'faqs';
   info: {
@@ -1360,6 +1413,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::about.about': ApiAboutAbout;
+      'api::adventure.adventure': ApiAdventureAdventure;
       'api::faq.faq': ApiFaqFaq;
       'api::gallery.gallery': ApiGalleryGallery;
       'api::holiday.holiday': ApiHolidayHoliday;

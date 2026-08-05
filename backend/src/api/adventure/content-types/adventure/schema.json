@@ -1,0 +1,102 @@
+{
+  "kind": "collectionType",
+  "collectionName": "adventures",
+  "info": {
+    "singularName": "adventure",
+    "pluralName": "adventures",
+    "displayName": "Paquetes de Aventura"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "badge": {
+      "type": "enumeration",
+      "enum": [
+        "nuevo",
+        "pocos_lugares",
+        "agotado",
+        "oculto"
+      ]
+    },
+    "home": {
+      "type": "boolean"
+    },
+    "subtitle": {
+      "type": "string"
+    },
+    "description": {
+      "type": "blocks"
+    },
+    "route": {
+      "type": "blocks"
+    },
+    "transport": {
+      "type": "string"
+    },
+    "departure": {
+      "type": "string"
+    },
+    "duration": {
+      "type": "string"
+    },
+    "accommodation": {
+      "type": "string"
+    },
+    "price": {
+      "type": "string"
+    },
+    "priceInternational": {
+      "type": "string"
+    },
+    "departureDate": {
+      "type": "string"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "imagesDetails": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "calendarStart": {
+      "type": "date"
+    },
+    "calendarEnd": {
+      "type": "date"
+    },
+    "includes": {
+      "type": "blocks"
+    },
+    "noIncludes": {
+      "type": "blocks"
+    },
+    "itineraryItem": {
+      "type": "component",
+      "component": "itinerary.itinerary-item",
+      "repeatable": true
+    },
+    "mapItem": {
+      "type": "component",
+      "component": "map.map-item",
+      "repeatable": true
+    }
+  }
+}
