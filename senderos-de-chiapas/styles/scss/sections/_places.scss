@@ -370,7 +370,6 @@
     @extend %gray-bg;
     @include border-radius(7px);
     border-bottom: none;
-    justify-content: space-between;
     & .nav-link {
       font: 500 18px $font;
       border: none;
