@@ -34,6 +34,7 @@ function getMapUrl(
 const FALLBACK = {
   title: 'Ruta',
   description: '',
+  idealFor: undefined as string | undefined,
   image: '/assets/images/place/single-place-1.jpg',
   imagesDetails: [] as string[],
   price: '$$$',
@@ -216,6 +217,19 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
               </div>
             )}
 
+            {/* Aviso "ideal para" - Visible only on mobile/tablet, antes de Detalles del paquete */}
+            {pkg.idealFor && (
+              <div className="package-ideal-for d-block d-xl-none mb-40" role="note">
+                <div className="package-ideal-for__box">
+                  <i className="fas fa-users" aria-hidden></i>
+                  <p>
+                    <strong>Este paquete es ideal para </strong>
+                    {pkg.idealFor}
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* Booking Info + Calendar - Visible only on mobile/tablet */}
             <div className="sidebar-widget-area d-block d-xl-none pb-30">
               <div className="sidebar-widget booking-info-widget wow fadeInUp mb-40">
@@ -259,6 +273,19 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                   <div className="d-none d-xl-block">
                     <div className="package-description pt-45 wow fadeInUp mb-40">
                       <GallerySlider images={galleryImages} embed />
+                    </div>
+                  </div>
+                )}
+
+                {/* Aviso destacado: para quién es ideal este paquete (antes de la Descripción) - solo desktop; en mobile se muestra arriba de Detalles del paquete */}
+                {pkg.idealFor && (
+                  <div className="package-ideal-for d-none d-xl-block pt-45 wow fadeInUp" role="note">
+                    <div className="package-ideal-for__box">
+                      <i className="fas fa-users" aria-hidden></i>
+                      <p>
+                        <strong>Este paquete es ideal para </strong>
+                        {pkg.idealFor}
+                      </p>
                     </div>
                   </div>
                 )}

@@ -903,6 +903,8 @@ export interface StrapiPackageItem {
   badge?: string;
   /** Texto largo o rich text (blocks); Holiday suele usarlo; Package puede tenerlo en CMS */
   description?: string | StrapiBlock | StrapiBlock[];
+  /** Para quién es ideal este paquete (texto simple). Se muestra como aviso destacado. */
+  idealFor?: string;
 }
 
 /** Normaliza badge de Strapi (puede venir en inglés o español) al valor interno. */
@@ -1190,6 +1192,8 @@ export async function fetchPackagesPageData(): Promise<{
 export interface AdaptedPackageDetail {
   title: string;
   description: string;
+  /** Para quién es ideal este paquete; se muestra como aviso destacado antes de la descripción */
+  idealFor?: string;
   image: string;
   /** URLs de imágenes para slider/detalle (como en tour-details) */
   imagesDetails?: string[];
@@ -1280,6 +1284,10 @@ function adaptPackageOrHolidayToDetail(item: StrapiPackageItem): AdaptedPackageD
     title: adapted.title,
     description:
       descriptionFromBlocks(item.description) || adapted.description || "",
+    idealFor:
+      typeof item.idealFor === "string" && item.idealFor.trim()
+        ? item.idealFor.trim()
+        : undefined,
     image: adapted.image,
     imagesDetails: imagesDetails.length > 0 ? imagesDetails : undefined,
     price: adapted.price ?? "Consultar",

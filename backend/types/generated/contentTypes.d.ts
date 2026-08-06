@@ -482,6 +482,7 @@ export interface ApiAdventureAdventure extends Struct.CollectionTypeSchema {
     description: Schema.Attribute.Blocks;
     duration: Schema.Attribute.String;
     home: Schema.Attribute.Boolean;
+    idealFor: Schema.Attribute.Text;
     image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     imagesDetails: Schema.Attribute.Media<
       'images' | 'files' | 'videos' | 'audios',

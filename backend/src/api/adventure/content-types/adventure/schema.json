@@ -32,6 +32,9 @@
     "description": {
       "type": "blocks"
     },
+    "idealFor": {
+      "type": "text"
+    },
     "recommendation": {
       "type": "blocks"
     },
