@@ -1128,6 +1128,22 @@ export async function fetchAdventuresForPackagesPage(): Promise<AdaptedSeason[]>
   }
 }
 
+/** Obtiene los paquetes de aventura para el home (Adventure con home: true). */
+export async function fetchAdventuresForHome(): Promise<AdaptedSeason[]> {
+  try {
+    const rawAdventures = await fetchRawAdventuresFromStrapi();
+    const all = rawAdventures
+      .filter((s) => s.home === true)
+      .map((s, i) => adaptStrapiSeasonItem(s, i));
+    return all.filter(
+      (s) => (s.title || s.category) && s.badge !== "oculto",
+    );
+  } catch (error) {
+    console.error("Error fetching adventures (home) from Strapi:", error);
+    return [];
+  }
+}
+
 /** Obtiene los paquetes desde Strapi Collection Type /api/packages */
 export async function fetchPackages(): Promise<AdaptedDestination[]> {
   const result = await fetchPackagesPageData();

@@ -6,7 +6,7 @@ import HeroSlider from '@/components/HeroSlider'
 import GallerySlider from '@/components/GallerySlider'
 import ToursHomeSlider from '@/components/ToursHomeSlider'
 import Link from 'next/link'
-import { fetchHome, fetchHomeHeroSlides, fetchDestinationsForHome, fetchPackages, fetchSeasonsForHome, parseHomeServices, parseHomeTestimonial, parseHomeGallery, GALLERY_FALLBACK_IMAGES, STRAPI_REVALIDATE_SECONDS, getTourDetailHref, tourCardSubtitle, type AdaptedDestination, type AdaptedHomeService, type AdaptedSeason } from '@/lib/strapi'
+import { fetchHome, fetchHomeHeroSlides, fetchDestinationsForHome, fetchPackages, fetchSeasonsForHome, fetchAdventuresForHome, parseHomeServices, parseHomeTestimonial, parseHomeGallery, GALLERY_FALLBACK_IMAGES, STRAPI_REVALIDATE_SECONDS, getTourDetailHref, tourCardSubtitle, type AdaptedDestination, type AdaptedHomeService, type AdaptedSeason } from '@/lib/strapi'
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
 
@@ -29,6 +29,7 @@ export default async function Home() {
   let testimonial: Awaited<ReturnType<typeof parseHomeTestimonial>> = null
   let galleryImages: string[] = []
   let seasons: AdaptedSeason[] = []
+  let adventures: AdaptedSeason[] = []
   let hasHeroFromStrapi = false
 
   try {
@@ -53,6 +54,7 @@ export default async function Home() {
       (pkg) => (pkg.badge || '') !== 'oculto'
     )
     seasons = await fetchSeasonsForHome()
+    adventures = await fetchAdventuresForHome()
   } catch (error) {
     console.error('Error fetching data from Strapi:', error)
   }
@@ -137,6 +139,40 @@ export default async function Home() {
                   </Link>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Adventure Packages Section - Datos desde Strapi (Adventure con home: true). Mismo layout que Tours. */}
+      {adventures.length > 0 && (
+        <section className="services-seciton pt-160">
+          <div className="container">
+            <div className="row justify-content-center">
+              <div className="col-xl-8 col-lg-10">
+                <div className="section-title text-center mb-60 wow fadeInDown">
+                  <span className="sub-title">Paquetes de Aventura</span>
+                  <h2>Rutas llenas de adrenalina para los más aventureros</h2>
+                </div>
+              </div>
+            </div>
+            <div className="places-section__container wow fadeInUp">
+              <ToursHomeSlider>
+                {adventures.map((adventure: AdaptedSeason, index: number) => (
+                  <div key={adventure.link || index} className="places-section__item">
+                    <TourItem
+                      title={adventure.title}
+                      subtitle={adventure.category || adventure.description || ''}
+                      image={adventure.image}
+                      link={adventure.link}
+                      departureDate={adventure.dateFormatted}
+                      duration={adventure.duration}
+                      price={adventure.price}
+                      badge={adventure.badge}
+                    />
+                  </div>
+                ))}
+              </ToursHomeSlider>
             </div>
           </div>
         </section>
