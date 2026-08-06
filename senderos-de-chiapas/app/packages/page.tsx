@@ -73,7 +73,7 @@ export default async function PackagesPage() {
             {seasons.length > 0 && (
               <div className="packages-group packages-group--seasonal pb-80">
                 <h2 className="packages-group__title">
-                  Paquetes de temporada
+                  Paquetes por temporada
                 </h2>
                 <p className="packages-group__subtitle pb-60">
                   Aprovecha rutas y promociones por fechas especiales

@@ -396,7 +396,7 @@ export default async function Home() {
             <div className="row justify-content-center">
               <div className="col-xl-6">
                 <div className="section-title text-center mb-45 wow fadeInDown">
-                  <span className="sub-title">Paquetes de temporada</span>
+                  <span className="sub-title">Paquetes por temporada</span>
                   <h2>Aprovecha nuestras mejores rutas y promociones por temporada</h2>
                 </div>
               </div>
