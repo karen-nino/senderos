@@ -7,7 +7,7 @@ import { WhatsAppIcon } from '@/components/WhatsAppIcon'
 // import PlaceSlider from '@/components/PlaceSlider'
 import GallerySlider from '@/components/GallerySlider'
 import { JsonLd, buildProductJsonLd } from '@/components/JsonLd'
-import { fetchPackageBySlug, fetchHolidayBySlug, fetchPackages, STRAPI_REVALIDATE_SECONDS } from '@/lib/strapi'
+import { fetchPackageBySlug, fetchHolidayBySlug, fetchAdventureBySlug, fetchPackages, STRAPI_REVALIDATE_SECONDS } from '@/lib/strapi'
 
 const SITE_URL = 'https://senderosdechiapas.com.mx'
 
@@ -59,11 +59,12 @@ export const revalidate = STRAPI_REVALIDATE_SECONDS
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
-  const [packageData, holidayData] = await Promise.all([
+  const [packageData, holidayData, adventureData] = await Promise.all([
     fetchPackageBySlug(slug),
     fetchHolidayBySlug(slug),
+    fetchAdventureBySlug(slug),
   ])
-  const pkg = packageData ?? holidayData
+  const pkg = packageData ?? holidayData ?? adventureData
   const title = pkg?.title ?? 'Paquete'
   const description =
     pkg?.description?.replace(/\s+/g, ' ').trim().slice(0, 160) ||
@@ -92,13 +93,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function PaqueteDetailPage({ params }: PageProps) {
   const { slug } = await params
-  const [packageData, holidayData, allPackages] = await Promise.all([
+  const [packageData, holidayData, adventureData, allPackages] = await Promise.all([
     fetchPackageBySlug(slug),
     fetchHolidayBySlug(slug),
+    fetchAdventureBySlug(slug),
     fetchPackages(),
   ])
-  // Mostrar paquete normal o paquete de temporada (Holiday) según el slug
-  const pkg = packageData ?? holidayData ?? FALLBACK
+  // Mostrar paquete normal, de temporada (Holiday) o de aventura (Adventure) según el slug
+  const pkg = packageData ?? holidayData ?? adventureData ?? FALLBACK
   const locationLabel = pkg.route ?? pkg.title ?? 'Chiapas, México'
 
   // Hasta 3 paquetes aleatorios (distintos al actual) para "Más paquetes"
@@ -354,7 +356,7 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                                           <li><i className="fas fa-route"></i> {item.routeItinerary}</li>
                                         )}
                                         {item.description && (
-                                          <li className="text-muted" style={{ listStyle: 'none' }}>
+                                          <li className="text-muted pb-40" style={{ listStyle: 'none' }}>
                                             {item.description}
                                           </li>
                                         )}

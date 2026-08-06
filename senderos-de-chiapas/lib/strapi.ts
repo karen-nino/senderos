@@ -1344,6 +1344,27 @@ export async function fetchHolidayBySlug(
   }
 }
 
+/** Obtiene un paquete de aventura (Adventure) por slug desde Strapi Collection Type /api/adventures. */
+export async function fetchAdventureBySlug(
+  slug: string,
+): Promise<AdaptedPackageDetail | null> {
+  try {
+    const response = await fetchStrapi(STRAPI_ADVENTURES_URL, STRAPI_TOURS_FETCH_OPTIONS);
+    if (response?.error) return null;
+    const items = getToursArrayFromResponse(response as Record<string, unknown>) as StrapiPackageItem[];
+    const normalizedSlug = slug.toLowerCase().replace(/\s+/g, "-");
+    const item = items.find((p) => {
+      const itemSlug = p.title ? slugify(p.title) : "";
+      return itemSlug === normalizedSlug;
+    });
+    if (item) return adaptPackageOrHolidayToDetail(item);
+    return null;
+  } catch (error) {
+    console.error("Error fetching adventure by slug from Strapi:", error);
+    return null;
+  }
+}
+
 /** Obtiene todos los tours publicados para la home (Collection Type /api/tours). Sin filtro home para que se vean todos; la home excluye solo badge "oculto". */
 export async function fetchDestinationsForHome(): Promise<
   AdaptedDestination[]
