@@ -883,6 +883,8 @@ export interface StrapiPackageItem {
   /** Galería de imágenes para detalle (mismo formato que StrapiDestinationItem.imagesDetails) */
   imagesDetails?: StrapiDestinationItem["imagesDetails"];
   includes?: StrapiBlock | StrapiBlock[];
+  /** Servicios NO incluidos (blocks); cada ítem/párrafo = una fila. */
+  noIncludes?: StrapiBlock | StrapiBlock[];
   /** Itinerario por día (componente repeatable) */
   itineraryItem?: StrapiItineraryItem[];
   /** Fecha inicio para calendario (ej. YYYY-MM-DD) */
@@ -1196,6 +1198,8 @@ export interface AdaptedPackageDetail {
   /** Cada viñeta/bloque de route en Strapi como línea propia */
   routeList?: string[];
   includes?: string[];
+  /** Servicios NO incluidos; si no hay datos, no se muestra la sección */
+  noIncludes?: string[];
   /** Itinerario por días; si no hay datos, no se muestra la sección */
   itinerary?: Array<{
     dayTitle: string;
@@ -1280,6 +1284,7 @@ function adaptPackageOrHolidayToDetail(item: StrapiPackageItem): AdaptedPackageD
     route: adapted.route,
     routeList: routeList ?? undefined,
     includes: adapted.includes,
+    noIncludes: blocksToList(item.noIncludes as StrapiDestinationItem["includes"]),
     itinerary: itinerary?.length ? itinerary : undefined,
     calendarStart: item.calendarStart,
     calendarEnd: item.calendarEnd,

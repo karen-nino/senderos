@@ -365,6 +365,11 @@
   }
 }
 
+/* "No incluye": mismo estilo que "Incluye" pero con icono (X) en rojo */
+.package-includes--excluded .check-list li i {
+  color: #dc3545;
+}
+
 .days-area {
   & .nav-tabs {
     @extend %gray-bg;

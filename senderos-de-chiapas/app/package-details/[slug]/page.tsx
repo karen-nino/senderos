@@ -42,6 +42,7 @@ const FALLBACK = {
   route: undefined as string | undefined,
   routeList: undefined as string[] | undefined,
   includes: undefined as string[] | undefined,
+  noIncludes: undefined as string[] | undefined,
   itinerary: undefined as Array<{ dayTitle: string; time?: string; activity: string; routeItinerary?: string; accommodation?: string }> | undefined,
   calendarStart: undefined as string | undefined,
   calendarEnd: undefined as string | undefined,
@@ -283,7 +284,7 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                 </div>
 
                 {/* Bloque: servicios incluidos en el paquete */}
-                <div className="package-includes pt-45 wow fadeInUp mb-100">
+                <div className="package-includes pt-45 wow fadeInUp mb-40">
                   <h4>Incluye</h4>
                   <p>Este paquete incluye los siguientes servicios:</p>
                   <div className="row align-items-lg-center">
@@ -302,6 +303,23 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                     </div>
                   </div>
                 </div>
+
+                {/* Bloque: servicios NO incluidos — solo si el paquete tiene datos en noIncludes */}
+                {pkg.noIncludes && pkg.noIncludes.length > 0 && (
+                  <div className="package-includes package-includes--excluded pt-45 wow fadeInUp mb-100">
+                    <h4>No incluye</h4>
+                    <p>Este paquete no incluye los siguientes servicios:</p>
+                    <div className="row align-items-lg-center">
+                      <div className="col-lg-12">
+                        <ul className="check-list">
+                          {pkg.noIncludes.map((item: string, i: number) => (
+                            <li key={i}><i className="fas fa-times"></i>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Days Area - Itinerario (solo se muestra si hay datos) */}
                 {pkg.itinerary && pkg.itinerary.length > 0 && (
