@@ -500,6 +500,7 @@ export interface ApiAdventureAdventure extends Struct.CollectionTypeSchema {
     price: Schema.Attribute.String;
     priceInternational: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    recommendation: Schema.Attribute.Blocks;
     route: Schema.Attribute.Blocks;
     subtitle: Schema.Attribute.String;
     title: Schema.Attribute.String;

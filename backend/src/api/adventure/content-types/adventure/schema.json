@@ -32,6 +32,9 @@
     "description": {
       "type": "blocks"
     },
+    "recommendation": {
+      "type": "blocks"
+    },
     "route": {
       "type": "blocks"
     },

@@ -186,7 +186,7 @@ export default async function Home() {
               <div className="col-xl-8 col-lg-10">
                 <div className="section-title text-center mb-60 wow fadeInDown">
                   <span className="sub-title">Tours</span>
-                  <h2>Recorre, disfruta y respira Chiapas</h2>
+                  <h2>Descubre los mejores tours de Chiapas</h2>
                 </div>
               </div>
             </div>

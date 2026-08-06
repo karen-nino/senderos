@@ -885,6 +885,8 @@ export interface StrapiPackageItem {
   includes?: StrapiBlock | StrapiBlock[];
   /** Servicios NO incluidos (blocks); cada ítem/párrafo = una fila. */
   noIncludes?: StrapiBlock | StrapiBlock[];
+  /** Recomendaciones (blocks); cada ítem/párrafo = una fila. */
+  recommendation?: StrapiBlock | StrapiBlock[];
   /** Itinerario por día (componente repeatable) */
   itineraryItem?: StrapiItineraryItem[];
   /** Fecha inicio para calendario (ej. YYYY-MM-DD) */
@@ -1200,6 +1202,8 @@ export interface AdaptedPackageDetail {
   includes?: string[];
   /** Servicios NO incluidos; si no hay datos, no se muestra la sección */
   noIncludes?: string[];
+  /** Recomendaciones; si no hay datos, no se muestra la sección */
+  recommendation?: string[];
   /** Itinerario por días; si no hay datos, no se muestra la sección */
   itinerary?: Array<{
     dayTitle: string;
@@ -1285,6 +1289,7 @@ function adaptPackageOrHolidayToDetail(item: StrapiPackageItem): AdaptedPackageD
     routeList: routeList ?? undefined,
     includes: adapted.includes,
     noIncludes: blocksToList(item.noIncludes as StrapiDestinationItem["includes"]),
+    recommendation: blocksToList(item.recommendation as StrapiDestinationItem["includes"]),
     itinerary: itinerary?.length ? itinerary : undefined,
     calendarStart: item.calendarStart,
     calendarEnd: item.calendarEnd,
