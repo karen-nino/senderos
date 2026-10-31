@@ -3437,9 +3437,10 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   .hero-postal a.hero-postal__wa {
     justify-content: center;
   }
-  .hero-postal a.hero-postal__cta {
-    padding-left: 1.5rem;
-    justify-content: space-between;
+  /* Botones centrados con su ancho natural, uno debajo del otro */
+  .hero-postal a.hero-postal__cta,
+  .hero-postal a.hero-postal__wa {
+    align-self: center;
   }
 }
 
