@@ -2769,7 +2769,7 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
-.hero-postal__card.is-depth-0 { cursor: pointer; }
+.hero-postal__card.is-clickable { cursor: pointer; }
 /* Solo con mouse: en pantallas táctiles el hover se queda pegado tras un toque */
 @media (hover: hover) and (pointer: fine) {
   .hero-postal__card.is-depth-0:hover { --card-t: translateY(-8px) rotate(0deg); }
@@ -2777,6 +2777,11 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
 .hero-postal__card.is-depth-1 { --card-t: translate(-7%, 1.5%) rotate(-5deg); }
 .hero-postal__card.is-depth-2 { --card-t: translate(8%, 2%) rotate(7deg); }
 .hero-postal__card.is-depth-3 { --card-t: translate(8%, 2%) rotate(7deg); opacity: 0; }
+/* Con 4+ slides la postal lanzada pasa a .is-depth-3: debe seguir visible mientras vuela */
+.hero-postal__card.is-tossed-next,
+.hero-postal__card.is-tossed-prev {
+  opacity: 1;
+}
 
 .hero-postal__card.is-tossed-next {
   animation: hero-postal-toss-next 0.9s cubic-bezier(0.65, 0, 0.35, 1) both;
@@ -2862,9 +2867,15 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   to { opacity: 1; transform: none; }
 }
 
+/* Valores iniciales aproximados del alto del header (el componente los corrige al montar) */
 @media (max-width: 1199.98px) {
   .hero-postal {
     --postal-header: 92px;
+  }
+}
+@media (max-width: 767.98px) {
+  .hero-postal {
+    --postal-header: 80px;
   }
 }
 

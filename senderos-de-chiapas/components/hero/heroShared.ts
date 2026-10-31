@@ -141,7 +141,12 @@ export function useHeroCarousel(total: number) {
       if (e.pointerType === 'mouse') setHovered(false)
     },
     onFocus: (e: FocusEvent) => {
-      if ((e.target as HTMLElement).matches?.(':focus-visible')) setFocused(true)
+      // :focus-visible no existe en Safari < 15.4 y matches() lanzaría un error
+      try {
+        if ((e.target as HTMLElement).matches(':focus-visible')) setFocused(true)
+      } catch {
+        // Sin soporte no se distingue teclado de clic: no se pausa
+      }
     },
     onBlur: (e: FocusEvent) => {
       if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setFocused(false)

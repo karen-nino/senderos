@@ -70,6 +70,12 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
     return () => clearTimeout(id)
   }, [leaving])
 
+  // Mientras una postal está en el aire se ignoran nuevos clics (si no, salta de golpe al fondo)
+  const navigate = (index: number) => {
+    if (leaving) return
+    goTo(index)
+  }
+
   const slide = slides[active] ?? slides[0]
   const { text, ctaText, ctaLink } = getHeroText(slide)
   const whatsappHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hola, quiero cotizar: ${slide.title}`)}`
@@ -136,7 +142,7 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
 
         {total > 1 && (
           <div className="hero-postal__nav">
-            <button type="button" onClick={() => goTo(active - 1)} aria-label="Postal anterior">
+            <button type="button" onClick={() => navigate(active - 1)} aria-label="Postal anterior">
               <i className="fal fa-arrow-left" aria-hidden />
             </button>
             <div className="hero-postal__count">
@@ -149,7 +155,7 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
                 />
               </span>
             </div>
-            <button type="button" onClick={() => goTo(active + 1)} aria-label="Postal siguiente">
+            <button type="button" onClick={() => navigate(active + 1)} aria-label="Postal siguiente">
               <i className="fal fa-arrow-right" aria-hidden />
             </button>
           </div>
@@ -168,10 +174,11 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
                 className={[
                   'hero-postal__card',
                   `is-depth-${Math.min(depth, 3)}`,
+                  isTop && total > 1 ? 'is-clickable' : '',
                   isLeaving ? `is-tossed-${leaving?.dir}` : '',
                 ].join(' ')}
                 style={{ zIndex: total - depth }}
-                onClick={() => isTop && total > 1 && goTo(active + 1)}
+                onClick={() => isTop && total > 1 && navigate(active + 1)}
                 onAnimationEnd={() => isLeaving && setLeaving(null)}
                 aria-hidden={!isTop}
                 tabIndex={isTop && total > 1 ? 0 : -1}
