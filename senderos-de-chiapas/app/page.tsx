@@ -10,17 +10,6 @@ import { fetchHome, fetchHomeHeroSlides, fetchDestinationsForHome, fetchPackages
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
 
-const HERO_FALLBACK = [
-  {
-    id: 0,
-    title: 'Travel & Adventure Camping',
-    subtitle: 'Nunc et dui nullam aliquam eget velit. Consectetur nulla convallis viverra quisque eleifend',
-    image: '/assets/images/hero/hero-one_img-1.jpg',
-    ctaText: 'Explorar más',
-    ctaLink: '/nosotros',
-  },
-]
-
 export default async function Home() {
   let heroSlides: Awaited<ReturnType<typeof fetchHomeHeroSlides>> = []
   let destinations: AdaptedDestination[] = []
@@ -39,9 +28,6 @@ export default async function Home() {
 
     heroSlides = await fetchHomeHeroSlides(home as Record<string, unknown>)
     hasHeroFromStrapi = heroSlides.length > 0
-    if (heroSlides.length === 0) {
-      heroSlides = [...HERO_FALLBACK]
-    }
 
     services = parseHomeServices(home)
     testimonial = parseHomeTestimonial(home)
@@ -104,7 +90,8 @@ export default async function Home() {
     <>
       <Header />
 
-      <HeroSlider slides={heroSlides} />
+      {/* Sin slides en Strapi no se muestra el hero (antes había un respaldo de relleno en inglés) */}
+      {hasHeroFromStrapi && <HeroSlider slides={heroSlides} />}
 
       {/* Features Section - Paquetes desde Strapi single type package (layout index-2) */}
       {packages.length > 0 && (

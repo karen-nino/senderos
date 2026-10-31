@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { PHONE_DISPLAY, PHONE_TEL_HREF } from '@/lib/contact'
 
 export default function Footer() {
   const pathname = usePathname()
@@ -33,7 +34,7 @@ export default function Footer() {
                   </div>
                   <div className="info">
                     <span className="title">Teléfono</span>
-                    <p><a href="tel:+529613629724">961 362 9724</a></p>
+                    <p><a href={PHONE_TEL_HREF}>{PHONE_DISPLAY}</a></p>
                   </div>
                 </div>
               </div>

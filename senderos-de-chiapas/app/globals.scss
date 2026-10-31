@@ -2431,10 +2431,6 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
 }
 
 /* Hero — Pila de postales sobre crema, con sendero y estampillas */
-.hero-postal--empty {
-  padding-block: 12rem 6rem;
-  text-align: center;
-}
 .hero-postal {
   /* Verde profundo para texto y botones (6.3:1 sobre crema); verde de marca para acentos */
   --postal-green: #2f6b1f;

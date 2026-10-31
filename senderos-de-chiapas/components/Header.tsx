@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Preloader from './Preloader'
 import { WhatsAppIcon } from './WhatsAppIcon'
+import { whatsappHref } from '@/lib/contact'
 
 export default function Header() {
   const pathname = usePathname()
@@ -53,7 +54,7 @@ export default function Header() {
               {/* Site Branding */}
               <div className="site-branding">
                 <Link href="/" className="brand-logo">
-                  <img src="/assets/images/logo/logo-senderos.svg" alt="Site Logo" />
+                  <img src="/assets/images/logo/logo-senderos.svg" alt="Senderos de Chiapas" />
                 </Link>
               </div>
 
@@ -61,7 +62,7 @@ export default function Header() {
               <div className={`nav-menu ${menuOpen ? 'menu-on' : ''}`}>
                 <div className="mobile-logo mb-30 d-block d-xl-none">
                   <Link href="/" className="brand-logo">
-                    <img src="/assets/images/logo/logo-senderos.svg" alt="Site Logo" />
+                    <img src="/assets/images/logo/logo-senderos.svg" alt="Senderos de Chiapas" />
                   </Link>
                 </div>
 
@@ -148,7 +149,7 @@ export default function Header() {
                 {/* Menu Button */}
                 <div className="menu-button mt-40 d-xl-none">
                   <a
-                    href={`https://wa.me/529613629724?text=${encodeURIComponent('¿Hola, en qué podemos ayudarte?')}`}
+                    href={whatsappHref('¿Hola, en qué podemos ayudarte?')}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="main-btn secondary-btn"
@@ -163,7 +164,7 @@ export default function Header() {
               <div className="nav-right-item">
                 <div className="menu-button d-xl-block d-none">
                   <a
-                    href={`https://wa.me/529613629724?text=${encodeURIComponent('¿Hola, en qué podemos ayudarte?')}`}
+                    href={whatsappHref('¿Hola, en qué podemos ayudarte?')}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="main-btn primary-btn"

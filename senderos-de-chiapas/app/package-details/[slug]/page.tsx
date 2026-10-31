@@ -8,6 +8,7 @@ import { WhatsAppIcon } from '@/components/WhatsAppIcon'
 import GallerySlider from '@/components/GallerySlider'
 import { JsonLd, buildProductJsonLd } from '@/components/JsonLd'
 import { fetchPackageBySlug, fetchHolidayBySlug, fetchAdventureBySlug, fetchPackages, STRAPI_REVALIDATE_SECONDS } from '@/lib/strapi'
+import { whatsappHref } from '@/lib/contact'
 
 const SITE_URL = 'https://senderosdechiapas.com.mx'
 
@@ -244,7 +245,7 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                   <li>
                     <div className="submit-button">
                       <a
-                        href={`https://wa.me/529613629724?text=${encodeURIComponent(whatsappMessage)}`}
+                        href={whatsappHref(whatsappMessage)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="main-btn primary-btn"
@@ -476,7 +477,7 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                         <li>
                           <div className="submit-button">
                             <a
-                              href={`https://wa.me/529613629724?text=${encodeURIComponent(whatsappMessage)}`}
+                              href={whatsappHref(whatsappMessage)}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="main-btn primary-btn"

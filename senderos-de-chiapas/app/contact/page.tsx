@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import ContactForm from '@/components/ContactForm'
+import { PHONE_DISPLAY_INTL, PHONE_TEL_HREF } from '@/lib/contact'
 
 export const metadata: Metadata = {
   title: 'Contacto - Senderos de Chiapas',
@@ -56,7 +57,7 @@ export default function Contact() {
                   </div>
                   <div className="info">
                     <span className="title">Teléfono</span>
-                    <p><a href="tel:+529613629724">+52 961 362 9724</a></p>
+                    <p><a href={PHONE_TEL_HREF}>{PHONE_DISPLAY_INTL}</a></p>
                   </div>
                 </div>
               </div>

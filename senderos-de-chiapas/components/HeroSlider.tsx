@@ -10,14 +10,9 @@ interface HeroSliderProps {
 }
 
 export default function HeroSlider({ slides }: HeroSliderProps) {
-  // Si no hay slides, mostrar un mensaje o retornar null
-  if (!slides || slides.length === 0) {
-    return (
-      <section className="hero-postal hero-postal--empty">
-        <p>No hay slides disponibles. Por favor, configura los slides en Strapi.</p>
-      </section>
-    )
-  }
+  // Un slide sin título dejaría un <h1> vacío y una postal sin nombre: se descarta
+  const validSlides = (slides ?? []).filter((s) => s.title?.trim())
+  if (validSlides.length === 0) return null
 
-  return <HeroPostales slides={slides} />
+  return <HeroPostales slides={validSlides} />
 }

@@ -3,8 +3,10 @@
 import Link from 'next/link'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { WhatsAppIcon } from '../WhatsAppIcon'
+import { whatsappHref } from '@/lib/contact'
 import {
   HERO_AUTOPLAY_MS,
+  cloudinaryResize,
   getHeroImageAlt,
   getHeroImageUrl,
   getHeroText,
@@ -13,18 +15,17 @@ import {
   type HeroVariantProps,
 } from './heroShared'
 
-const WHATSAPP_NUMBER = '529613629724'
 /** Duración de la animación de lanzar la postal (debe coincidir con el CSS); margen para limpiar el estado. */
 const TOSS_MS = 900
 
 // useLayoutEffect en el cliente (antes de pintar); en el servidor no aplica
 const useIsoLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
+// La postal mide como mucho ~540px de ancho: 1080px cubre pantallas 2x
+const CARD_IMAGE = 'f_auto,q_auto,w_1080'
+const CARD_IMAGE_MOBILE = 'f_auto,q_auto,w_800'
 // Miniatura para las estampillas decorativas
-const getThumbUrl = (url: string) =>
-  url.includes('res.cloudinary.com') && url.includes('/upload/')
-    ? url.replace('/upload/', '/upload/w_240,h_280,c_fill,q_70/')
-    : url
+const STAMP_IMAGE = 'f_auto,q_auto,w_240,h_280,c_fill'
 
 /** Hero — Pila de postales: cada slide es una postal; la de arriba se lanza para dejar ver la siguiente. */
 export default function HeroPostales({ slides }: HeroVariantProps) {
@@ -78,7 +79,7 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
 
   const slide = slides[active] ?? slides[0]
   const { text, ctaText, ctaLink } = getHeroText(slide)
-  const whatsappHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hola, quiero cotizar: ${slide.title}`)}`
+  const quoteHref = whatsappHref(`Hola, quiero cotizar: ${slide.title}`)
 
   return (
     <section
@@ -103,7 +104,7 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
               return (
                 <span key={offset} className={`hero-postal__stamp-deco hero-postal__stamp-deco--${offset}`}>
                   <span className="hero-postal__stamp-paper">
-                    <img src={getThumbUrl(getHeroImageUrl(s.image))} alt="" loading="lazy" />
+                    <img src={cloudinaryResize(getHeroImageUrl(s.image), STAMP_IMAGE)} alt="" loading="lazy" />
                   </span>
                 </span>
               )
@@ -133,7 +134,7 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
                 </span>
               </Link>
             )}
-            <a href={whatsappHref} className="hero-postal__wa" target="_blank" rel="noopener noreferrer">
+            <a href={quoteHref} className="hero-postal__wa" target="_blank" rel="noopener noreferrer">
               <WhatsAppIcon className="hero-postal__wa-icon" aria-hidden />
               Cotizar por WhatsApp
             </a>
@@ -186,10 +187,10 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
               >
                 <picture className="hero-postal__photo">
                   {s.mobileImage && (
-                    <source media="(max-width: 767px)" srcSet={getHeroImageUrl(s.mobileImage)} />
+                    <source media="(max-width: 767px)" srcSet={cloudinaryResize(getHeroImageUrl(s.mobileImage), CARD_IMAGE_MOBILE)} />
                   )}
                   <img
-                    src={getHeroImageUrl(s.image)}
+                    src={cloudinaryResize(getHeroImageUrl(s.image), CARD_IMAGE)}
                     alt={getHeroImageAlt(s.image, s.title)}
                     width={800}
                     height={700}
