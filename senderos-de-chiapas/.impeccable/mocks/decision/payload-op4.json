@@ -1,0 +1,46 @@
+{
+  "title": "Hero opción 4: elige la estructura (a todo lo ancho)",
+  "question": "Tres estructuras nuevas, de borde a borde y sin contenedor redondeado, con los datos de Strapi. Elige una, ajústala con una indicación o pide otra tirada.",
+  "options": [
+    {
+      "id": "portada-revista",
+      "kind": "assigned",
+      "label": "Portada de revista",
+      "kicker": "THE ROLL",
+      "thesis": "Cada destino es la portada de una revista de viajes: foto a sangre, título como cabecera gigante y los otros destinos como titulares de portada.",
+      "palette": ["#1c231f", "#fdf9f1", "#f7921e", "#63ab45"],
+      "materials": ["foto a sangre", "cabecera tipográfica", "titulares de portada"],
+      "viewport": "Foto a todo lo ancho; título enorme arriba a lo ancho; columna derecha con los otros destinos numerados; lugar y botones abajo a la izquierda.",
+      "risk": "Con imágenes que traen texto incrustado, la cabecera compite con el texto de la foto.",
+      "html": ".impeccable/mocks/decision/portada-revista.html",
+      "comp": ".impeccable/mocks/decision/portada-revista.webp"
+    },
+    {
+      "id": "tipografia-calada",
+      "kind": "dealt",
+      "label": "Tipografía calada",
+      "thesis": "El nombre del destino a todo lo ancho funciona como ventana: la foto solo se ve dentro de las letras y luego se abre a pantalla completa.",
+      "palette": ["#1c231f", "#fdf9f1", "#f7921e", "#63ab45"],
+      "materials": ["letras caladas", "foto revelada"],
+      "viewport": "Banda oscura a todo lo ancho; título gigante en dos líneas con la foto dentro de las letras; lugar, botones y flechas debajo.",
+      "risk": "Títulos largos reducen el tamaño de letra y con él la foto visible; la apertura necesita animación cuidada.",
+      "html": ".impeccable/mocks/decision/tipografia-calada.html",
+      "comp": ".impeccable/mocks/decision/tipografia-calada.webp"
+    },
+    {
+      "id": "marquee-cinetico",
+      "kind": "dealt",
+      "label": "Marquee cinético",
+      "thesis": "Sobre la foto a sangre corren bandas con los nombres de todos los destinos en direcciones opuestas; el activo se resalta en naranja.",
+      "palette": ["#1c231f", "#fdf9f1", "#f7921e", "#63ab45"],
+      "materials": ["foto a sangre", "bandas de texto en movimiento"],
+      "viewport": "Foto a todo lo ancho; tres bandas de texto gigante cruzando al centro; título, lugar y botones fijos abajo.",
+      "risk": "Mucho movimiento; requiere pausa y versión quieta para quien prefiere menos animación.",
+      "html": ".impeccable/mocks/decision/marquee-cinetico.html",
+      "comp": ".impeccable/mocks/decision/marquee-cinetico.webp"
+    }
+  ],
+  "reroll": true,
+  "buildPath": { "value": "code" },
+  "steer": true
+}

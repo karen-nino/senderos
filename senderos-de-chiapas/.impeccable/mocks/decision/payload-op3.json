@@ -1,0 +1,46 @@
+{
+  "title": "Hero opción 3: elige la estructura",
+  "question": "Tres estructuras nuevas (distintas a las ya vistas) con los colores, tipografía y datos de Strapi del sitio. Elige una, ajústala con una indicación o pide otra tirada.",
+  "options": [
+    {
+      "id": "mosaico-editorial",
+      "kind": "assigned",
+      "label": "Mosaico editorial",
+      "kicker": "THE ROLL",
+      "thesis": "Todos los destinos a la vez en un mosaico asimétrico; el título gigante se monta sobre las fotos y el destino activo ocupa la pieza grande.",
+      "palette": ["#fdf9f1", "#1c231f", "#63ab45", "#f7921e"],
+      "materials": ["fotos en rejilla asimétrica", "tipografía Prompt 800 superpuesta"],
+      "viewport": "Fondo crema; rejilla de 3 fotos (una grande, dos chicas) a la derecha; título enorme que cruza sobre la foto grande; CTAs y lugar abajo a la izquierda.",
+      "risk": "El título encima de la foto exige sombra o velo; con muchos slides la rejilla necesita reglas de cuántas piezas mostrar.",
+      "html": ".impeccable/mocks/decision/mosaico-editorial.html",
+      "comp": ".impeccable/mocks/decision/mosaico-editorial.webp"
+    },
+    {
+      "id": "tira-pelicula",
+      "kind": "dealt",
+      "label": "Tira de película",
+      "thesis": "Los destinos son fotogramas de un rollo de viaje: una banda oscura con perforaciones corre de lado a lado y el fotograma activo se agranda al centro.",
+      "palette": ["#1c231f", "#fdf9f1", "#f7921e", "#63ab45"],
+      "materials": ["negativo de película con perforaciones", "fotogramas numerados"],
+      "viewport": "Banda oscura a todo el ancho con perforaciones arriba y abajo; fotograma central grande y vecinos recortados a los lados; título, lugar y CTAs debajo sobre crema.",
+      "risk": "Puede leerse como galería si el título no domina; la banda oscura compite con el header verde.",
+      "html": ".impeccable/mocks/decision/tira-pelicula.html",
+      "comp": ".impeccable/mocks/decision/tira-pelicula.webp"
+    },
+    {
+      "id": "coverflow",
+      "kind": "dealt",
+      "label": "Coverflow de destinos",
+      "thesis": "El destino activo de frente y grande; los demás giran en 3D a los lados como portadas en un estante, listos para pasar al centro.",
+      "palette": ["#fdf9f1", "#1c231f", "#63ab45", "#f7921e"],
+      "materials": ["tarjetas de foto con reflejo", "perspectiva 3D"],
+      "viewport": "Fondo crema; tarjeta central vertical grande con el título encima en blanco; tarjetas laterales inclinadas; CTAs centrados debajo.",
+      "risk": "El coverflow es un patrón conocido; necesita movimiento muy pulido para no verse anticuado.",
+      "html": ".impeccable/mocks/decision/coverflow.html",
+      "comp": ".impeccable/mocks/decision/coverflow.webp"
+    }
+  ],
+  "reroll": true,
+  "buildPath": { "value": "code" },
+  "steer": true
+}

@@ -1,0 +1,46 @@
+{
+  "title": "Hero opción 4 (nueva tirada): elige la estructura",
+  "question": "Tres estructuras totalmente distintas a las anteriores, a todo lo ancho y sin contenedor redondeado. Elige una, ajústala con una indicación o pide otra tirada.",
+  "options": [
+    {
+      "id": "cordilleras",
+      "kind": "assigned",
+      "label": "Cordilleras en capas",
+      "kicker": "THE ROLL",
+      "thesis": "La foto del destino a sangre y, encima, siluetas de montañas en capas de verdes de la marca que se mueven en paralaje; el texto vive sobre las montañas.",
+      "palette": ["#1d361b", "#2f5f24", "#63ab45", "#fdf9f1", "#f7921e"],
+      "materials": ["siluetas de sierra en capas", "foto a sangre", "paralaje"],
+      "viewport": "Foto del destino arriba; desde la mitad, tres crestas de montaña superpuestas en verdes de oscuro a claro; título, lugar y botones sobre la cresta más cercana.",
+      "risk": "Las siluetas son ilustrativas; deben dibujarse con cuidado para no verse genéricas.",
+      "html": ".impeccable/mocks/decision/cordilleras.html",
+      "comp": ".impeccable/mocks/decision/cordilleras.webp"
+    },
+    {
+      "id": "scroll-recorrido",
+      "kind": "dealt",
+      "label": "Recorrido con scroll",
+      "thesis": "El hero se queda fijo mientras haces scroll y cada destino entra por turno; un indicador lateral marca el avance del viaje.",
+      "palette": ["#1c231f", "#fdf9f1", "#f7921e", "#63ab45"],
+      "materials": ["foto a sangre fija", "indicador vertical de avance"],
+      "viewport": "Foto a pantalla completa; a la izquierda un riel vertical con los tres destinos y el activo resaltado; título, lugar y botones abajo; aviso de desplazarse.",
+      "risk": "Retiene el scroll unos segundos antes de llegar al contenido; algunos visitantes lo encuentran lento.",
+      "html": ".impeccable/mocks/decision/scroll-recorrido.html",
+      "comp": ".impeccable/mocks/decision/scroll-recorrido.webp"
+    },
+    {
+      "id": "persianas",
+      "kind": "dealt",
+      "label": "Persianas",
+      "thesis": "La foto está cortada en franjas verticales que giran como persianas para pasar al siguiente destino; un panel de color sostiene el texto.",
+      "palette": ["#2a5a1d", "#fdf9f1", "#1c231f", "#f7921e"],
+      "materials": ["franjas verticales giratorias", "panel verde sólido"],
+      "viewport": "Panel verde sólido a la izquierda (40%) con título, lugar y botones; a la derecha la foto en 6 franjas, algunas a medio girar mostrando el siguiente destino.",
+      "risk": "La transición es el protagonista; si es lenta o brusca se nota mucho.",
+      "html": ".impeccable/mocks/decision/persianas.html",
+      "comp": ".impeccable/mocks/decision/persianas.webp"
+    }
+  ],
+  "reroll": true,
+  "buildPath": { "value": "code" },
+  "steer": true
+}

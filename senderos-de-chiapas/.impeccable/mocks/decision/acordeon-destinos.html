@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0}
+body{width:1440px;height:900px;overflow:hidden;background:#fdf9f1;font-family:Prompt,sans-serif;color:#1c231f}
+header{height:110px;display:flex;align-items:center;justify-content:space-between;padding:0 70px}
+.logo{font-weight:800;font-size:26px;color:#d7262e;line-height:.9}
+nav{display:flex;gap:30px;font-weight:500;font-size:17px;color:#63ab45}
+.hdr-btn{background:#63ab45;color:#fff;border-radius:999px;padding:16px 28px;font-weight:600}
+.rail{display:flex;gap:14px;height:760px;padding:0 24px 24px}
+.panel{position:relative;border-radius:26px;overflow:hidden;background:#333 center/cover}
+.panel::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(12,18,14,.82),rgba(12,18,14,.05) 60%)}
+.closed{flex:0 0 150px}
+.closed .v{position:absolute;z-index:2;left:50%;bottom:36px;transform-origin:left bottom;transform:rotate(-90deg) translate(0,50%);white-space:nowrap;color:#fff;font-size:30px;font-weight:600}
+.closed .n{position:absolute;z-index:2;top:28px;left:0;right:0;text-align:center;color:#fff;font-weight:500;opacity:.8}
+.open{flex:1}
+.open .body{position:absolute;z-index:2;left:56px;right:56px;bottom:52px;color:#fff;display:flex;align-items:flex-end;justify-content:space-between;gap:40px}
+.open h1{font-size:120px;font-weight:800;letter-spacing:-.04em;line-height:.9}
+.open .place{font-size:22px;margin-top:18px;opacity:.9}
+.open .n{position:absolute;z-index:2;top:30px;left:56px;color:#fff;font-weight:500;font-size:18px}
+.ctas{display:flex;flex-direction:column;gap:12px;align-items:flex-end}
+.cta{display:flex;align-items:center;gap:14px;background:#63ab45;color:#fff;border-radius:999px;padding:8px 8px 8px 26px;font-weight:600;font-size:17px}
+.cta i{width:46px;height:46px;border-radius:50%;background:#fff;display:block}
+.wa{background:#fff;color:#1c231f;border-radius:999px;padding:20px 26px;font-weight:600;font-size:17px}
+.bar{position:absolute;z-index:2;left:56px;right:56px;top:66px;height:3px;background:rgba(255,255,255,.3);border-radius:3px}
+.bar i{display:block;width:40%;height:100%;background:#f7921e}
+.p1{background-image:url(https://res.cloudinary.com/dqsavdj0u/image/upload/v1781288923/imperdible_66c2ab3953.jpg)}
+.p2{background-image:url(https://res.cloudinary.com/dqsavdj0u/image/upload/v1781288854/sorprendente_fa1427a6a8.jpg)}
+.p3{background-image:url(https://res.cloudinary.com/dqsavdj0u/image/upload/v1786051939/Arco_del_tiempo_520150f217.png)}
+</style></head>
+<body>
+<header>
+  <div class="logo">Senderos<br>CHIAPAS</div>
+  <nav><span>Tours</span><span>Paquetes</span><span>Experiencias</span><span>Nosotros</span><span>Contáctanos</span></nav>
+  <div class="hdr-btn">Contáctanos</div>
+</header>
+<section class="rail">
+  <div class="panel closed p1"><span class="n">01</span><span class="v">Chiapas Imperdible</span></div>
+  <div class="panel closed p2"><span class="n">02</span><span class="v">Chiapas Sorprendente</span></div>
+  <div class="panel open p3">
+    <span class="n">03</span>
+    <div class="bar"><i></i></div>
+    <div class="body">
+      <div><h1>Arco del tiempo</h1><p class="place">Cintalapa, Chiapas.</p></div>
+      <div class="ctas"><span class="cta">Más información<i></i></span><span class="wa">Cotizar por WhatsApp</span></div>
+    </div>
+  </div>
+</section>
+</body></html>
