@@ -392,94 +392,6 @@ button,
   text-decoration: line-through;
 }
 
-/* Colores de los botones slick-arrow (prev/next) */
-/* Hero Slider One y Two */
-.hero-slider-one .slick-arrow,
-.hero-slider-two .slick-arrow {
-  border: 1px solid transparent;
-  background-color: #f7921e; /* secondary-bg - naranja (mismo color que services-section) */
-  color: #fff; /* white-color */
-}
-
-.hero-slider-one .slick-arrow:hover,
-.hero-slider-one .slick-arrow:focus,
-.hero-slider-two .slick-arrow:hover,
-.hero-slider-two .slick-arrow:focus {
-  background-color: #b8b8b8; /* gris en hover (mismo color que services-section) */
-  color: #fff; /* white-color */
-  border-color: transparent;
-}
-
-.hero-slider-one .slick-arrow.prev,
-.hero-slider-two .slick-arrow.prev {
-  left: 70px;
-}
-
-@media only screen and (min-width: 1200px) and (max-width: 1600px) {
-  .hero-slider-one .slick-arrow.prev {
-    left: 30px;
-  }
-}
-
-.hero-slider-one .slick-arrow.next,
-.hero-slider-two .slick-arrow.next {
-  right: 70px;
-}
-
-@media only screen and (min-width: 1200px) and (max-width: 1600px) {
-  .hero-slider-one .slick-arrow.next {
-    right: 30px;
-  }
-}
-
-.hero-slider-two .slick-arrow.prev {
-  left: 40px;
-}
-
-.hero-slider-two .slick-arrow.next {
-  right: 40px;
-}
-
-/* Hero Slider Three (hero-wrapper-three) */
-.hero-wrapper-three .hero-arrows .slick-arrow {
-  border: 1px solid #fff;
-  color: #fff; /* white-color */
-  background-color: transparent;
-}
-
-.hero-wrapper-three .hero-arrows .slick-arrow:hover,
-.hero-wrapper-three .hero-arrows .slick-arrow:focus {
-  background-color: #fff; /* white-bg */
-  color: #63ab45; /* primary-color */
-}
-
-/* Hero Wrapper con bg-light - sobrescribir Bootstrap que usa !important */
-/* Usar especificidad máxima + !important solo para sobrescribir Bootstrap */
-.hero-section .hero-wrapper.bg-light,
-section.hero-section .hero-wrapper.bg-light,
-.hero-section > .hero-wrapper.bg-light {
-  background-color: $bg-light !important;
-}
-
-/* Textos oscuros en hero-wrapper con bg-light */
-.hero-wrapper.bg-light .hero-content h1,
-.hero-wrapper.bg-light .hero-content h2,
-.hero-wrapper.bg-light .hero-content h3,
-.hero-wrapper.bg-light .hero-content h4,
-.hero-wrapper.bg-light .hero-content h5,
-.hero-wrapper.bg-light .hero-content h6 {
-  color: #1c231f; /* title-color - texto oscuro */
-}
-
-.hero-wrapper.bg-light .hero-content p {
-  color: #484848; /* text-color - texto oscuro */
-}
-
-.hero-wrapper.bg-light .hero-content .sub-title {
-  color: #63ab45; /* primary-color */
-  background: rgba(99, 171, 69, 0.1);
-}
-
 /* Place Arrows (related-tour-place) */
 .related-tour-place .place-arrows .slick-arrow {
   color: #b8b8b8;
@@ -2518,13 +2430,19 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   to { transform: scaleX(1); }
 }
 
-/* Hero opción 2 — Pila de postales */
+/* Hero — Pila de postales sobre crema, con sendero y estampillas */
 .hero-postal--empty {
   padding-block: 12rem 6rem;
   text-align: center;
 }
 .hero-postal {
-  /* A todo lo ancho: el panel empieza justo debajo del header (absoluto, ~117px / ~92px) */
+  /* Verde profundo para texto y botones (6.3:1 sobre crema); verde de marca para acentos */
+  --postal-green: #2f6b1f;
+  --postal-green-dark: #24561a;
+  --postal-accent: #63ab45;
+  /* Naranja de marca (2.2:1 sobre crema; elegido por diseño aunque queda bajo el mínimo de 3:1) */
+  --postal-title: #f7921e;
+  /* A todo lo ancho: el panel empieza justo debajo del header (el componente mide el valor real) */
   --postal-header: 117px;
   --postal-field-h: clamp(600px, calc(100svh - var(--postal-header)), 920px);
   /* El fondo va de borde a borde; el contenido se limita a 1640px centrados */
@@ -2536,8 +2454,8 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   background-color: $bg-light;
 }
 .hero-postal ::selection {
-  background-color: #f7921e;
-  color: #1c231f;
+  background-color: var(--postal-accent);
+  color: #fff;
 }
 .hero-postal__field {
   position: relative;
@@ -2550,46 +2468,18 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   column-gap: clamp(2rem, 5vw, 6rem);
   min-height: var(--postal-field-h);
   padding: var(--postal-pad-y) var(--postal-inline) clamp(2rem, 5vh, 3.5rem);
-  background-color: #1c231f;
+  background:
+    url("/assets/images/hero/topografia-oscura.svg") center / cover no-repeat,
+    #fffbf2;
   overflow: hidden;
   isolation: isolate;
-  color: #fff;
+  color: #1c231f;
 }
 .hero-postal__copy,
 .hero-postal__nav,
 .hero-postal__stack {
   position: relative;
   z-index: 1;
-}
-
-/* Fondo ambiental: la foto de la postal activa, desenfocada; cambia de color con cada destino */
-.hero-postal__ambient {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-}
-.hero-postal__ambient img {
-  position: absolute;
-  inset: -12%;
-  width: 124%;
-  height: 124%;
-  object-fit: cover;
-  filter: blur(44px) saturate(1.7) brightness(0.88);
-  opacity: 0;
-  transition: opacity 1.2s ease;
-}
-.hero-postal__ambient img.is-active {
-  opacity: 1;
-}
-/* Velo para que el texto blanco mantenga contraste sobre cualquier foto */
-.hero-postal__ambient::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(90deg, rgba(14, 20, 15, 0.55) 0%, rgba(14, 20, 15, 0.22) 55%, rgba(14, 20, 15, 0) 100%),
-    linear-gradient(0deg, rgba(14, 20, 15, 0.3) 0%, rgba(14, 20, 15, 0) 30%);
 }
 
 /* Texto y acciones */
@@ -2603,9 +2493,8 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
 }
 .hero-postal__copy > :nth-child(2) { animation-delay: 0.08s; }
 .hero-postal__copy > :nth-child(3) { animation-delay: 0.16s; }
-.hero-postal .hero-postal__copy h1,
-.hero-postal .hero-postal__copy h2 {
-  color: #fff;
+.hero-postal .hero-postal__copy h1 {
+  color: var(--postal-title);
   font-size: clamp(2.6rem, 1rem + 3.8vw, 5.5rem);
   font-weight: 800;
   line-height: 0.95;
@@ -2615,7 +2504,7 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   overflow-wrap: break-word;
 }
 .hero-postal .hero-postal__place {
-  color: rgba(255, 255, 255, 0.88);
+  color: #484848;
   font-size: clamp(1.1rem, 1rem + 0.35vw, 1.35rem);
   line-height: 1.5;
   margin: clamp(0.9rem, 0.6rem + 0.6vw, 1.4rem) 0 0;
@@ -2632,12 +2521,12 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   gap: 1rem;
   padding: 0.5rem 0.5rem 0.5rem 1.6rem;
   border-radius: 999px;
-  background-color: #fff;
-  color: #1c231f;
+  background-color: var(--postal-green);
+  color: #fff;
   font-weight: 600;
   font-size: 1rem;
   line-height: 1;
-  box-shadow: 0 14px 30px -14px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 14px 30px -16px rgba(47, 107, 31, 0.7);
   transition: background-color 0.25s ease, transform 0.25s ease;
 }
 .hero-postal__cta-icon {
@@ -2646,14 +2535,14 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background-color: #f7921e;
-  color: #1c231f;
+  background-color: var(--postal-accent);
+  color: #fff;
   transition: transform 0.3s ease;
 }
 .hero-postal a.hero-postal__cta:hover,
 .hero-postal a.hero-postal__cta:focus-visible {
-  background-color: #fdf9f1;
-  color: #1c231f;
+  background-color: var(--postal-green-dark);
+  color: #fff;
   transform: translateY(-2px);
 }
 .hero-postal a.hero-postal__cta:hover .hero-postal__cta-icon,
@@ -2666,14 +2555,14 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   gap: 0.6rem;
   min-height: 60px;
   padding: 0 1.5rem;
-  border: 1.5px solid rgba(255, 255, 255, 0.75);
+  border: 1.5px solid var(--postal-green);
   border-radius: 999px;
-  background-color: rgba(14, 20, 15, 0.18);
-  color: #fff;
+  background-color: transparent;
+  color: var(--postal-green);
   font-weight: 600;
   font-size: 1rem;
   line-height: 1;
-  transition: background-color 0.25s ease, transform 0.25s ease;
+  transition: background-color 0.25s ease, color 0.25s ease, transform 0.25s ease;
 }
 .hero-postal__wa-icon {
   width: 22px;
@@ -2686,19 +2575,13 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
 }
 .hero-postal a.hero-postal__wa:hover,
 .hero-postal a.hero-postal__wa:focus-visible {
-  background-color: #fff;
-  border-color: #fff;
-  color: #1c231f;
+  background-color: var(--postal-green);
+  border-color: var(--postal-green);
+  color: #fff;
   transform: translateY(-2px);
 }
 
-/* Fondo "sendero": verde con curvas de nivel y sendero punteado hacia la pila */
-.hero-postal--sendero .hero-postal__field {
-  background:
-    url("/assets/images/hero/topografia.svg") center / cover no-repeat,
-    radial-gradient(60% 75% at 76% 55%, #3f7f2a 0%, rgba(63, 127, 42, 0) 100%),
-    #2a5a1d;
-}
+/* Sendero punteado y estampillas (alineados al ancho del contenido) */
 .hero-postal__trail,
 .hero-postal__stamps {
   position: absolute;
@@ -2723,11 +2606,11 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   height: 12px;
   margin: -6px 0 0 -6px;
   border-radius: 50%;
-  background-color: #f7921e;
+  background-color: var(--postal-accent);
 }
 .hero-postal__trail path {
   fill: none;
-  stroke: #f7921e;
+  stroke: var(--postal-accent);
   stroke-width: 3;
   stroke-linecap: round;
   stroke-dasharray: 0.1 12;
@@ -2737,22 +2620,15 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
 @keyframes hero-postal-walk {
   to { stroke-dashoffset: -24; }
 }
-
-/* Fondo "mesa": textil de rombos tono sobre tono con sellos postales */
-.hero-postal--mesa .hero-postal__field {
-  background-color: #6d1a26;
-  background-image:
-    radial-gradient(70% 80% at 78% 55%, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0) 70%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='0.09' stroke-width='2'%3E%3Cpath d='M36 6 66 36 36 66 6 36Z'/%3E%3Cpath d='M36 20 52 36 36 52 20 36Z'/%3E%3C/g%3E%3Cg fill='%23ffffff' fill-opacity='0.09'%3E%3Cpath d='M36 31 41 36 36 41 31 36Z'/%3E%3Cpath d='M0 0h6v6H0zM66 0h6v6h-6zM0 66h6v6H0zM66 66h6v6h-6z'/%3E%3C/g%3E%3C/svg%3E");
-  background-size: auto, 72px 72px;
-}
 /* El exterior lleva la sombra; el interior el papel dentado (mask recortaría la sombra) */
 .hero-postal__stamp-deco {
   position: absolute;
   display: block;
   width: clamp(84px, 7vw, 116px);
   aspect-ratio: 6 / 7;
-  filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.35));
+  filter:
+    drop-shadow(0 0 1px rgba(28, 35, 31, 0.45))
+    drop-shadow(0 10px 14px rgba(28, 35, 31, 0.25));
 }
 .hero-postal__stamp-paper {
   display: block;
@@ -2792,120 +2668,11 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   bottom: 15%;
   width: clamp(120px, 10vw, 160px);
   fill: none;
-  stroke: #fff;
-  stroke-opacity: 0.45;
+  stroke: #1c231f;
+  stroke-opacity: 0.3;
   stroke-width: 2;
   /* Volteado: las ondas quedan a la izquierda y el círculo cae sobre el sello */
   transform: scaleX(-1) rotate(10deg);
-}
-
-/* Fondo "claro": sendero y estampillas sobre crema #fffbf2; texto y controles oscuros */
-.hero-postal--claro .hero-postal__field {
-  background:
-    url("/assets/images/hero/topografia-oscura.svg") center / cover no-repeat,
-    #fffbf2;
-  color: #1c231f;
-}
-.hero-postal--claro {
-  /* Verde profundo para texto y botones (6.3:1 sobre crema); verde de marca para acentos */
-  --claro-green: #2f6b1f;
-  --claro-green-dark: #24561a;
-  --claro-accent: #63ab45;
-  /* Naranja de marca (2.2:1 sobre crema; elegido por diseño aunque queda bajo el mínimo de 3:1) */
-  --claro-title: #f7921e;
-}
-.hero-postal--claro ::selection {
-  background-color: var(--claro-accent);
-  color: #fff;
-}
-.hero-postal--claro .hero-postal__copy h1,
-.hero-postal--claro .hero-postal__copy h2 {
-  color: var(--claro-title);
-}
-.hero-postal--claro .hero-postal__place {
-  color: #484848;
-}
-.hero-postal--claro a.hero-postal__cta {
-  background-color: var(--claro-green);
-  color: #fff;
-  box-shadow: 0 14px 30px -16px rgba(47, 107, 31, 0.7);
-}
-.hero-postal--claro .hero-postal__cta-icon {
-  background-color: var(--claro-accent);
-  color: #fff;
-}
-.hero-postal--claro a.hero-postal__cta:hover,
-.hero-postal--claro a.hero-postal__cta:focus-visible {
-  background-color: var(--claro-green-dark);
-  color: #fff;
-}
-.hero-postal--claro a.hero-postal__wa {
-  border-color: var(--claro-green);
-  background-color: transparent;
-  color: var(--claro-green);
-}
-.hero-postal--claro a.hero-postal__wa:hover,
-.hero-postal--claro a.hero-postal__wa:focus-visible {
-  background-color: var(--claro-green);
-  border-color: var(--claro-green);
-  color: #fff;
-}
-/* Acentos en verde: sendero, progreso y sellos de las postales */
-.hero-postal--claro .hero-postal__trail path {
-  stroke: var(--claro-accent);
-}
-.hero-postal--claro .hero-postal__trail-end {
-  background-color: var(--claro-accent);
-}
-.hero-postal--claro .hero-postal__progress > span {
-  background-color: var(--claro-green);
-}
-.hero-postal--claro .hero-postal__stamp {
-  border-color: var(--claro-accent);
-  color: var(--claro-green);
-}
-.hero-postal--claro .hero-postal__nav > button {
-  border-color: rgba(47, 107, 31, 0.4);
-  color: var(--claro-green);
-}
-.hero-postal--claro .hero-postal__nav > button:hover {
-  background-color: var(--claro-green);
-  border-color: var(--claro-green);
-  color: #fff;
-}
-.hero-postal--claro .hero-postal__count {
-  color: var(--claro-green);
-}
-.hero-postal--claro .hero-postal__progress {
-  background-color: rgba(28, 35, 31, 0.15);
-}
-.hero-postal--claro .hero-postal__postmark {
-  stroke: #1c231f;
-  stroke-opacity: 0.3;
-}
-/* Postales y estampillas blancas sobre crema: borde y sombra para que no se pierdan */
-.hero-postal--claro .hero-postal__stamp-deco {
-  filter:
-    drop-shadow(0 0 1px rgba(28, 35, 31, 0.45))
-    drop-shadow(0 10px 14px rgba(28, 35, 31, 0.25));
-}
-.hero-postal--claro .hero-postal__card {
-  box-shadow:
-    0 30px 50px -28px rgba(28, 35, 31, 0.45),
-    0 0 0 1px rgba(28, 35, 31, 0.08);
-}
-.hero-postal.hero-postal--claro a.hero-postal__cta:focus-visible,
-.hero-postal.hero-postal--claro a.hero-postal__wa:focus-visible,
-.hero-postal.hero-postal--claro .hero-postal__nav > button:focus-visible,
-.hero-postal.hero-postal--claro .hero-postal__card:focus-visible {
-  outline-color: var(--claro-green);
-}
-
-/* Fondo "selva": verde selva profundo liso */
-.hero-postal--selva .hero-postal__field {
-  background:
-    radial-gradient(55% 70% at 76% 55%, #2d5a26 0%, rgba(45, 90, 38, 0) 100%),
-    #1d361b;
 }
 
 /* Navegación */
@@ -2923,22 +2690,23 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.45);
+  border: 1px solid rgba(47, 107, 31, 0.4);
   background: transparent;
-  color: #fff;
+  color: var(--postal-green);
   cursor: pointer;
   transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
 }
 .hero-postal__nav > button:hover {
-  background-color: #fff;
-  border-color: #fff;
-  color: #1c231f;
+  background-color: var(--postal-green);
+  border-color: var(--postal-green);
+  color: #fff;
 }
 .hero-postal__count {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   min-width: 110px;
+  color: var(--postal-green);
   font-size: 0.95rem;
   font-weight: 500;
   line-height: 1;
@@ -2948,13 +2716,13 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   display: block;
   height: 3px;
   border-radius: 3px;
-  background-color: rgba(255, 255, 255, 0.25);
+  background-color: rgba(28, 35, 31, 0.15);
   overflow: hidden;
 }
 .hero-postal__progress > span {
   display: block;
   height: 100%;
-  background-color: #f7921e;
+  background-color: var(--postal-green);
   transform: scaleX(0);
   transform-origin: left;
   animation: hero-progress var(--hero-autoplay, 7s) linear forwards;
@@ -2966,7 +2734,7 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
 .hero-postal a.hero-postal__wa:focus-visible,
 .hero-postal__nav > button:focus-visible,
 .hero-postal__card:focus-visible {
-  outline: 2px solid #fff;
+  outline: 2px solid var(--postal-green);
   outline-offset: 4px;
 }
 
@@ -2991,7 +2759,10 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   background-color: #fffdf8;
   color: #1c231f;
   text-align: left;
-  box-shadow: 0 30px 50px -28px rgba(10, 30, 8, 0.65), 0 2px 6px rgba(10, 30, 8, 0.12);
+  /* Blanca sobre crema: borde y sombra para que no se pierda */
+  box-shadow:
+    0 30px 50px -28px rgba(28, 35, 31, 0.45),
+    0 0 0 1px rgba(28, 35, 31, 0.08);
   transform: var(--card-t);
   transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
   cursor: default;
@@ -2999,7 +2770,10 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   -webkit-tap-highlight-color: transparent;
 }
 .hero-postal__card.is-depth-0 { cursor: pointer; }
-.hero-postal__card.is-depth-0:hover { --card-t: translateY(-8px) rotate(0deg); }
+/* Solo con mouse: en pantallas táctiles el hover se queda pegado tras un toque */
+@media (hover: hover) and (pointer: fine) {
+  .hero-postal__card.is-depth-0:hover { --card-t: translateY(-8px) rotate(0deg); }
+}
 .hero-postal__card.is-depth-1 { --card-t: translate(-7%, 1.5%) rotate(-5deg); }
 .hero-postal__card.is-depth-2 { --card-t: translate(8%, 2%) rotate(7deg); }
 .hero-postal__card.is-depth-3 { --card-t: translate(8%, 2%) rotate(7deg); opacity: 0; }
@@ -3075,9 +2849,9 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   flex-shrink: 0;
   width: clamp(48px, 4vw, 60px);
   height: clamp(56px, 4.8vw, 70px);
-  border: 2px dashed #f7921e;
+  border: 2px dashed var(--postal-accent);
   border-radius: 4px;
-  color: #c76a06;
+  color: var(--postal-green);
   font-size: clamp(1.1rem, 0.9rem + 0.6vw, 1.6rem);
   font-weight: 800;
   transform: rotate(4deg);
@@ -3156,8 +2930,11 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   .hero-postal__card.is-tossed-prev {
     animation: none !important;
   }
-  .hero-postal__card,
-  .hero-postal__ambient img {
+  /* Sin autoplay no hay progreso que mostrar */
+  .hero-postal__progress {
+    display: none;
+  }
+  .hero-postal__card {
     transition: none;
   }
 }

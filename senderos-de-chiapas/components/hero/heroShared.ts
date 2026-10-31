@@ -1,6 +1,7 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import type { FocusEvent, PointerEvent } from 'react'
 
 export interface HeroSlide {
   id?: number
@@ -58,43 +59,94 @@ export function getHeroImageAlt(image: HeroSlide['image'], title: string): strin
   return (image as { alternativeText?: string })?.alternativeText || title
 }
 
+const SITE_HOSTS = ['senderosdechiapas.com.mx', 'www.senderosdechiapas.com.mx']
+
+/**
+ * Strapi guarda enlaces absolutos al dominio de producción. Si apuntan al propio sitio se convierten
+ * en ruta relativa: navegación interna de Next y sin saltar a producción desde local o previews.
+ */
+export function toSiteHref(url: string | undefined): string | undefined {
+  if (!url || !/^https?:\/\//i.test(url)) return url
+  try {
+    const parsed = new URL(url)
+    if (!SITE_HOSTS.includes(parsed.hostname)) return url
+    return `${parsed.pathname}${parsed.search}${parsed.hash}` || '/'
+  } catch {
+    return url
+  }
+}
+
 export function getHeroText(slide: HeroSlide) {
   return {
     text: slide.subtitle || slide.description || '',
     ctaText: slide.buttonText || slide.ctaText,
-    ctaLink: slide.buttonLink || slide.ctaLink,
+    ctaLink: toSiteHref(slide.buttonLink || slide.ctaLink),
   }
 }
 
 export const padIndex = (n: number) => String(n).padStart(2, '0')
 
-/** Estado del carrusel: slide activo, navegación y autoplay (pausable, respeta reduced-motion). */
+/**
+ * Estado del carrusel: slide activo, navegación y autoplay.
+ * - Pausa solo con mouse encima o con foco de teclado (un toque en pantallas táctiles no lo detiene).
+ * - Al reanudar, el autoplay continúa con el tiempo restante, igual que la barra de progreso.
+ * - `announce` indica si el último cambio lo hizo el usuario (para anunciarlo a lectores de pantalla).
+ */
 export function useHeroCarousel(total: number) {
   const [active, setActive] = useState(0)
-  const [paused, setPaused] = useState(false)
+  const [hovered, setHovered] = useState(false)
+  const [focused, setFocused] = useState(false)
+  const [announce, setAnnounce] = useState(false)
+  const remainingRef = useRef(HERO_AUTOPLAY_MS)
+  const paused = hovered || focused
 
-  const goTo = useCallback((index: number) => {
+  const advance = useCallback((index: number) => {
     if (total === 0) return
     setActive((index + total) % total)
   }, [total])
+
+  const goTo = useCallback((index: number) => {
+    setAnnounce(true)
+    advance(index)
+  }, [advance])
 
   useEffect(() => {
     if (active >= total) setActive(0)
   }, [active, total])
 
+  // Cada slide nuevo arranca con el tiempo completo (debe correr antes del efecto del temporizador)
+  useEffect(() => {
+    remainingRef.current = HERO_AUTOPLAY_MS
+  }, [active])
+
   useEffect(() => {
     if (total < 2 || paused) return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const id = setTimeout(() => goTo(active + 1), HERO_AUTOPLAY_MS)
-    return () => clearTimeout(id)
-  }, [active, paused, total, goTo])
+    const start = performance.now()
+    const id = setTimeout(() => {
+      setAnnounce(false)
+      advance(active + 1)
+    }, remainingRef.current)
+    return () => {
+      clearTimeout(id)
+      remainingRef.current = Math.max(0, remainingRef.current - (performance.now() - start))
+    }
+  }, [active, paused, total, advance])
 
   const pauseHandlers = {
-    onMouseEnter: () => setPaused(true),
-    onMouseLeave: () => setPaused(false),
-    onFocus: () => setPaused(true),
-    onBlur: () => setPaused(false),
+    onPointerEnter: (e: PointerEvent) => {
+      if (e.pointerType === 'mouse') setHovered(true)
+    },
+    onPointerLeave: (e: PointerEvent) => {
+      if (e.pointerType === 'mouse') setHovered(false)
+    },
+    onFocus: (e: FocusEvent) => {
+      if ((e.target as HTMLElement).matches?.(':focus-visible')) setFocused(true)
+    },
+    onBlur: (e: FocusEvent) => {
+      if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setFocused(false)
+    },
   }
 
-  return { active, paused, goTo, pauseHandlers }
+  return { active, paused, announce, goTo, pauseHandlers }
 }

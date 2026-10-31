@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { WhatsAppIcon } from '../WhatsAppIcon'
 import {
   HERO_AUTOPLAY_MS,
@@ -14,59 +14,61 @@ import {
 } from './heroShared'
 
 const WHATSAPP_NUMBER = '529613629724'
+/** Duración de la animación de lanzar la postal (debe coincidir con el CSS); margen para limpiar el estado. */
+const TOSS_MS = 900
 
-// El fondo ambiental se desenfoca: en Cloudinary basta una versión pequeña de la imagen
-const getAmbientUrl = (url: string) =>
-  url.includes('res.cloudinary.com') && url.includes('/upload/')
-    ? url.replace('/upload/', '/upload/w_400,q_60/')
-    : url
+// useLayoutEffect en el cliente (antes de pintar); en el servidor no aplica
+const useIsoLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect
 
-// Miniatura para los sellos postales de la variante "mesa"
+// Miniatura para las estampillas decorativas
 const getThumbUrl = (url: string) =>
   url.includes('res.cloudinary.com') && url.includes('/upload/')
     ? url.replace('/upload/', '/upload/w_240,h_280,c_fill,q_70/')
     : url
 
-/**
- * Fondos del panel:
- * - ambiental: foto del destino activo desenfocada
- * - sendero: verde con curvas de nivel y un sendero punteado hacia las postales
- * - mesa: textil de rombos con sellos postales de los otros destinos
- * - sendero también lleva los sellos, unidos por el sendero punteado
- * - selva: verde selva profundo liso
- * - claro: igual que sendero pero sobre fondo claro #fffbf2 con texto oscuro
- */
-export type HeroPostalFondo = 'ambiental' | 'sendero' | 'mesa' | 'selva' | 'claro'
-
-interface HeroOpcion2Props extends HeroVariantProps {
-  fondo?: HeroPostalFondo
-}
-
-/** Opción 2 — Pila de postales: cada slide es una postal; la de arriba se lanza para dejar ver la siguiente. */
-const FONDOS: HeroPostalFondo[] = ['ambiental', 'sendero', 'mesa', 'selva', 'claro']
-
-export default function HeroOpcion2({ slides, fondo: fondoProp = 'claro' }: HeroOpcion2Props) {
-  // Solo en desarrollo: ?fondo=sendero|mesa|selva|ambiental para comparar fondos sin tocar código
-  const [fondo, setFondo] = useState<HeroPostalFondo>(fondoProp)
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'production') return
-    const param = new URLSearchParams(window.location.search).get('fondo') as HeroPostalFondo | null
-    setFondo(param && FONDOS.includes(param) ? param : fondoProp)
-  }, [fondoProp])
-
+/** Hero — Pila de postales: cada slide es una postal; la de arriba se lanza para dejar ver la siguiente. */
+export default function HeroPostales({ slides }: HeroVariantProps) {
   const total = slides.length
-  const { active, paused, goTo, pauseHandlers } = useHeroCarousel(total)
+  const { active, paused, announce, goTo, pauseHandlers } = useHeroCarousel(total)
+  const sectionRef = useRef<HTMLElement>(null)
 
-  // La postal que acaba de salir se anima por encima antes de volver al fondo de la pila
+  // El header del tema es absoluto: el panel empieza justo donde termina (su alto varía por breakpoint)
+  useEffect(() => {
+    const section = sectionRef.current
+    const header = document.querySelector('.header-area')
+    if (!section || !header) return
+    const update = () => {
+      if (getComputedStyle(header).position !== 'absolute') return
+      // Con scroll, la navegación pasa a fija y el contenedor se colapsa: esa medida no sirve
+      if (header.querySelector('.header-navigation.sticky')) return
+      const bottom = header.getBoundingClientRect().bottom + window.scrollY
+      section.style.setProperty('--postal-header', `${Math.round(bottom)}px`)
+    }
+    update()
+    const observer = new ResizeObserver(update)
+    observer.observe(header)
+    return () => observer.disconnect()
+  }, [])
+
+  // La postal que acaba de salir se anima por encima antes de volver al fondo de la pila.
+  // Se calcula antes de pintar para que no haya un frame con la postal ya movida al fondo.
   const lastRef = useRef(active)
   const [leaving, setLeaving] = useState<{ index: number; dir: 'next' | 'prev' } | null>(null)
-  useEffect(() => {
+  useIsoLayoutEffect(() => {
     const last = lastRef.current
     if (last === active) return
+    lastRef.current = active
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const dir = (last + 1) % total === active ? 'next' : 'prev'
     setLeaving({ index: dir === 'next' ? last : active, dir })
-    lastRef.current = active
   }, [active, total])
+
+  // Respaldo por si animationend no llega (pestaña en segundo plano, cambio rápido de postal)
+  useEffect(() => {
+    if (!leaving) return
+    const id = window.setTimeout(() => setLeaving(null), TOSS_MS + 150)
+    return () => clearTimeout(id)
+  }, [leaving])
 
   const slide = slides[active] ?? slides[0]
   const { text, ctaText, ctaLink } = getHeroText(slide)
@@ -74,37 +76,21 @@ export default function HeroOpcion2({ slides, fondo: fondoProp = 'claro' }: Hero
 
   return (
     <section
-      className={`hero-postal hero-postal--${fondo}`}
+      ref={sectionRef}
+      className="hero-postal"
       aria-roledescription="carrusel"
       aria-label="Destacados"
       {...pauseHandlers}
     >
       <div className="hero-postal__field">
-        {fondo === 'ambiental' && (
-          <div className="hero-postal__ambient" aria-hidden>
-            {slides.map((s, index) => (
-              <img
-                key={s.id || index}
-                src={getAmbientUrl(getHeroImageUrl(s.image))}
-                alt=""
-                className={index === active ? 'is-active' : ''}
-                loading={index === 0 ? 'eager' : 'lazy'}
-                decoding="async"
-              />
-            ))}
-          </div>
-        )}
+        <div className="hero-postal__trail" aria-hidden>
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+            <path d="M 44 104 C 46 96, 50 92, 50 84 C 50 70, 42 60, 44 46 C 45 34, 47 26, 48 20 C 49 14, 53 14, 55 24" />
+          </svg>
+          <span className="hero-postal__trail-end" />
+        </div>
 
-        {(fondo === 'sendero' || fondo === 'claro') && (
-          <div className="hero-postal__trail" aria-hidden>
-            <svg viewBox="0 0 100 100" preserveAspectRatio="none">
-              <path d="M 44 104 C 46 96, 50 92, 50 84 C 50 70, 42 60, 44 46 C 45 34, 47 26, 48 20 C 49 14, 53 14, 55 24" />
-            </svg>
-            <span className="hero-postal__trail-end" />
-          </div>
-        )}
-
-        {(fondo === 'mesa' || fondo === 'sendero' || fondo === 'claro') && total > 1 && (
+        {total > 1 && (
           <div className="hero-postal__stamps" aria-hidden>
             {[1, 2].filter((offset) => offset < total).map((offset) => {
               const s = slides[(active + offset) % total]
@@ -124,8 +110,13 @@ export default function HeroOpcion2({ slides, fondo: fondoProp = 'claro' }: Hero
           </div>
         )}
 
-        <div className="hero-postal__copy" key={`copy-${active}`} aria-live="polite">
-          {active === 0 ? <h1>{slide.title}</h1> : <h2>{slide.title}</h2>}
+        {/* Solo se anuncia cuando el usuario cambia de postal, no con cada paso del autoplay */}
+        <p className="visually-hidden" aria-live="polite" aria-atomic="true">
+          {announce ? `Postal ${active + 1} de ${total}: ${slide.title}` : ''}
+        </p>
+
+        <div className="hero-postal__copy" key={`copy-${active}`}>
+          <h1>{slide.title}</h1>
           {text && <p className="hero-postal__place">{text}</p>}
           <div className="hero-postal__ctas">
             {ctaText && ctaLink && (

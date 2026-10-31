@@ -1,17 +1,15 @@
 'use client'
 
-import HeroOpcion2, { type HeroPostalFondo } from './hero/HeroOpcion2'
+import HeroPostales from './hero/HeroPostales'
 import type { HeroSlide } from './hero/heroShared'
 
 export type { HeroSlide }
 
 interface HeroSliderProps {
   slides: HeroSlide[]
-  /** Fondo del panel (por defecto: claro) */
-  fondo?: HeroPostalFondo
 }
 
-export default function HeroSlider({ slides, fondo }: HeroSliderProps) {
+export default function HeroSlider({ slides }: HeroSliderProps) {
   // Si no hay slides, mostrar un mensaje o retornar null
   if (!slides || slides.length === 0) {
     return (
@@ -21,5 +19,5 @@ export default function HeroSlider({ slides, fondo }: HeroSliderProps) {
     )
   }
 
-  return <HeroOpcion2 slides={slides} fondo={fondo} />
+  return <HeroPostales slides={slides} />
 }
