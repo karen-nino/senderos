@@ -104,7 +104,7 @@ export default async function Home() {
     <>
       <Header />
 
-      <HeroSlider slides={heroSlides} variant={2} />
+      <HeroSlider slides={heroSlides} />
 
       {/* Features Section - Paquetes desde Strapi single type package (layout index-2) */}
       {packages.length > 0 && (
