@@ -2505,6 +2505,14 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   }
 }
 
+/* Logo del header: un poco más pequeño en móvil (el SVG mide 150px de ancho) */
+@media (max-width: 767.98px) {
+  .header-navigation .site-branding .brand-logo img {
+    width: 116px;
+    height: auto;
+  }
+}
+
 /* Hero inmersivo — imagen a sangre dentro de un marco redondeado, texto sobre degradado */
 .hero-immersive {
   --hero-radius: clamp(16px, 2vw, 32px);
