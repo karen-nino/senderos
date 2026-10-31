@@ -39,3 +39,5 @@ next-env.d.ts
 # claude
 /.claude
 /.claude/settings.local.json
+# Bocetos generados por la skill impeccable (rondas de diseño)
+.impeccable/mocks/
