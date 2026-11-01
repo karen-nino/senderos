@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { preload } from 'react-dom'
 import { WhatsAppIcon } from '../WhatsAppIcon'
 import { whatsappHref } from '@/lib/contact'
 import { cloudinaryResize } from '@/lib/cloudinary'
@@ -14,6 +15,9 @@ import {
   useHeroCarousel,
   type HeroVariantProps,
 } from './heroShared'
+
+// El fondo topográfico del hero es el elemento LCP y solo aparece en el CSS: se precarga desde el <head>
+const FIELD_BACKGROUND = '/assets/images/hero/topografia-oscura.svg'
 
 /** Duración de la animación de lanzar la postal (debe coincidir con el CSS); margen para limpiar el estado. */
 const TOSS_MS = 900
@@ -76,6 +80,8 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
     if (leaving) return
     goTo(index)
   }
+
+  preload(FIELD_BACKGROUND, { as: 'image', fetchPriority: 'high' })
 
   const slide = slides[active] ?? slides[0]
   const { text, ctaText, ctaLink } = getHeroText(slide)

@@ -25,7 +25,7 @@ html {
 
 /* Estilos base del body - usar especificidad en lugar de !important donde sea posible */
 body {
-  font-family: "Prompt", sans-serif;
+  font-family: var(--font-prompt), sans-serif;
   font-weight: 300;
   font-size: 16px;
   line-height: 29.6px;
@@ -61,7 +61,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Prompt", sans-serif;
+  font-family: var(--font-prompt), sans-serif;
   margin: 0;
   color: #1c231f; /* $title-color del template */
 }
@@ -248,7 +248,7 @@ a[href] {
 
 /* Estilos de botones - usar especificidad */
 .main-btn {
-  font-family: "Prompt", sans-serif;
+  font-family: var(--font-prompt), sans-serif;
   font-weight: 600;
   font-size: 16px;
   text-transform: capitalize;
@@ -681,7 +681,7 @@ button,
 
 /* Botones genéricos */
 button {
-  font-family: "Prompt", sans-serif;
+  font-family: var(--font-prompt), sans-serif;
   border: none;
 }
 
@@ -971,7 +971,7 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   color: #1c231f; /* title-color - %heading */
   font-weight: 500;
   font-size: 16px;
-  font-family: "Prompt", sans-serif;
+  font-family: var(--font-prompt), sans-serif;
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -1199,7 +1199,7 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
 /* cat-btn (category button en blog) */
 .cat-btn,
 .cat-btn[href] {
-  font-family: "Prompt", sans-serif;
+  font-family: var(--font-prompt), sans-serif;
   font-weight: 500;
   font-size: 18px;
   line-height: 28px;
@@ -1288,7 +1288,7 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   top: 15px;
   left: 15px;
   z-index: 2;
-  font-family: "Prompt", sans-serif;
+  font-family: var(--font-prompt), sans-serif;
   font-weight: 600;
   font-size: 11px;
   letter-spacing: 0.08em;

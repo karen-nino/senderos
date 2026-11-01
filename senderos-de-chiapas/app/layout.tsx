@@ -4,7 +4,16 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import Scripts from '@/components/Scripts'
 import ThemeReinitOnRoute from '@/components/ThemeReinitOnRoute'
 import { JsonLd, buildOrganizationJsonLd } from '@/components/JsonLd'
+import { Prompt } from 'next/font/google'
 import './globals.scss'
+
+// Se sirve desde el propio sitio (sin la hoja de Google Fonts que bloqueaba el primer pintado)
+const prompt = Prompt({
+  weight: ['300', '400', '500', '600', '700', '800'],
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-prompt',
+})
 
 const SITE_URL = 'https://senderosdechiapas.com.mx'
 const OG_IMAGE_URL = `${SITE_URL}/og-image.jpg`
@@ -44,10 +53,9 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="es">
+    <html lang="es" className={prompt.variable}>
       <head>
         <link rel="icon" href="/assets/images/favicon.ico" type="image/x-icon" />
-        <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
         <link rel="stylesheet" href="/assets/fonts/flaticon/flaticon_gowilds.css" />
         <link rel="stylesheet" href="/assets/fonts/fontawesome/css/subset.min.css" />
         <link rel="stylesheet" href="/assets/vendor/bootstrap/css/bootstrap.min.css" />

@@ -344,7 +344,7 @@ export default async function Home() {
                       <div className="testimonial-inner-content">
                         <div className="quote-rating-box px-4">
                           <div className="icon">
-                            <img src="/assets/images/testimonial/quote.png" alt="quote icon" />
+                            <img src="/assets/images/testimonial/quote.png" alt="" width={88} height={68} loading="lazy" />
                           </div>
                           <div className="ratings-box">
                             <h3 className="h4">Calidad de Servicio</h3>
