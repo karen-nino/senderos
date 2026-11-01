@@ -51,12 +51,7 @@ export default function RootLayout({
         <link rel="stylesheet" href="/assets/fonts/flaticon/flaticon_gowilds.css" />
         <link rel="stylesheet" href="/assets/fonts/fontawesome/css/all.min.css" />
         <link rel="stylesheet" href="/assets/vendor/bootstrap/css/bootstrap.min.css" />
-        <link rel="stylesheet" href="/assets/vendor/magnific-popup/dist/magnific-popup.css" />
-        <link rel="stylesheet" href="/assets/vendor/slick/slick.css" />
-        <link rel="stylesheet" href="/assets/vendor/jquery-ui/jquery-ui.min.css" />
-        <link rel="stylesheet" href="/assets/vendor/nice-select/css/nice-select.css" />
-        <link rel="stylesheet" href="/assets/vendor/calendar/calendar.min.css" />
-        <link rel="stylesheet" href="/assets/vendor/animate.css" />
+        {/* El CSS de slick, animate, magnific-popup y calendar lo carga <Scripts /> junto con sus plugins: no bloquea el primer pintado */}
         <link rel="stylesheet" href="/assets/css/default.css" />
         {/* CSS compilado comentado para permitir que SCSS tenga prioridad */}
         {/* <link rel="stylesheet" href="/assets/css/style.css" /> */}
