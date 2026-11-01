@@ -27,6 +27,8 @@ node_modules
 
 # Builds (global)
 dist
+# magnific-popup se publica desde su carpeta dist (el sitio la carga en producción)
+!senderos-de-chiapas/public/assets/vendor/magnific-popup/dist/
 build
 .next
 out

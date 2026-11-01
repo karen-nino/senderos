@@ -9,6 +9,7 @@ import GallerySlider from '@/components/GallerySlider'
 import { JsonLd, buildProductJsonLd } from '@/components/JsonLd'
 import { fetchPackageBySlug, fetchHolidayBySlug, fetchAdventureBySlug, fetchPackages, STRAPI_REVALIDATE_SECONDS } from '@/lib/strapi'
 import { whatsappHref } from '@/lib/contact'
+import { cloudinaryWidth } from '@/lib/cloudinary'
 
 const SITE_URL = 'https://senderosdechiapas.com.mx'
 
@@ -163,375 +164,377 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
     <>
       <JsonLd data={packageJsonLd} />
       <Header />
+      <main>
 
-      {/* ====== Start Place Details Section (basado en destination-details) ====== */}
-      <section className="place-details-section">
-        {/* Place Slider - mosaico horizontal (oculto por el momento) */}
-        {/* {(() => {
-          const gallery = (() => {
-            const raw = (pkg.imagesDetails?.filter(Boolean) ?? []) as string[]
-            const base = (pkg.image ? [pkg.image] : []) as string[]
-            const list = raw.length > 0 ? raw : base.length > 0 ? base : [FALLBACK.image]
-            const seen = new Set<string>()
-            return list.filter((u) => (seen.has(u) ? false : (seen.add(u), true)))
-          })()
-          const images = (() => {
-            const list = gallery.length > 0 ? gallery : [FALLBACK.image]
-            return [0, 1, 2, 3].map((i) => list[i % list.length])
-          })()
+        {/* ====== Start Place Details Section (basado en destination-details) ====== */}
+        <section className="place-details-section">
+          {/* Place Slider - mosaico horizontal (oculto por el momento) */}
+          {/* {(() => {
+            const gallery = (() => {
+              const raw = (pkg.imagesDetails?.filter(Boolean) ?? []) as string[]
+              const base = (pkg.image ? [pkg.image] : []) as string[]
+              const list = raw.length > 0 ? raw : base.length > 0 ? base : [FALLBACK.image]
+              const seen = new Set<string>()
+              return list.filter((u) => (seen.has(u) ? false : (seen.add(u), true)))
+            })()
+            const images = (() => {
+              const list = gallery.length > 0 ? gallery : [FALLBACK.image]
+              return [0, 1, 2, 3].map((i) => list[i % list.length])
+            })()
 
-          return <PlaceSlider images={images} alt={pkg.title} />
-        })()} */}
+            return <PlaceSlider images={images} alt={pkg.title} />
+          })()} */}
 
-        <div className="container">
-          <div className="tour-details-wrapper pt-80">
-            {/* Tour Title Wrapper */}
-            <div className="tour-title-wrapper pb-30 wow fadeInUp">
-              <div className="row">
-                <div className="col-xl-6">
-                  <div className="tour-title mb-20">
-                    <span className="tour-label">PAQUETE</span>
-                    <h1 className="title">{pkg.title}</h1>
-                  </div>
-                </div>
-                <div className="col-xl-6 d-none d-xl-block">
-                  <div className="tour-widget-info">
-                    <div className="info-box mb-20">
-                      <div className="icon"><i className="fal fa-box-usd"></i></div>
-                      <div className="info"><h4><span>Desde</span>{pkg.price}</h4></div>
-                    </div>
-                    <div className="info-box mb-20">
-                      <div className="icon"><i className="fal fa-clock"></i></div>
-                      <div className="info"><h4><span>Duración</span>{pkg.duration || 'Variable'}</h4></div>
+          <div className="container">
+            <div className="tour-details-wrapper pt-80">
+              {/* Tour Title Wrapper */}
+              <div className="tour-title-wrapper pb-30 wow fadeInUp">
+                <div className="row">
+                  <div className="col-xl-6">
+                    <div className="tour-title mb-20">
+                      <span className="tour-label">PAQUETE</span>
+                      <h1 className="title">{pkg.title}</h1>
                     </div>
                   </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Galería - Visible only on mobile/tablet, antes de los Detalles del paquete */}
-            {galleryImages.length > 0 && (
-              <div className="d-block d-xl-none">
-                <div className="package-description wow fadeInUp mb-40">
-                  <GallerySlider images={galleryImages} embed />
-                </div>
-              </div>
-            )}
-
-            {/* Aviso "ideal para" - Visible only on mobile/tablet, antes de Detalles del paquete */}
-            {pkg.idealFor && (
-              <div className="package-ideal-for d-block d-xl-none mb-40" role="note">
-                <div className="package-ideal-for__box">
-                  <i className="fas fa-users" aria-hidden></i>
-                  <p>
-                    <strong>Este paquete es ideal para </strong>
-                    {pkg.idealFor}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Booking Info + Calendar - Visible only on mobile/tablet */}
-            <div className="sidebar-widget-area d-block d-xl-none pb-30">
-              <div className="sidebar-widget booking-info-widget wow fadeInUp mb-40">
-                <h4 className="widget-title">Detalles del paquete</h4>
-                <ul className="info-list info-list--stack">
-                  <li><span><i className="fal fa-box-usd"></i>Precio Nacional<span>{pkg.price}</span></span></li>
-                  {pkg.priceInternational && <li><span><i className="fal fa-box-usd"></i>Precio Internacional<span>{pkg.priceInternational}</span></span></li>}
-                  <li><span><i className="fal fa-clock"></i>Duración<span>{pkg.duration || 'Variable'}</span></span></li>
-                  {pkg.accommodation && <li><span><i className="far fa-bed"></i>Alojamiento<span>{pkg.accommodation}</span></span></li>}
-                  {pkg.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida<span>{pkg.departure}</span></span></li>}
-                  {pkg.transport && <li><span><i className="fal fa-bus"></i>Transporte<span>{pkg.transport}</span></span></li>}
-                  <li>
-                    <div className="submit-button">
-                      <a
-                        href={whatsappHref(whatsappMessage)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="main-btn primary-btn"
-                      >
-                        Cotizar por WhatsApp<WhatsAppIcon className="whatsapp-icon" />
-                      </a>
+                  <div className="col-xl-6 d-none d-xl-block">
+                    <div className="tour-widget-info">
+                      <div className="info-box mb-20">
+                        <div className="icon"><i className="fal fa-box-usd"></i></div>
+                        <div className="info"><h4><span>Desde</span>{pkg.price}</h4></div>
+                      </div>
+                      <div className="info-box mb-20">
+                        <div className="icon"><i className="fal fa-clock"></i></div>
+                        <div className="info"><h4><span>Duración</span>{pkg.duration || 'Variable'}</h4></div>
+                      </div>
                     </div>
-                  </li>
-                </ul>
+                  </div>
+                </div>
               </div>
-              {(pkg.calendarStart || pkg.calendarEnd) && (
-                <div className="calendar-wrapper wow fadeInUp mb-40">
-                  <div
-                    className="calendar-container"
-                    data-calendar-date={pkg.calendarStart ?? ''}
-                    data-calendar-end={pkg.calendarEnd ?? ''}
-                  />
+
+              {/* Galería - Visible only on mobile/tablet, antes de los Detalles del paquete */}
+              {galleryImages.length > 0 && (
+                <div className="d-block d-xl-none">
+                  <div className="package-description wow fadeInUp mb-40">
+                    <GallerySlider images={galleryImages} embed />
+                  </div>
                 </div>
               )}
-            </div>
 
-            <div className="row">
-              <div className="col-xl-8">
-                {/* Galería - sólo desktop (en mobile se muestra arriba, antes de los Detalles) */}
-                {galleryImages.length > 0 && (
-                  <div className="d-none d-xl-block">
-                    <div className="package-description pt-45 wow fadeInUp mb-40">
-                      <GallerySlider images={galleryImages} embed />
-                    </div>
-                  </div>
-                )}
-
-                {/* Aviso destacado: para quién es ideal este paquete (antes de la Descripción) - solo desktop; en mobile se muestra arriba de Detalles del paquete */}
-                {pkg.idealFor && (
-                  <div className="package-ideal-for d-none d-xl-block pt-45 wow fadeInUp" role="note">
-                    <div className="package-ideal-for__box">
-                      <i className="fas fa-users" aria-hidden></i>
-                      <p>
-                        <strong>Este paquete es ideal para </strong>
-                        {pkg.idealFor}
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Bloque: descripción del paquete y lista de lugares de la ruta */}
-                <div className="package-description-route pt-45 wow fadeInUp mb-20">
-                  {pkg.description && (
-                    <>
-                      <h3 className="title">Descripción</h3>
-                      <p>{pkg.description}</p>
-                    </>
-                  )}
-                  <h4 className="title">Ruta</h4>
-                  <p>Lugares que recorre este paquete:</p>
-                  <div className="row align-items-lg-center">
-                    <div className="col-lg-12">
-                      <ul className="check-list">
-                        {displayRouteItems.map((item: string, i: number) => (
-                          <li key={i}><i className="fas fa-route"></i>{item}</li>
-                        ))}
-                      </ul>
-                    </div>
+              {/* Aviso "ideal para" - Visible only on mobile/tablet, antes de Detalles del paquete */}
+              {pkg.idealFor && (
+                <div className="package-ideal-for d-block d-xl-none mb-40" role="note">
+                  <div className="package-ideal-for__box">
+                    <i className="fas fa-users" aria-hidden></i>
+                    <p>
+                      <strong>Este paquete es ideal para </strong>
+                      {pkg.idealFor}
+                    </p>
                   </div>
                 </div>
+              )}
 
-                {/* Bloque: servicios incluidos en el paquete */}
-                <div className="package-includes pt-45 wow fadeInUp mb-40">
-                  <h4>Incluye</h4>
-                  <p>Este paquete incluye los siguientes servicios:</p>
-                  <div className="row align-items-lg-center">
-                    <div className="col-lg-12">
-                      <ul className="check-list">
-                        {pkg.includes && pkg.includes.length > 0
-                          ? pkg.includes.map((item: string, i: number) => (
-                            <li key={i}><i className="fas fa-badge-check"></i>{item}</li>
-                          ))
-                          : (
-                            <>
-                              <li><i className="fas fa-badge-check"></i>Incluye</li>
-                            </>
-                          )}
-                      </ul>
-                    </div>
-                  </div>
+              {/* Booking Info + Calendar - Visible only on mobile/tablet */}
+              <div className="sidebar-widget-area d-block d-xl-none pb-30">
+                <div className="sidebar-widget booking-info-widget wow fadeInUp mb-40">
+                  <h4 className="widget-title">Detalles del paquete</h4>
+                  <ul className="info-list info-list--stack">
+                    <li><span><i className="fal fa-box-usd"></i>Precio Nacional<span>{pkg.price}</span></span></li>
+                    {pkg.priceInternational && <li><span><i className="fal fa-box-usd"></i>Precio Internacional<span>{pkg.priceInternational}</span></span></li>}
+                    <li><span><i className="fal fa-clock"></i>Duración<span>{pkg.duration || 'Variable'}</span></span></li>
+                    {pkg.accommodation && <li><span><i className="far fa-bed"></i>Alojamiento<span>{pkg.accommodation}</span></span></li>}
+                    {pkg.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida<span>{pkg.departure}</span></span></li>}
+                    {pkg.transport && <li><span><i className="fal fa-bus"></i>Transporte<span>{pkg.transport}</span></span></li>}
+                    <li>
+                      <div className="submit-button">
+                        <a
+                          href={whatsappHref(whatsappMessage)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="main-btn primary-btn"
+                        >
+                          Cotizar por WhatsApp<WhatsAppIcon className="whatsapp-icon" />
+                        </a>
+                      </div>
+                    </li>
+                  </ul>
                 </div>
-
-                {/* Bloque: servicios NO incluidos — solo si el paquete tiene datos en noIncludes */}
-                {pkg.noIncludes && pkg.noIncludes.length > 0 && (
-                  <div className="package-includes package-includes--excluded pt-45 wow fadeInUp mb-40">
-                    <h4>No incluye</h4>
-                    <p>Este paquete no incluye los siguientes servicios:</p>
-                    <div className="row align-items-lg-center">
-                      <div className="col-lg-12">
-                        <ul className="check-list">
-                          {pkg.noIncludes.map((item: string, i: number) => (
-                            <li key={i}><i className="fas fa-times"></i>{item}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
+                {(pkg.calendarStart || pkg.calendarEnd) && (
+                  <div className="calendar-wrapper wow fadeInUp mb-40">
+                    <div
+                      className="calendar-container"
+                      data-calendar-date={pkg.calendarStart ?? ''}
+                      data-calendar-end={pkg.calendarEnd ?? ''}
+                    />
                   </div>
                 )}
-
-                {/* Bloque: recomendaciones — solo si el paquete tiene datos en recommendation */}
-                {pkg.recommendation && pkg.recommendation.length > 0 && (
-                  <div className="package-recommendations pt-45 wow fadeInUp mb-100">
-                    <h4 className="title">Recomendaciones</h4>
-                    <p>Te sugerimos tomar en cuenta lo siguiente:</p>
-                    <div className="row align-items-lg-center">
-                      <div className="col-lg-12">
-                        <ul className="check-list">
-                          {pkg.recommendation.map((item: string, i: number) => (
-                            <li key={i}><i className="fas fa-lightbulb"></i>{item}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Days Area - Itinerario (solo se muestra si hay datos) */}
-                {pkg.itinerary && pkg.itinerary.length > 0 && (
-                  <div className="days-area mb-100 wow fadeInUp">
-                    <h4 className="title">Itinerario</h4>
-                    <p className="pb-4">Cronograma de actividades del paquete:</p>
-                    {(() => {
-                      const daysMap = new Map<string, typeof pkg.itinerary>();
-                      for (const item of pkg.itinerary!) {
-                        const day = item.dayTitle || 'Día';
-                        if (!daysMap.has(day)) daysMap.set(day, []);
-                        daysMap.get(day)!.push(item);
-                      }
-                      const days = Array.from(daysMap.keys());
-                      const dayIds = days.map((d, i) => `day${i + 1}`);
-                      return (
-                        <>
-                          <ul className="nav nav-tabs mb-35">
-                            {days.map((day, i) => (
-                              <li key={day} className="nav-item">
-                                <button
-                                  className={`nav-link ${i === 0 ? 'active' : ''}`}
-                                  data-bs-toggle="tab"
-                                  data-bs-target={`#${dayIds[i]}`}
-                                  type="button"
-                                >
-                                  {day}
-                                </button>
-                              </li>
-                            ))}
-                          </ul>
-                          <div className="tab-content">
-                            {days.map((day, i) => (
-                              <div
-                                key={day}
-                                className={`tab-pane fade ${i === 0 ? 'show active' : ''}`}
-                                id={dayIds[i]}
-                              >
-                                <div className="content-box">
-                                  <ul className="check-list">
-                                    {daysMap.get(day)!.map((item: { dayTitle: string; time?: string; activity: string; description?: string; routeItinerary?: string; accommodation?: string }, j: number) => (
-                                      <React.Fragment key={j}>
-                                        <li>
-                                          <i className="fas fa-map-marker-alt"></i>
-                                          {item.time ? `${item.time} - ` : ''}
-                                          {item.activity}
-                                        </li>
-                                        {item.accommodation && (
-                                          <li><i className="fas fa-bed"></i> {item.accommodation}</li>
-                                        )}
-                                        {item.routeItinerary && (
-                                          <li><i className="fas fa-route"></i> {item.routeItinerary}</li>
-                                        )}
-                                        {item.description && (
-                                          <li className="text-muted pb-40" style={{ listStyle: 'none' }}>
-                                            {item.description}
-                                          </li>
-                                        )}
-                                      </React.Fragment>
-                                    ))}
-                                  </ul>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </>
-                      );
-                    })()}
-                  </div>
-                )}
-
-                {/* Map Box(es) - solo se muestra si hay mapItem en Strapi */}
-                {pkg.mapItem?.length
-                  ? pkg.mapItem
-                    .map((item) => ({
-                      src: getMapUrl(item.map, locationLabel),
-                      title: item.title?.trim() || 'Ubicación',
-                    }))
-                    .filter((e) => e.src)
-                    .map((entry, i) => (
-                      <div
-                        key={i}
-                        className="map-box mb-100 wow fadeInUp"
-                      >
-                        <h4 className="title pb-4">{entry.title}</h4>
-                        <iframe
-                          src={entry.src}
-                          title={`Mapa - ${entry.title}`}
-                        />
-                      </div>
-                    ))
-                  : null}
               </div>
 
-              {/* Sidebar */}
-              <div className="col-xl-4">
-                <div className="sidebar-widget-area pt-60 pl-lg-30">
-                  {/* Booking Info Widget - Visible only on desktop (xl) */}
-                  <div className="d-none d-xl-block">
-                    <div className="sidebar-widget booking-info-widget wow fadeInUp mb-100">
-                      <h4 className="widget-title">Detalles del paquete</h4>
-                      <ul className="info-list">
-                        <li><span><i className="fal fa-box-usd"></i>Precio Nacional<span>{pkg.price}</span></span></li>
-                        {pkg.priceInternational && <li className="info-list__item--wrap"><span><i className="fal fa-box-usd"></i>Precio Internacional<span>{pkg.priceInternational}</span></span></li>}
-                        <li><span><i className="fal fa-clock"></i>Duración<span>{pkg.duration || 'Variable'}</span></span></li>
-                        {pkg.accommodation && <li><span><i className="far fa-bed"></i>Alojamiento<span>{pkg.accommodation}</span></span></li>}
-                        {pkg.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida<span>{pkg.departure}</span></span></li>}
-                        {pkg.transport && <li><span><i className="fal fa-bus"></i>Transporte<span>{pkg.transport}</span></span></li>}
-                        <li>
-                          <div className="submit-button">
-                            <a
-                              href={whatsappHref(whatsappMessage)}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="main-btn primary-btn"
-                            >
-                              Cotizar por WhatsApp<WhatsAppIcon className="whatsapp-icon" />
-                            </a>
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
-                    {(pkg.calendarStart || pkg.calendarEnd) && (
-                      <div className="calendar-wrapper wow fadeInUp mb-100">
-                        <div
-                          className="calendar-container"
-                          data-calendar-date={pkg.calendarStart ?? ''}
-                          data-calendar-end={pkg.calendarEnd ?? ''}
-                        />
+              <div className="row">
+                <div className="col-xl-8">
+                  {/* Galería - sólo desktop (en mobile se muestra arriba, antes de los Detalles) */}
+                  {galleryImages.length > 0 && (
+                    <div className="d-none d-xl-block">
+                      <div className="package-description pt-45 wow fadeInUp mb-40">
+                        <GallerySlider images={galleryImages} embed />
                       </div>
+                    </div>
+                  )}
+
+                  {/* Aviso destacado: para quién es ideal este paquete (antes de la Descripción) - solo desktop; en mobile se muestra arriba de Detalles del paquete */}
+                  {pkg.idealFor && (
+                    <div className="package-ideal-for d-none d-xl-block pt-45 wow fadeInUp" role="note">
+                      <div className="package-ideal-for__box">
+                        <i className="fas fa-users" aria-hidden></i>
+                        <p>
+                          <strong>Este paquete es ideal para </strong>
+                          {pkg.idealFor}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Bloque: descripción del paquete y lista de lugares de la ruta */}
+                  <div className="package-description-route pt-45 wow fadeInUp mb-20">
+                    {pkg.description && (
+                      <>
+                        <h3 className="title">Descripción</h3>
+                        <p>{pkg.description}</p>
+                      </>
                     )}
+                    <h4 className="title">Ruta</h4>
+                    <p>Lugares que recorre este paquete:</p>
+                    <div className="row align-items-lg-center">
+                      <div className="col-lg-12">
+                        <ul className="check-list">
+                          {displayRouteItems.map((item: string, i: number) => (
+                            <li key={i}><i className="fas fa-route"></i>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
                   </div>
-                  {/* Recent Place Widget - hasta 3 paquetes aleatorios */}
-                  <div className="sidebar-widget recent-place-widget mb-160 wow fadeInUp">
-                    <h4 className="widget-title">Más paquetes</h4>
-                    <ul className="recent-place-list">
-                      {otherPackagesList.length > 0 &&
-                        otherPackagesList.map((p, i) => (
-                          <li key={p.slug ?? `${p.title}-${i}`} className="place-thumbnail-content">
-                            <img src={p.image && !p.image.includes('las-tres-tzimoleras') ? p.image : FALLBACK.image} alt={p.title} />
-                            <div className="place-content">
-                              <h5>
-                                <Link href={p.slug ? `/paquete-detalles/${p.slug}` : (p.link || '/paquetes')} className="recent-place-title-link">{p.title}</Link>
-                              </h5>
-                              {(p.duration || p.price) && (
-                                <ul className="place-meta recent-place-meta list-unstyled mt-1 mb-0 small">
-                                  {p.duration && <li><i className="fal fa-clock me-1"></i>{p.duration}</li>}
-                                  {p.price && <li><i className="fal fa-box-usd me-1"></i>{p.price}</li>}
-                                </ul>
-                              )}
+
+                  {/* Bloque: servicios incluidos en el paquete */}
+                  <div className="package-includes pt-45 wow fadeInUp mb-40">
+                    <h4>Incluye</h4>
+                    <p>Este paquete incluye los siguientes servicios:</p>
+                    <div className="row align-items-lg-center">
+                      <div className="col-lg-12">
+                        <ul className="check-list">
+                          {pkg.includes && pkg.includes.length > 0
+                            ? pkg.includes.map((item: string, i: number) => (
+                              <li key={i}><i className="fas fa-badge-check"></i>{item}</li>
+                            ))
+                            : (
+                              <>
+                                <li><i className="fas fa-badge-check"></i>Incluye</li>
+                              </>
+                            )}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bloque: servicios NO incluidos — solo si el paquete tiene datos en noIncludes */}
+                  {pkg.noIncludes && pkg.noIncludes.length > 0 && (
+                    <div className="package-includes package-includes--excluded pt-45 wow fadeInUp mb-40">
+                      <h4>No incluye</h4>
+                      <p>Este paquete no incluye los siguientes servicios:</p>
+                      <div className="row align-items-lg-center">
+                        <div className="col-lg-12">
+                          <ul className="check-list">
+                            {pkg.noIncludes.map((item: string, i: number) => (
+                              <li key={i}><i className="fas fa-times"></i>{item}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Bloque: recomendaciones — solo si el paquete tiene datos en recommendation */}
+                  {pkg.recommendation && pkg.recommendation.length > 0 && (
+                    <div className="package-recommendations pt-45 wow fadeInUp mb-100">
+                      <h4 className="title">Recomendaciones</h4>
+                      <p>Te sugerimos tomar en cuenta lo siguiente:</p>
+                      <div className="row align-items-lg-center">
+                        <div className="col-lg-12">
+                          <ul className="check-list">
+                            {pkg.recommendation.map((item: string, i: number) => (
+                              <li key={i}><i className="fas fa-lightbulb"></i>{item}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Days Area - Itinerario (solo se muestra si hay datos) */}
+                  {pkg.itinerary && pkg.itinerary.length > 0 && (
+                    <div className="days-area mb-100 wow fadeInUp">
+                      <h4 className="title">Itinerario</h4>
+                      <p className="pb-4">Cronograma de actividades del paquete:</p>
+                      {(() => {
+                        const daysMap = new Map<string, typeof pkg.itinerary>();
+                        for (const item of pkg.itinerary!) {
+                          const day = item.dayTitle || 'Día';
+                          if (!daysMap.has(day)) daysMap.set(day, []);
+                          daysMap.get(day)!.push(item);
+                        }
+                        const days = Array.from(daysMap.keys());
+                        const dayIds = days.map((d, i) => `day${i + 1}`);
+                        return (
+                          <>
+                            <ul className="nav nav-tabs mb-35">
+                              {days.map((day, i) => (
+                                <li key={day} className="nav-item">
+                                  <button
+                                    className={`nav-link ${i === 0 ? 'active' : ''}`}
+                                    data-bs-toggle="tab"
+                                    data-bs-target={`#${dayIds[i]}`}
+                                    type="button"
+                                  >
+                                    {day}
+                                  </button>
+                                </li>
+                              ))}
+                            </ul>
+                            <div className="tab-content">
+                              {days.map((day, i) => (
+                                <div
+                                  key={day}
+                                  className={`tab-pane fade ${i === 0 ? 'show active' : ''}`}
+                                  id={dayIds[i]}
+                                >
+                                  <div className="content-box">
+                                    <ul className="check-list">
+                                      {daysMap.get(day)!.map((item: { dayTitle: string; time?: string; activity: string; description?: string; routeItinerary?: string; accommodation?: string }, j: number) => (
+                                        <React.Fragment key={j}>
+                                          <li>
+                                            <i className="fas fa-map-marker-alt"></i>
+                                            {item.time ? `${item.time} - ` : ''}
+                                            {item.activity}
+                                          </li>
+                                          {item.accommodation && (
+                                            <li><i className="fas fa-bed"></i> {item.accommodation}</li>
+                                          )}
+                                          {item.routeItinerary && (
+                                            <li><i className="fas fa-route"></i> {item.routeItinerary}</li>
+                                          )}
+                                          {item.description && (
+                                            <li className="text-muted pb-40" style={{ listStyle: 'none' }}>
+                                              {item.description}
+                                            </li>
+                                          )}
+                                        </React.Fragment>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </>
+                        );
+                      })()}
+                    </div>
+                  )}
+
+                  {/* Map Box(es) - solo se muestra si hay mapItem en Strapi */}
+                  {pkg.mapItem?.length
+                    ? pkg.mapItem
+                      .map((item) => ({
+                        src: getMapUrl(item.map, locationLabel),
+                        title: item.title?.trim() || 'Ubicación',
+                      }))
+                      .filter((e) => e.src)
+                      .map((entry, i) => (
+                        <div
+                          key={i}
+                          className="map-box mb-100 wow fadeInUp"
+                        >
+                          <h4 className="title pb-4">{entry.title}</h4>
+                          <iframe
+                            src={entry.src}
+                            title={`Mapa - ${entry.title}`}
+                          />
+                        </div>
+                      ))
+                    : null}
+                </div>
+
+                {/* Sidebar */}
+                <div className="col-xl-4">
+                  <div className="sidebar-widget-area pt-60 pl-lg-30">
+                    {/* Booking Info Widget - Visible only on desktop (xl) */}
+                    <div className="d-none d-xl-block">
+                      <div className="sidebar-widget booking-info-widget wow fadeInUp mb-100">
+                        <h4 className="widget-title">Detalles del paquete</h4>
+                        <ul className="info-list">
+                          <li><span><i className="fal fa-box-usd"></i>Precio Nacional<span>{pkg.price}</span></span></li>
+                          {pkg.priceInternational && <li className="info-list__item--wrap"><span><i className="fal fa-box-usd"></i>Precio Internacional<span>{pkg.priceInternational}</span></span></li>}
+                          <li><span><i className="fal fa-clock"></i>Duración<span>{pkg.duration || 'Variable'}</span></span></li>
+                          {pkg.accommodation && <li><span><i className="far fa-bed"></i>Alojamiento<span>{pkg.accommodation}</span></span></li>}
+                          {pkg.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida<span>{pkg.departure}</span></span></li>}
+                          {pkg.transport && <li><span><i className="fal fa-bus"></i>Transporte<span>{pkg.transport}</span></span></li>}
+                          <li>
+                            <div className="submit-button">
+                              <a
+                                href={whatsappHref(whatsappMessage)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="main-btn primary-btn"
+                              >
+                                Cotizar por WhatsApp<WhatsAppIcon className="whatsapp-icon" />
+                              </a>
                             </div>
                           </li>
-                        ))
-                      }
-                    </ul>
-                    <div className="place-content">
-                      <h5><Link href="/paquetes" className="recent-place-title-link">Ver todos los paquetes</Link></h5>
+                        </ul>
+                      </div>
+                      {(pkg.calendarStart || pkg.calendarEnd) && (
+                        <div className="calendar-wrapper wow fadeInUp mb-100">
+                          <div
+                            className="calendar-container"
+                            data-calendar-date={pkg.calendarStart ?? ''}
+                            data-calendar-end={pkg.calendarEnd ?? ''}
+                          />
+                        </div>
+                      )}
+                    </div>
+                    {/* Recent Place Widget - hasta 3 paquetes aleatorios */}
+                    <div className="sidebar-widget recent-place-widget mb-160 wow fadeInUp">
+                      <h4 className="widget-title">Más paquetes</h4>
+                      <ul className="recent-place-list">
+                        {otherPackagesList.length > 0 &&
+                          otherPackagesList.map((p, i) => (
+                            <li key={p.slug ?? `${p.title}-${i}`} className="place-thumbnail-content">
+                              <img src={p.image && !p.image.includes('las-tres-tzimoleras') ? cloudinaryWidth(p.image, 800) : FALLBACK.image} alt={p.title} loading="lazy" decoding="async" />
+                              <div className="place-content">
+                                <h5>
+                                  <Link href={p.slug ? `/paquete-detalles/${p.slug}` : (p.link || '/paquetes')} className="recent-place-title-link">{p.title}</Link>
+                                </h5>
+                                {(p.duration || p.price) && (
+                                  <ul className="place-meta recent-place-meta list-unstyled mt-1 mb-0 small">
+                                    {p.duration && <li><i className="fal fa-clock me-1"></i>{p.duration}</li>}
+                                    {p.price && <li><i className="fal fa-box-usd me-1"></i>{p.price}</li>}
+                                  </ul>
+                                )}
+                              </div>
+                            </li>
+                          ))
+                        }
+                      </ul>
+                      <div className="place-content">
+                        <h5><Link href="/paquetes" className="recent-place-title-link">Ver todos los paquetes</Link></h5>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
+      </main>
       <Footer />
     </>
   )

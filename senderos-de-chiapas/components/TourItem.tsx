@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { cloudinaryWidth } from '@/lib/cloudinary'
 
 interface TourItemProps {
     title: string
@@ -67,7 +68,7 @@ export default function TourItem({
                         {badge === 'nuevo' ? '¡NUEVO!' : badge === 'pocos_lugares' ? 'POCOS LUGARES' : 'AGOTADO'}
                     </span>
                 )}
-                <img src={image} alt={title} />
+                <img src={cloudinaryWidth(image, 800)} alt={title} loading="lazy" decoding="async" />
             </div>
             <span className="tour-item-more-info-btn">Más información</span>
         </Link>

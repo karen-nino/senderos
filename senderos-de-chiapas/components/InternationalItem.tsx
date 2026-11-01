@@ -1,3 +1,5 @@
+import { cloudinaryWidth } from '@/lib/cloudinary'
+
 interface InternationalItemProps {
     title: string
     description: string
@@ -119,7 +121,7 @@ export default function InternationalItem({
                         {badge === 'nuevo' ? '¡NUEVO!' : badge === 'pocos_lugares' ? 'POCOS LUGARES' : 'AGOTADO'}
                     </span>
                 )}
-                <img src={image} alt={title} />
+                <img src={cloudinaryWidth(image, 800)} alt={title} loading="lazy" decoding="async" />
             </div>
         </div>
     )

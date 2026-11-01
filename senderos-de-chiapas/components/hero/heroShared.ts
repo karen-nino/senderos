@@ -54,15 +54,6 @@ export function getHeroImageUrl(image: HeroSlide['image']): string {
   return cleanUrl.startsWith('/uploads/') ? `/api/strapi-uploads/${cleanUrl.replace(/^\/uploads\//, '')}` : `${strapiUrl}${cleanUrl}`
 }
 
-/**
- * Pide a Cloudinary una versión optimizada (formato automático WebP/AVIF, calidad automática y
- * ancho máximo). Las URLs que no son de Cloudinary se devuelven tal cual.
- */
-export function cloudinaryResize(url: string, transform: string): string {
-  if (!url.includes('res.cloudinary.com') || !url.includes('/upload/')) return url
-  return url.replace('/upload/', `/upload/${transform}/`)
-}
-
 export function getHeroImageAlt(image: HeroSlide['image'], title: string): string {
   if (typeof image === 'string') return title
   return (image as { alternativeText?: string })?.alternativeText || title

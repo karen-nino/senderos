@@ -52,8 +52,8 @@ export default function Footer() {
               <div className="col-lg-3 col-sm-6">
                 <div className="social-box mb-40 float-lg-end">
                   <ul className="social-link">
-                    <li><a href="https://www.facebook.com/senderos.chiapas.3"><i className="fab fa-facebook-f"></i></a></li>
-                    <li style={{ marginLeft: '5px' }}><a href="https://www.instagram.com/senderos_dechiapas"><i className="fab fa-instagram"></i></a></li>
+                    <li><a href="https://www.facebook.com/senderos.chiapas.3" aria-label="Facebook de Senderos de Chiapas"><i className="fab fa-facebook-f" aria-hidden="true"></i></a></li>
+                    <li style={{ marginLeft: '5px' }}><a href="https://www.instagram.com/senderos_dechiapas" aria-label="Instagram de Senderos de Chiapas"><i className="fab fa-instagram" aria-hidden="true"></i></a></li>
                   </ul>
                 </div>
               </div>
@@ -69,7 +69,7 @@ export default function Footer() {
                   <div className="footer-content">
                     <p>Senderos de Chiapas es una empresa 100% Chiapaneca. Ofrecemos diversos servicios turísticos con atención personalizada. Conócenos.</p>
                     <a href="#" className="footer-logo">
-                      <img src="/assets/images/logo/logo-senderos.svg" alt="Site Logo" />
+                      <img src="/assets/images/logo/logo-senderos.svg" alt="Site Logo" width={150} height={52} />
                     </a>
                   </div>
                 </div>

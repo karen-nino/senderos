@@ -9,6 +9,7 @@ import GallerySlider from '@/components/GallerySlider'
 import { JsonLd, buildProductJsonLd } from '@/components/JsonLd'
 import { fetchTourBySlug, fetchTourPageData, STRAPI_REVALIDATE_SECONDS } from '@/lib/strapi'
 import { whatsappHref } from '@/lib/contact'
+import { cloudinaryWidth } from '@/lib/cloudinary'
 
 const SITE_URL = 'https://senderosdechiapas.com.mx'
 
@@ -147,385 +148,387 @@ export default async function TourDetailPage({ params }: PageProps) {
     <>
       <JsonLd data={tourJsonLd} />
       <Header />
+      <main>
 
-      {/* ====== Start Place Details Section (tour-details.html) ====== */}
-      <section className="place-details-section">
-        {/* Place Slider - mosaico horizontal (oculto por el momento) */}
-        {/* {(() => {
-          const gallery = (() => {
-            const raw = destination.imagesDetails?.filter(Boolean) ?? [];
-            if (raw.length === 0) return [destination.image];
-            const seen = new Set<string>();
-            return raw.filter((u) => (seen.has(u) ? false : (seen.add(u), true)));
-          })();
-          const images = (() => {
-            const list = gallery.length > 0 ? gallery : [destination.image];
-            return [0, 1, 2, 3].map((i) => list[i % list.length]);
-          })();
-          return <PlaceSlider images={images} alt={destination.title} />;
-        })()} */}
+        {/* ====== Start Place Details Section (tour-details.html) ====== */}
+        <section className="place-details-section">
+          {/* Place Slider - mosaico horizontal (oculto por el momento) */}
+          {/* {(() => {
+            const gallery = (() => {
+              const raw = destination.imagesDetails?.filter(Boolean) ?? [];
+              if (raw.length === 0) return [destination.image];
+              const seen = new Set<string>();
+              return raw.filter((u) => (seen.has(u) ? false : (seen.add(u), true)));
+            })();
+            const images = (() => {
+              const list = gallery.length > 0 ? gallery : [destination.image];
+              return [0, 1, 2, 3].map((i) => list[i % list.length]);
+            })();
+            return <PlaceSlider images={images} alt={destination.title} />;
+          })()} */}
 
-        <div className="container">
-          <div className="tour-details-wrapper pt-80">
-            {/* Tour Title Wrapper */}
-            <div className="tour-title-wrapper pb-30 wow fadeInUp">
-              <div className="row">
-                <div className="col-xl-6">
-                  <div className="tour-title mb-10">
-                    <h1 className="title">{destination.title}</h1>
-                    {destination.subtitle ? (
-                      <p className="text-muted mb-0 mt-2">{destination.subtitle}</p>
-                    ) : null}
+          <div className="container">
+            <div className="tour-details-wrapper pt-80">
+              {/* Tour Title Wrapper */}
+              <div className="tour-title-wrapper pb-30 wow fadeInUp">
+                <div className="row">
+                  <div className="col-xl-6">
+                    <div className="tour-title mb-10">
+                      <h1 className="title">{destination.title}</h1>
+                      {destination.subtitle ? (
+                        <p className="text-muted mb-0 mt-2">{destination.subtitle}</p>
+                      ) : null}
+                    </div>
                   </div>
-                </div>
-                <div className="col-xl-6 d-none d-xl-block">
-                  <div className="tour-widget-info">
-                    {/* <div className="info-box mb-20">
-                      <div className="submit-button">
-                        <button type="submit" className="main-btn primary-btn">Reservar<WhatsAppIcon className="whatsapp-icon" /></button>
-                      </div>
-                    </div> */}
+                  <div className="col-xl-6 d-none d-xl-block">
+                    <div className="tour-widget-info">
+                      {/* <div className="info-box mb-20">
+                        <div className="submit-button">
+                          <button type="submit" className="main-btn primary-btn">Reservar<WhatsAppIcon className="whatsapp-icon" /></button>
+                        </div>
+                      </div> */}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Galería - Visible only on mobile/tablet, antes de los Detalles del Tour */}
-            {galleryImages.length > 0 && (
-              <div className="d-block d-xl-none">
-                <div className="package-description wow fadeInUp mb-40">
-                  <GallerySlider images={galleryImages} embed />
-                </div>
-              </div>
-            )}
-
-            {/* Booking Info + Calendar - Visible only on mobile/tablet, right after Tour Title (misma info que desktop) */}
-            <div className="sidebar-widget-area d-block d-xl-none pb-30">
-              {(destination.departures && destination.departures.length > 0
-                ? destination.departures
-                : [{ departure: destination.departure, transport: destination.transport, minimumParticipants: destination.minimumParticipants, arrival: destination.arrival }]
-              ).map((dep, depIdx) => (
-                <div key={`departure-mobile-${depIdx}`} className="sidebar-widget booking-info-widget wow fadeInUp mb-40">
-                  <div className="pb-2 border-bottom">
-                    <h4 className="">Detalles del Tour</h4>
-                    <h5 className="fw-light">Salida {dep.departure}</h5>
+              {/* Galería - Visible only on mobile/tablet, antes de los Detalles del Tour */}
+              {galleryImages.length > 0 && (
+                <div className="d-block d-xl-none">
+                  <div className="package-description wow fadeInUp mb-40">
+                    <GallerySlider images={galleryImages} embed />
                   </div>
-                  <ul className="info-list pt-3">
-                    {dep.minimumParticipants && <li><span><i className="fal fa-users"></i>Mínimo de participantes<span style={{ float: 'none' }}>{dep.minimumParticipants}</span></span></li>}
-                    {dep.transport && <li><span><i className="fal fa-bus"></i>Transporte<span style={{ float: 'none' }}>{dep.transport}</span></span></li>}
-                    {dep.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida desde<span style={{ float: 'none', display: 'block' }}>{dep.departure}</span></span></li>}
-                    {dep.arrival && dep.arrival.length > 0 && (
-                      dep.arrival.length === 1 ? (
-                        <React.Fragment>
-                          <li><span><i className="far fa-map-marker-alt"></i>Regreso hacia<span style={{ float: 'none', display: 'block'}}>{dep.arrival[0].value}</span><span style={{ float: 'none', display: 'block' }}>{dep.arrival[0].arrivalHour}</span></span></li>
-                          {dep.arrival[0].arrivalNationalPrice && (
-                            <li><span><i className="fal fa-box-usd"></i>Precio Nacional desde<span style={{ float: 'none' }}>{dep.arrival[0].arrivalNationalPrice}</span></span></li>
-                          )}
-                          {dep.arrival[0].arrivalInternationalPrice && (
-                            <li><span><i className="fal fa-box-usd"></i>Precio Internacional desde<span style={{ float: 'none' }}>{dep.arrival[0].arrivalInternationalPrice}</span></span></li>
-                          )}
-                        </React.Fragment>
-                      ) : (
-                        dep.arrival.map((a, i) => (
-                          <React.Fragment key={`arrival-${depIdx}-${i}`}>
-                            <li><span><i className="far fa-map-marker-alt pb-3"></i>{`Regreso hacia`}<span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.value}</span><span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.arrivalHour}</span><span className='pt-3' style={{ float: 'none', display: 'block'}}>Alojamiento</span><span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.arrivalAccommodation}</span><span className='pt-3' style={{ float: 'none', display: 'block'}}>Precio Nacional desde</span><span style={{ float: 'none', display: 'block', fontSize: '22px' }}>{a.arrivalNationalPrice}</span><span className='pt-3' style={{ float: 'none', display: 'block'}}>Precio Internacional desde</span><span style={{ float: 'none', display: 'block', fontSize: '22px' }}>{a.arrivalInternationalPrice}</span></span></li>
+                </div>
+              )}
+
+              {/* Booking Info + Calendar - Visible only on mobile/tablet, right after Tour Title (misma info que desktop) */}
+              <div className="sidebar-widget-area d-block d-xl-none pb-30">
+                {(destination.departures && destination.departures.length > 0
+                  ? destination.departures
+                  : [{ departure: destination.departure, transport: destination.transport, minimumParticipants: destination.minimumParticipants, arrival: destination.arrival }]
+                ).map((dep, depIdx) => (
+                  <div key={`departure-mobile-${depIdx}`} className="sidebar-widget booking-info-widget wow fadeInUp mb-40">
+                    <div className="pb-2 border-bottom">
+                      <h4 className="">Detalles del Tour</h4>
+                      <h5 className="fw-light">Salida {dep.departure}</h5>
+                    </div>
+                    <ul className="info-list pt-3">
+                      {dep.minimumParticipants && <li><span><i className="fal fa-users"></i>Mínimo de participantes<span style={{ float: 'none' }}>{dep.minimumParticipants}</span></span></li>}
+                      {dep.transport && <li><span><i className="fal fa-bus"></i>Transporte<span style={{ float: 'none' }}>{dep.transport}</span></span></li>}
+                      {dep.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida desde<span style={{ float: 'none', display: 'block' }}>{dep.departure}</span></span></li>}
+                      {dep.arrival && dep.arrival.length > 0 && (
+                        dep.arrival.length === 1 ? (
+                          <React.Fragment>
+                            <li><span><i className="far fa-map-marker-alt"></i>Regreso hacia<span style={{ float: 'none', display: 'block'}}>{dep.arrival[0].value}</span><span style={{ float: 'none', display: 'block' }}>{dep.arrival[0].arrivalHour}</span></span></li>
+                            {dep.arrival[0].arrivalNationalPrice && (
+                              <li><span><i className="fal fa-box-usd"></i>Precio Nacional desde<span style={{ float: 'none' }}>{dep.arrival[0].arrivalNationalPrice}</span></span></li>
+                            )}
+                            {dep.arrival[0].arrivalInternationalPrice && (
+                              <li><span><i className="fal fa-box-usd"></i>Precio Internacional desde<span style={{ float: 'none' }}>{dep.arrival[0].arrivalInternationalPrice}</span></span></li>
+                            )}
                           </React.Fragment>
-                        ))
-                      )
-                    )}
-                    <li className="tour-details-wa-cta-mobile">
-                      <div className="submit-button">
-                        <a
-                          href={whatsappHref(whatsappMessage)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="main-btn primary-btn"
-                        >
-                          Consulta disponibilidad<WhatsAppIcon className="whatsapp-icon" />
-                        </a>
-                      </div>
-                    </li>
-                  </ul>
-                </div>
-              ))}
-            </div>
+                        ) : (
+                          dep.arrival.map((a, i) => (
+                            <React.Fragment key={`arrival-${depIdx}-${i}`}>
+                              <li><span><i className="far fa-map-marker-alt pb-3"></i>{`Regreso hacia`}<span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.value}</span><span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.arrivalHour}</span><span className='pt-3' style={{ float: 'none', display: 'block'}}>Alojamiento</span><span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.arrivalAccommodation}</span><span className='pt-3' style={{ float: 'none', display: 'block'}}>Precio Nacional desde</span><span style={{ float: 'none', display: 'block', fontSize: '22px' }}>{a.arrivalNationalPrice}</span><span className='pt-3' style={{ float: 'none', display: 'block'}}>Precio Internacional desde</span><span style={{ float: 'none', display: 'block', fontSize: '22px' }}>{a.arrivalInternationalPrice}</span></span></li>
+                            </React.Fragment>
+                          ))
+                        )
+                      )}
+                      <li className="tour-details-wa-cta-mobile">
+                        <div className="submit-button">
+                          <a
+                            href={whatsappHref(whatsappMessage)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="main-btn primary-btn"
+                          >
+                            Consulta disponibilidad<WhatsAppIcon className="whatsapp-icon" />
+                          </a>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                ))}
+              </div>
 
-            <div className="row">
-              <div className="col-xl-8">
-                {/* Galería - sólo desktop (en mobile se muestra arriba, antes de los Detalles) */}
-                {galleryImages.length > 0 && (
-                  <div className="d-none d-xl-block">
+              <div className="row">
+                <div className="col-xl-8">
+                  {/* Galería - sólo desktop (en mobile se muestra arriba, antes de los Detalles) */}
+                  {galleryImages.length > 0 && (
+                    <div className="d-none d-xl-block">
+                      <div className="package-description pt-45 wow fadeInUp mb-40">
+                        <GallerySlider images={galleryImages} embed />
+                      </div>
+                    </div>
+                  )}
+                  {/* Descripción + Ruta: mismo patrón que package-details */}
+                  {destination.description?.trim() && (
                     <div className="package-description pt-45 wow fadeInUp mb-40">
-                      <GallerySlider images={galleryImages} embed />
+                      <h3 className="title">Descripción</h3>
+                      <div className="tour-description-text" style={{ lineHeight: 1.85 }}>
+                        {destination.description.split(/\n\n+/).map((para, idx) => (
+                          <p key={idx} className={idx > 0 ? 'mt-3' : ''} style={{ lineHeight: 'inherit' }}>
+                            {para.trim()}
+                          </p>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
-                {/* Descripción + Ruta: mismo patrón que package-details */}
-                {destination.description?.trim() && (
-                  <div className="package-description pt-45 wow fadeInUp mb-40">
-                    <h3 className="title">Descripción</h3>
-                    <div className="tour-description-text" style={{ lineHeight: 1.85 }}>
-                      {destination.description.split(/\n\n+/).map((para, idx) => (
-                        <p key={idx} className={idx > 0 ? 'mt-3' : ''} style={{ lineHeight: 'inherit' }}>
-                          {para.trim()}
-                        </p>
-                      ))}
+                  )}
+                  {routeList.length > 0 && (
+                    <div className="package-route pt-45 wow fadeInUp mb-40">
+                      <h4 className="title">Ruta</h4>
+                      <p>Lugares que recorre este tour:</p>
+                      <div className="row align-items-lg-center">
+                        <div className="col-lg-12">
+                          <ul className="check-list">
+                            {routeList.map((item: string, i: number) => (
+                              <li key={i}><i className="fas fa-route"></i>{item}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                )}
-                {routeList.length > 0 && (
-                  <div className="package-route pt-45 wow fadeInUp mb-40">
-                    <h4 className="title">Ruta</h4>
-                    <p>Lugares que recorre este tour:</p>
+                  )}
+                  <div
+                    className={`${(destination.description?.trim() || routeList.length > 0) ? 'package-includes' : 'place-content-wrap'} pt-45 wow fadeInUp mb-80`}
+                  >
+                    <h4 className="title">Incluye</h4>
+                    <p>Este tour incluye los siguientes servicios:</p>
                     <div className="row align-items-lg-center">
                       <div className="col-lg-12">
                         <ul className="check-list">
-                          {routeList.map((item: string, i: number) => (
-                            <li key={i}><i className="fas fa-route"></i>{item}</li>
-                          ))}
+                          {destination.includes && destination.includes.length > 0
+                            ? destination.includes.map((item: string, i: number) => (
+                              <li key={i}><i className="fas fa-badge-check"></i>{item}</li>
+                            ))
+                            : (
+                              <>
+                                <li><i className="fas fa-badge-check"></i>Incluye</li>
+                              </>
+                            )}
                         </ul>
                       </div>
                     </div>
                   </div>
-                )}
-                <div
-                  className={`${(destination.description?.trim() || routeList.length > 0) ? 'package-includes' : 'place-content-wrap'} pt-45 wow fadeInUp mb-80`}
-                >
-                  <h4 className="title">Incluye</h4>
-                  <p>Este tour incluye los siguientes servicios:</p>
-                  <div className="row align-items-lg-center">
-                    <div className="col-lg-12">
-                      <ul className="check-list">
-                        {destination.includes && destination.includes.length > 0
-                          ? destination.includes.map((item: string, i: number) => (
-                            <li key={i}><i className="fas fa-badge-check"></i>{item}</li>
-                          ))
-                          : (
-                            <>
-                              <li><i className="fas fa-badge-check"></i>Incluye</li>
-                            </>
-                          )}
-                      </ul>
+
+                  {/* Days Area - Itinerario desde Strapi (solo se muestra si hay datos) */}
+                  {destination.itinerary && destination.itinerary.length > 0 && (
+                    <div className="days-area mb-140 wow fadeInUp">
+                      <h4 className="title">Itinerario</h4>
+                      <p className="pb-4">Cronograma de actividades del tour:</p>
+                      {(() => {
+                        const items = destination.itinerary!;
+                        const daysMap = new Map<string, typeof items>();
+                        const dayOrder: string[] = [];
+                        for (const item of items) {
+                          const day = (item.dayTitle || "Día").trim() || "Día";
+                          if (!daysMap.has(day)) {
+                            daysMap.set(day, []);
+                            dayOrder.push(day);
+                          }
+                          daysMap.get(day)!.push(item);
+                        }
+                        const dayIds = dayOrder.map((_, i) => `itinerary-day-${i}`);
+                        return (
+                          <>
+                            {dayOrder.length > 1 && (
+                              <ul className="nav nav-tabs mb-35 flex-wrap" role="tablist">
+                                {dayOrder.map((day, i) => (
+                                  <li key={dayIds[i]} className="nav-item" role="presentation">
+                                    <button
+                                      className={`nav-link ${i === 0 ? "active" : ""}`}
+                                      id={`${dayIds[i]}-tab`}
+                                      data-bs-toggle="tab"
+                                      data-bs-target={`#${dayIds[i]}`}
+                                      type="button"
+                                      role="tab"
+                                      aria-controls={dayIds[i]}
+                                      aria-selected={i === 0}
+                                    >
+                                      {day}
+                                    </button>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                            <div className="tab-content">
+                              {dayOrder.map((day, i) => (
+                                <div
+                                  key={dayIds[i]}
+                                  className={`tab-pane fade ${i === 0 ? "show active" : ""}`}
+                                  id={dayIds[i]}
+                                  role="tabpanel"
+                                  aria-labelledby={`${dayIds[i]}-tab`}
+                                >
+                                  <div className="content-box">
+                                    <ul className="check-list pb-4">
+                                      {daysMap.get(day)!.map(
+                                        (
+                                          item: {
+                                            dayTitle: string;
+                                            time?: string;
+                                            activity: string;
+                                            description?: string;
+                                            routeItinerary?: string;
+                                            accommodation?: string;
+                                            note?: string;
+                                          },
+                                          j: number,
+                                        ) => (
+                                          <React.Fragment key={`${dayIds[i]}-act-${j}`}>
+                                            <li>
+                                              <i className="fas fa-clock"></i>
+                                              {item.time ? `${item.time} - ` : ""}
+                                              {item.activity}
+                                            </li>
+                                            {item.description ? (
+                                              <li className="ps-4 text-muted" style={{ listStyle: 'none' }}>
+                                                {item.description}
+                                              </li>
+                                            ) : null}
+                                            {item.routeItinerary ? (
+                                              <li>
+                                                <i className="fas fa-route"></i> {item.routeItinerary}
+                                              </li>
+                                            ) : null}
+                                            {item.accommodation ? (
+                                              <li>
+                                                <i className="fas fa-bed"></i> {item.accommodation}
+                                              </li>
+                                            ) : null}
+                                          </React.Fragment>
+                                        ),
+                                      )}
+                                    </ul>
+                                    {daysMap.get(day)![0]?.note ? (
+                                      <p className="mt-3 mb-0 text-muted fst-italic" style={{ paddingLeft: '2rem' }}>
+                                        <i className="fas fa-info-circle me-2"></i>{daysMap.get(day)![0].note}
+                                      </p>
+                                    ) : null}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </>
+                        );
+                      })()}
                     </div>
-                  </div>
+                  )}
+
+                  {/* Map Box(es) - solo se muestra si hay mapItem en Strapi */}
+                  {destination.mapItem?.length ? (
+                    <>
+                      <div className="tour-details-map-section">
+                        {destination.mapItem
+                          .map((item) => ({
+                            src: getMapUrl(item.map, destination.location),
+                            title: item.title?.trim() || "Ubicación",
+                          }))
+                          .filter((e) => e.src)
+                          .map((entry, i) => (
+                            <div
+                              key={i}
+                              className="map-box mb-0 tour-details-map-box wow fadeInUp"
+                            >
+                              <h4 className="title pb-4">{entry.title}</h4>
+                              <iframe
+                                src={entry.src}
+                                title={`Mapa - ${entry.title}`}
+                              />
+                            </div>
+                          ))}
+                      </div>
+                      {/* Altura fija: el margen bajo el último mapa se ve (evita colapso de márgenes) */}
+                      <div className="tour-details-map-bottom-space" aria-hidden />
+                    </>
+                  ) : null}
                 </div>
 
-                {/* Days Area - Itinerario desde Strapi (solo se muestra si hay datos) */}
-                {destination.itinerary && destination.itinerary.length > 0 && (
-                  <div className="days-area mb-140 wow fadeInUp">
-                    <h4 className="title">Itinerario</h4>
-                    <p className="pb-4">Cronograma de actividades del tour:</p>
-                    {(() => {
-                      const items = destination.itinerary!;
-                      const daysMap = new Map<string, typeof items>();
-                      const dayOrder: string[] = [];
-                      for (const item of items) {
-                        const day = (item.dayTitle || "Día").trim() || "Día";
-                        if (!daysMap.has(day)) {
-                          daysMap.set(day, []);
-                          dayOrder.push(day);
-                        }
-                        daysMap.get(day)!.push(item);
-                      }
-                      const dayIds = dayOrder.map((_, i) => `itinerary-day-${i}`);
-                      return (
-                        <>
-                          {dayOrder.length > 1 && (
-                            <ul className="nav nav-tabs mb-35 flex-wrap" role="tablist">
-                              {dayOrder.map((day, i) => (
-                                <li key={dayIds[i]} className="nav-item" role="presentation">
-                                  <button
-                                    className={`nav-link ${i === 0 ? "active" : ""}`}
-                                    id={`${dayIds[i]}-tab`}
-                                    data-bs-toggle="tab"
-                                    data-bs-target={`#${dayIds[i]}`}
-                                    type="button"
-                                    role="tab"
-                                    aria-controls={dayIds[i]}
-                                    aria-selected={i === 0}
-                                  >
-                                    {day}
-                                  </button>
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                          <div className="tab-content">
-                            {dayOrder.map((day, i) => (
-                              <div
-                                key={dayIds[i]}
-                                className={`tab-pane fade ${i === 0 ? "show active" : ""}`}
-                                id={dayIds[i]}
-                                role="tabpanel"
-                                aria-labelledby={`${dayIds[i]}-tab`}
-                              >
-                                <div className="content-box">
-                                  <ul className="check-list pb-4">
-                                    {daysMap.get(day)!.map(
-                                      (
-                                        item: {
-                                          dayTitle: string;
-                                          time?: string;
-                                          activity: string;
-                                          description?: string;
-                                          routeItinerary?: string;
-                                          accommodation?: string;
-                                          note?: string;
-                                        },
-                                        j: number,
-                                      ) => (
-                                        <React.Fragment key={`${dayIds[i]}-act-${j}`}>
-                                          <li>
-                                            <i className="fas fa-clock"></i>
-                                            {item.time ? `${item.time} - ` : ""}
-                                            {item.activity}
-                                          </li>
-                                          {item.description ? (
-                                            <li className="ps-4 text-muted" style={{ listStyle: 'none' }}>
-                                              {item.description}
-                                            </li>
-                                          ) : null}
-                                          {item.routeItinerary ? (
-                                            <li>
-                                              <i className="fas fa-route"></i> {item.routeItinerary}
-                                            </li>
-                                          ) : null}
-                                          {item.accommodation ? (
-                                            <li>
-                                              <i className="fas fa-bed"></i> {item.accommodation}
-                                            </li>
-                                          ) : null}
-                                        </React.Fragment>
-                                      ),
-                                    )}
-                                  </ul>
-                                  {daysMap.get(day)![0]?.note ? (
-                                    <p className="mt-3 mb-0 text-muted fst-italic" style={{ paddingLeft: '2rem' }}>
-                                      <i className="fas fa-info-circle me-2"></i>{daysMap.get(day)![0].note}
-                                    </p>
-                                  ) : null}
-                                </div>
-                              </div>
-                            ))}
+                {/* Sidebar */}
+                <div className="col-xl-4">
+                  <div className="sidebar-widget-area pt-60 pl-lg-30">
+                    {/* Booking Info Widget - Visible only on desktop (xl) */}
+                    <div className="d-none d-xl-block">
+                      {(destination.departures && destination.departures.length > 0
+                        ? destination.departures
+                        : [{ departure: destination.departure, transport: destination.transport, minimumParticipants: destination.minimumParticipants, arrival: destination.arrival }]
+                      ).map((dep, depIdx) => (
+                        <div key={`departure-desktop-${depIdx}`} className="sidebar-widget booking-info-widget wow fadeInUp mb-100">
+                          <div className="pb-2 border-bottom">
+                            <h4 className="">Detalles del Tour</h4>
+                            <h5 className="fw-light">Salida {dep.departure}</h5>
                           </div>
-                        </>
-                      );
-                    })()}
-                  </div>
-                )}
-
-                {/* Map Box(es) - solo se muestra si hay mapItem en Strapi */}
-                {destination.mapItem?.length ? (
-                  <>
-                    <div className="tour-details-map-section">
-                      {destination.mapItem
-                        .map((item) => ({
-                          src: getMapUrl(item.map, destination.location),
-                          title: item.title?.trim() || "Ubicación",
-                        }))
-                        .filter((e) => e.src)
-                        .map((entry, i) => (
-                          <div
-                            key={i}
-                            className="map-box mb-0 tour-details-map-box wow fadeInUp"
-                          >
-                            <h4 className="title pb-4">{entry.title}</h4>
-                            <iframe
-                              src={entry.src}
-                              title={`Mapa - ${entry.title}`}
-                            />
-                          </div>
-                        ))}
-                    </div>
-                    {/* Altura fija: el margen bajo el último mapa se ve (evita colapso de márgenes) */}
-                    <div className="tour-details-map-bottom-space" aria-hidden />
-                  </>
-                ) : null}
-              </div>
-
-              {/* Sidebar */}
-              <div className="col-xl-4">
-                <div className="sidebar-widget-area pt-60 pl-lg-30">
-                  {/* Booking Info Widget - Visible only on desktop (xl) */}
-                  <div className="d-none d-xl-block">
-                    {(destination.departures && destination.departures.length > 0
-                      ? destination.departures
-                      : [{ departure: destination.departure, transport: destination.transport, minimumParticipants: destination.minimumParticipants, arrival: destination.arrival }]
-                    ).map((dep, depIdx) => (
-                      <div key={`departure-desktop-${depIdx}`} className="sidebar-widget booking-info-widget wow fadeInUp mb-100">
-                        <div className="pb-2 border-bottom">
-                          <h4 className="">Detalles del Tour</h4>
-                          <h5 className="fw-light">Salida {dep.departure}</h5>
-                        </div>
-                        <ul className="info-list pt-3">
-                          {dep.minimumParticipants && <li><span><i className="fal fa-users"></i>Mínimo de participantes<span style={{ float: 'none' }}>{dep.minimumParticipants}</span></span></li>}
-                          {dep.transport && <li><span><i className="fal fa-bus"></i>Transporte<span style={{ float: 'none' }}>{dep.transport}</span></span></li>}
-                          {dep.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida desde<span style={{ float: 'none', display: 'block' }}>{dep.departure}</span></span></li>}
-                          {dep.arrival && dep.arrival.length > 0 && (
-                            dep.arrival.length === 1 ? (
-                              <React.Fragment>
-                                <li><span><i className="far fa-map-marker-alt"></i>Regreso hacia<span style={{ float: 'none', display: 'block'}}>{dep.arrival[0].value}</span><span style={{ float: 'none', display: 'block' }}>{dep.arrival[0].arrivalHour}</span></span></li>
-                                {dep.arrival[0].arrivalNationalPrice && (
-                                  <li><span><i className="fal fa-box-usd"></i>Precio Nacional desde<span style={{ float: 'none' }}>{dep.arrival[0].arrivalNationalPrice}</span></span></li>
-                                )}
-                                {dep.arrival[0].arrivalInternationalPrice && (
-                                  <li><span><i className="fal fa-box-usd"></i>Precio Internacional desde<span style={{ float: 'none' }}>{dep.arrival[0].arrivalInternationalPrice}</span></span></li>
-                                )}
-                              </React.Fragment>
-                            ) : (
-                              dep.arrival.map((a, i) => (
-                                <React.Fragment key={`arrival-${depIdx}-${i}`}>
-                                  <li><span><i className="far fa-map-marker-alt pb-3"></i>{`Regreso hacia`}<span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.value}</span><span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.arrivalHour}</span><span className='pt-3' style={{ float: 'none', display: 'block'}}>Alojamiento</span><span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.arrivalAccommodation}</span><span className='pt-3' style={{ float: 'none', display: 'block'}}>Precio Nacional desde</span><span style={{ float: 'none', display: 'block', fontSize: '22px' }}>{a.arrivalNationalPrice}</span><span className='pt-3' style={{ float: 'none', display: 'block'}}>Precio Internacional desde</span><span style={{ float: 'none', display: 'block', fontSize: '22px' }}>{a.arrivalInternationalPrice}</span></span></li>
+                          <ul className="info-list pt-3">
+                            {dep.minimumParticipants && <li><span><i className="fal fa-users"></i>Mínimo de participantes<span style={{ float: 'none' }}>{dep.minimumParticipants}</span></span></li>}
+                            {dep.transport && <li><span><i className="fal fa-bus"></i>Transporte<span style={{ float: 'none' }}>{dep.transport}</span></span></li>}
+                            {dep.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida desde<span style={{ float: 'none', display: 'block' }}>{dep.departure}</span></span></li>}
+                            {dep.arrival && dep.arrival.length > 0 && (
+                              dep.arrival.length === 1 ? (
+                                <React.Fragment>
+                                  <li><span><i className="far fa-map-marker-alt"></i>Regreso hacia<span style={{ float: 'none', display: 'block'}}>{dep.arrival[0].value}</span><span style={{ float: 'none', display: 'block' }}>{dep.arrival[0].arrivalHour}</span></span></li>
+                                  {dep.arrival[0].arrivalNationalPrice && (
+                                    <li><span><i className="fal fa-box-usd"></i>Precio Nacional desde<span style={{ float: 'none' }}>{dep.arrival[0].arrivalNationalPrice}</span></span></li>
+                                  )}
+                                  {dep.arrival[0].arrivalInternationalPrice && (
+                                    <li><span><i className="fal fa-box-usd"></i>Precio Internacional desde<span style={{ float: 'none' }}>{dep.arrival[0].arrivalInternationalPrice}</span></span></li>
+                                  )}
                                 </React.Fragment>
-                              ))
-                            )
-                          )}
-                          <li>
-                            <div className="submit-button">
-                              <a
-                                href={`https://wa.me/529612980999?text=${encodeURIComponent(whatsappMessage)}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="main-btn primary-btn"
-                              >
-                                Consulta disponibilidad<WhatsAppIcon className="whatsapp-icon" />
-                              </a>
-                            </div>
-                          </li>
-                        </ul>
-                      </div>
-                    ))}
-                  </div>
-                  {/* Recent Place Widget - hasta 4 tours aleatorios (TourItem) */}
-                  <div className="sidebar-widget recent-place-widget mb-160 wow fadeInUp">
-                    <h4 className="widget-title">Más Experiencias</h4>
-                    <ul className="recent-place-list">
-                      {randomTours.length > 0 ? (
-                        randomTours.map((tour, i) => (
-                          <li key={tour.slug ?? `${tour.title}-${i}`} className="place-thumbnail-content">
-                            <img src={tour.image} alt={tour.title} width={100} height={74} />
+                              ) : (
+                                dep.arrival.map((a, i) => (
+                                  <React.Fragment key={`arrival-${depIdx}-${i}`}>
+                                    <li><span><i className="far fa-map-marker-alt pb-3"></i>{`Regreso hacia`}<span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.value}</span><span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.arrivalHour}</span><span className='pt-3' style={{ float: 'none', display: 'block'}}>Alojamiento</span><span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.arrivalAccommodation}</span><span className='pt-3' style={{ float: 'none', display: 'block'}}>Precio Nacional desde</span><span style={{ float: 'none', display: 'block', fontSize: '22px' }}>{a.arrivalNationalPrice}</span><span className='pt-3' style={{ float: 'none', display: 'block'}}>Precio Internacional desde</span><span style={{ float: 'none', display: 'block', fontSize: '22px' }}>{a.arrivalInternationalPrice}</span></span></li>
+                                  </React.Fragment>
+                                ))
+                              )
+                            )}
+                            <li>
+                              <div className="submit-button">
+                                <a
+                                  href={`https://wa.me/529612980999?text=${encodeURIComponent(whatsappMessage)}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="main-btn primary-btn"
+                                >
+                                  Consulta disponibilidad<WhatsAppIcon className="whatsapp-icon" />
+                                </a>
+                              </div>
+                            </li>
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                    {/* Recent Place Widget - hasta 4 tours aleatorios (TourItem) */}
+                    <div className="sidebar-widget recent-place-widget mb-160 wow fadeInUp">
+                      <h4 className="widget-title">Más Experiencias</h4>
+                      <ul className="recent-place-list">
+                        {randomTours.length > 0 ? (
+                          randomTours.map((tour, i) => (
+                            <li key={tour.slug ?? `${tour.title}-${i}`} className="place-thumbnail-content">
+                              <img src={cloudinaryWidth(tour.image, 200)} alt={tour.title} width={100} height={74} loading="lazy" />
+                              <div className="place-content">
+                                <h5><Link href={tour.slug ? `/tour-detalles/${tour.slug}` : (tour.link || '/tour-detalles/chiapas')} className="recent-place-title-link">{tour.title}</Link></h5>
+                              </div>
+                            </li>
+                          ))
+                        ) : (
+                          <li className="place-thumbnail-content">
+                            <img src="/assets/images/place/thumb-1.jpg" alt="post thumb" width={100} height={74} />
                             <div className="place-content">
-                              <h5><Link href={tour.slug ? `/tour-detalles/${tour.slug}` : (tour.link || '/tour-detalles/chiapas')} className="recent-place-title-link">{tour.title}</Link></h5>
+                              <h5><Link href="/tour-detalles/chiapas" className="recent-place-title-link">Tour en Chiapas</Link></h5>
                             </div>
                           </li>
-                        ))
-                      ) : (
-                        <li className="place-thumbnail-content">
-                          <img src="/assets/images/place/thumb-1.jpg" alt="post thumb" width={100} height={74} />
-                          <div className="place-content">
-                            <h5><Link href="/tour-detalles/chiapas" className="recent-place-title-link">Tour en Chiapas</Link></h5>
-                          </div>
-                        </li>
-                      )}
-                    </ul>
+                        )}
+                      </ul>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
+      </main>
       <Footer />
     </>
   )

@@ -54,7 +54,7 @@ export default function Header() {
               {/* Site Branding */}
               <div className="site-branding">
                 <Link href="/" className="brand-logo">
-                  <img src="/assets/images/logo/logo-senderos.svg" alt="Senderos de Chiapas" />
+                  <img src="/assets/images/logo/logo-senderos.svg" alt="Senderos de Chiapas" width={150} height={52} />
                 </Link>
               </div>
 
@@ -62,7 +62,7 @@ export default function Header() {
               <div className={`nav-menu ${menuOpen ? 'menu-on' : ''}`}>
                 <div className="mobile-logo mb-30 d-block d-xl-none">
                   <Link href="/" className="brand-logo">
-                    <img src="/assets/images/logo/logo-senderos.svg" alt="Senderos de Chiapas" />
+                    <img src="/assets/images/logo/logo-senderos.svg" alt="Senderos de Chiapas" width={150} height={52} />
                   </Link>
                 </div>
 

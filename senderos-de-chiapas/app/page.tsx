@@ -7,6 +7,7 @@ import GallerySlider from '@/components/GallerySlider'
 import ToursHomeSlider from '@/components/ToursHomeSlider'
 import Link from 'next/link'
 import { fetchHome, fetchHomeHeroSlides, fetchDestinationsForHome, fetchPackages, fetchSeasonsForHome, fetchAdventuresForHome, parseHomeServices, parseHomeTestimonial, parseHomeGallery, GALLERY_FALLBACK_IMAGES, STRAPI_REVALIDATE_SECONDS, getTourDetailHref, tourCardSubtitle, type AdaptedDestination, type AdaptedHomeService, type AdaptedSeason } from '@/lib/strapi'
+import { cloudinaryWidth } from '@/lib/cloudinary'
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
 
@@ -60,27 +61,29 @@ export default async function Home() {
     return (
       <>
         <Header />
-        <section className="contact-section pt-220 pb-220">
-          <div className="container">
-            <div className="row justify-content-center">
-              <div className="col-lg-8 text-center">
-                <div className="section-title mb-70 wow fadeInDown">
-                  <i className="fas fa-tools mb-30 d-block" style={{ color: '#63ab45', fontSize: '3.5rem' }} aria-hidden />
-                  <span className="sub-title">En mantenimiento</span>
-                  <h2>Esta página está en mantenimiento</h2>
-                  <p className="mt-40">
-                    Estaremos de vuelta pronto. Contáctanos si necesitas más información.
-                  </p>
-                </div>
-                <div className="d-flex flex-wrap justify-content-center gap-3">
-                  <Link href="/contacto" className="main-btn primary-btn wow fadeInUp" style={{ padding: '16px 45px' }}>
-                    Contáctanos
-                  </Link>
+        <main>
+          <section className="contact-section pt-220 pb-220">
+            <div className="container">
+              <div className="row justify-content-center">
+                <div className="col-lg-8 text-center">
+                  <div className="section-title mb-70 wow fadeInDown">
+                    <i className="fas fa-tools mb-30 d-block" style={{ color: '#63ab45', fontSize: '3.5rem' }} aria-hidden />
+                    <span className="sub-title">En mantenimiento</span>
+                    <h2>Esta página está en mantenimiento</h2>
+                    <p className="mt-40">
+                      Estaremos de vuelta pronto. Contáctanos si necesitas más información.
+                    </p>
+                  </div>
+                  <div className="d-flex flex-wrap justify-content-center gap-3">
+                    <Link href="/contacto" className="main-btn primary-btn wow fadeInUp" style={{ padding: '16px 45px' }}>
+                      Contáctanos
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </main>
         <Footer />
       </>
     )
@@ -89,282 +92,290 @@ export default async function Home() {
   return (
     <>
       <Header />
+      <main>
 
-      {/* Sin slides en Strapi no se muestra el hero (antes había un respaldo de relleno en inglés) */}
-      {hasHeroFromStrapi && <HeroSlider slides={heroSlides} />}
+        {/* Sin slides en Strapi no se muestra el hero (antes había un respaldo de relleno en inglés) */}
+        {hasHeroFromStrapi && <HeroSlider slides={heroSlides} />}
 
-      {/* Features Section - Paquetes desde Strapi single type package (layout index-2) */}
-      {packages.length > 0 && (
-        <section className="features-section pt-160">
-          <div className="container">
-            <div className="row justify-content-center">
-              <div className="col-xl-8">
-                <div className="section-title text-center mb-45 wow fadeInDown">
-                  <span className="sub-title">Paquetes</span>
-                  <h2>Recorre, disfruta y respira Chiapas</h2>
+        {/* Features Section - Paquetes desde Strapi single type package (layout index-2) */}
+        {packages.length > 0 && (
+          <section className="features-section pt-160">
+            <div className="container">
+              <div className="row justify-content-center">
+                <div className="col-xl-8">
+                  <div className="section-title text-center mb-45 wow fadeInDown">
+                    <span className="sub-title">Paquetes</span>
+                    <h2>Recorre, disfruta y respira Chiapas</h2>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="row g-2 g-md-3 justify-content-center">
-              {packages.map((pkg: AdaptedDestination, index: number) => (
-                <div key={index} className="col-12 col-md-6 col-xl-3">
-                  <Link
-                    href={pkg.link || '#'}
-                    className={`single-features-item-two mb-30 mb-md-40 wow ${index % 2 === 0 ? 'fadeInUp' : 'fadeInDown'} d-block w-100`}
-                  >
-                    <div className="img-holder">
-                      <span className="package-badge">Paquete</span>
-                      <img src={pkg.image && !pkg.image.includes('las-tres-tzimoleras') ? pkg.image : '/assets/images/place/single-place-1.jpg'} alt={pkg.title} />
-                      <div className="item-overlay">
-                        <div className="content text-center">
-                          <h3 className="title">{pkg.title}</h3>
-                          {pkg.route && <p className="package-route"><i className="far fa-map-marked-alt"></i>{pkg.route}</p>}
-                          <p className="package-price">{pkg.price || 'Consultar'}</p>
+              <div className="row g-2 g-md-3 justify-content-center">
+                {packages.map((pkg: AdaptedDestination, index: number) => (
+                  <div key={index} className="col-12 col-md-6 col-xl-3">
+                    <Link
+                      href={pkg.link || '#'}
+                      className={`single-features-item-two mb-30 mb-md-40 wow ${index % 2 === 0 ? 'fadeInUp' : 'fadeInDown'} d-block w-100`}
+                    >
+                      <div className="img-holder">
+                        <span className="package-badge">Paquete</span>
+                        <img src={pkg.image && !pkg.image.includes('las-tres-tzimoleras') ? cloudinaryWidth(pkg.image, 800) : '/assets/images/place/single-place-1.jpg'} alt={pkg.title} loading="lazy" decoding="async" />
+                        <div className="item-overlay">
+                          <div className="content text-center">
+                            <h3 className="title">{pkg.title}</h3>
+                            {pkg.route && <p className="package-route"><i className="far fa-map-marked-alt"></i>{pkg.route}</p>}
+                            <p className="package-price">{pkg.price || 'Consultar'}</p>
+                          </div>
                         </div>
                       </div>
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Adventure Packages Section - Datos desde Strapi (Adventure con home: true). Mismo layout que Tours. */}
+        {adventures.length > 0 && (
+          <section className="services-seciton pt-160">
+            <div className="container">
+              <div className="row justify-content-center">
+                <div className="col-xl-8 col-lg-10">
+                  <div className="section-title text-center mb-60 wow fadeInDown">
+                    <span className="sub-title">Paquetes de Aventura</span>
+                    <h2>Rutas llenas de adrenalina para los más aventureros</h2>
+                  </div>
+                </div>
+              </div>
+              <div className="places-section__container wow fadeInUp">
+                <ToursHomeSlider>
+                  {adventures.map((adventure: AdaptedSeason, index: number) => (
+                    <div key={adventure.link || index} className="places-section__item">
+                      <TourItem
+                        title={adventure.title}
+                        subtitle={adventure.category || adventure.description || ''}
+                        image={adventure.image}
+                        link={adventure.link}
+                        departureDate={adventure.dateFormatted}
+                        duration={adventure.duration}
+                        price={adventure.price}
+                        badge={adventure.badge}
+                      />
                     </div>
-                  </Link>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Adventure Packages Section - Datos desde Strapi (Adventure con home: true). Mismo layout que Tours. */}
-      {adventures.length > 0 && (
-        <section className="services-seciton pt-160">
-          <div className="container">
-            <div className="row justify-content-center">
-              <div className="col-xl-8 col-lg-10">
-                <div className="section-title text-center mb-60 wow fadeInDown">
-                  <span className="sub-title">Paquetes de Aventura</span>
-                  <h2>Rutas llenas de adrenalina para los más aventureros</h2>
-                </div>
+                  ))}
+                </ToursHomeSlider>
               </div>
             </div>
-            <div className="places-section__container wow fadeInUp">
-              <ToursHomeSlider>
-                {adventures.map((adventure: AdaptedSeason, index: number) => (
-                  <div key={adventure.link || index} className="places-section__item">
-                    <TourItem
-                      title={adventure.title}
-                      subtitle={adventure.category || adventure.description || ''}
-                      image={adventure.image}
-                      link={adventure.link}
-                      departureDate={adventure.dateFormatted}
-                      duration={adventure.duration}
-                      price={adventure.price}
-                      badge={adventure.badge}
-                    />
+          </section>
+        )}
+
+        {/* Tours Section */}
+        {destinations.length > 0 && (
+          <section className="services-seciton pt-160 pb-160">
+            <div className="container">
+              <div className="row justify-content-center">
+                <div className="col-xl-8 col-lg-10">
+                  <div className="section-title text-center mb-60 wow fadeInDown">
+                    <span className="sub-title">Tours</span>
+                    <h2>Descubre los mejores tours de Chiapas</h2>
                   </div>
-                ))}
-              </ToursHomeSlider>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Tours Section */}
-      {destinations.length > 0 && (
-        <section className="services-seciton pt-160 pb-160">
-          <div className="container">
-            <div className="row justify-content-center">
-              <div className="col-xl-8 col-lg-10">
-                <div className="section-title text-center mb-60 wow fadeInDown">
-                  <span className="sub-title">Tours</span>
-                  <h2>Descubre los mejores tours de Chiapas</h2>
                 </div>
               </div>
+              <div className="places-section__container wow fadeInUp">
+                <ToursHomeSlider>
+                  {destinations.map((destination: AdaptedDestination, index: number) => (
+                    <div key={index} className="places-section__item">
+                      <TourItem
+                        title={destination.title}
+                        subtitle={tourCardSubtitle(destination)}
+                        image={destination.image}
+                        link={getTourDetailHref(destination)}
+                        departureDate={destination.departureDate}
+                        duration={destination.duration}
+                        price={destination.price}
+                        badge={destination.badge}
+                      />
+                    </div>
+                  ))}
+                </ToursHomeSlider>
+              </div>
             </div>
-            <div className="places-section__container wow fadeInUp">
-              <ToursHomeSlider>
-                {destinations.map((destination: AdaptedDestination, index: number) => (
-                  <div key={index} className="places-section__item">
-                    <TourItem
-                      title={destination.title}
-                      subtitle={tourCardSubtitle(destination)}
-                      image={destination.image}
-                      link={getTourDetailHref(destination)}
-                      departureDate={destination.departureDate}
-                      duration={destination.duration}
-                      price={destination.price}
-                      badge={destination.badge}
-                    />
+          </section>
+        )}
+
+        {/* Activity Section */}
+        <section className="activity-section">
+          <div className="activity-wrapper-bgc text-white black-bg">
+            <div className="container">
+              <div className="row justify-content-center">
+                <div className="col-xl-7">
+                  <div className="section-title text-center mb-50 wow fadeInDown">
+                    <span className="sub-title">Nuestros Servicios</span>
+                    <h2>Tu próxima aventura, empezando aquí y ahora</h2>
                   </div>
-                ))}
-              </ToursHomeSlider>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Activity Section */}
-      <section className="activity-section">
-        <div className="activity-wrapper-bgc text-white black-bg">
-          <div className="container">
-            <div className="row justify-content-center">
-              <div className="col-xl-7">
-                <div className="section-title text-center mb-50 wow fadeInDown">
-                  <span className="sub-title">Nuestros Servicios</span>
-                  <h2>Tu próxima aventura, empezando aquí y ahora</h2>
                 </div>
               </div>
-            </div>
-            <div className="row">
-              <div className="col-lg-4">
-                <div className="activity-nav-tab mb-50 wow fadeInLeft">
-                  <ul className="nav nav-tabs">
-                    {services.length > 0 ? (
-                      services.map((svc, idx) => (
-                        <li key={svc.title || idx}>
-                          <a
-                            href={`#tab${idx + 1}`}
-                            className={`nav-link ${idx === 0 ? 'active' : ''}`}
-                            data-bs-toggle="tab"
-                            data-bs-target={`#tab${idx + 1}`}
-                          >
-                            {svc.subtitle || svc.title || `Servicio ${idx + 1}`}
+              <div className="row">
+                <div className="col-lg-4">
+                  <div className="activity-nav-tab mb-50 wow fadeInLeft">
+                    <ul className="nav nav-tabs">
+                      {services.length > 0 ? (
+                        services.map((svc, idx) => (
+                          <li key={svc.title || idx} className="nav-item" role="presentation">
+                            <a
+                              href={`#tab${idx + 1}`}
+                              className={`nav-link ${idx === 0 ? 'active' : ''}`}
+                              data-bs-toggle="tab"
+                              data-bs-target={`#tab${idx + 1}`}
+                            >
+                              {svc.subtitle || svc.title || `Servicio ${idx + 1}`}
+                            </a>
+                          </li>
+                        ))
+                      ) : (
+                        <li className="nav-item" role="presentation">
+                          <a href="#tab1" className="nav-link active" data-bs-toggle="tab" data-bs-target="#tab1">
+                            Nuestros Servicios
                           </a>
                         </li>
+                      )}
+                    </ul>
+                  </div>
+                </div>
+                <div className="col-lg-8">
+                  <div className="tab-content mb-50 wow fadeInRight">
+                    {services.length > 0 ? (
+                      services.map((svc, idx) => (
+                        <div
+                          key={svc.title || idx}
+                          className={`tab-pane fade ${idx === 0 ? 'show active' : ''}`}
+                          id={`tab${idx + 1}`}
+                        >
+                          <div className="row pt-50">
+                            <div className="col-md-6">
+                              <div className="activity-content-box pl-lg-40">
+                                <h3 className="title">{svc.title || svc.subtitle || 'Servicio'}</h3>
+                                {svc.description && (
+                                  <p>{svc.description}</p>
+                                )}
+                                {svc.listItems.length > 0 && (
+                                  <ul className="check-list">
+                                    {svc.listItems.map((item, i) => (
+                                      <li key={i}>
+                                        <i className="fas fa-badge-check"></i>
+                                        {item}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                )}
+                              </div>
+                            </div>
+                            <div className="col-md-6">
+                              <div className="activity-image-box">
+                                <img
+                                  src={cloudinaryWidth(svc.imageUrl, 1000)}
+                                  className="radius-12"
+                                  loading="lazy"
+                                  decoding="async"
+                                  alt={svc.title || 'Imagen del servicio'}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       ))
                     ) : (
-                      <li>
-                        <a href="#tab1" className="nav-link active" data-bs-toggle="tab" data-bs-target="#tab1">
-                          Nuestros Servicios
-                        </a>
-                      </li>
-                    )}
-                  </ul>
-                </div>
-              </div>
-              <div className="col-lg-8">
-                <div className="tab-content mb-50 wow fadeInRight">
-                  {services.length > 0 ? (
-                    services.map((svc, idx) => (
-                      <div
-                        key={svc.title || idx}
-                        className={`tab-pane fade ${idx === 0 ? 'show active' : ''}`}
-                        id={`tab${idx + 1}`}
-                      >
-                        <div className="row pt-50">
+                      <div className="tab-pane fade show active" id="tab1">
+                        <div className="row align-items-center">
                           <div className="col-md-6">
                             <div className="activity-content-box pl-lg-40">
-                              <h3 className="title">{svc.title || svc.subtitle || 'Servicio'}</h3>
-                              {svc.description && (
-                                <p>{svc.description}</p>
-                              )}
-                              {svc.listItems.length > 0 && (
-                                <ul className="check-list">
-                                  {svc.listItems.map((item, i) => (
-                                    <li key={i}>
-                                      <i className="fas fa-badge-check"></i>
-                                      {item}
-                                    </li>
-                                  ))}
-                                </ul>
-                              )}
+                              <h3 className="title">Tu próxima aventura, empezando aquí y ahora</h3>
+                              <ul className="check-list">
+                                <li><i className="fas fa-badge-check"></i>Tours Diarios</li>
+                                <li><i className="fas fa-badge-check"></i>Paquetes</li>
+                                <li><i className="fas fa-badge-check"></i>Experiencias únicas</li>
+                              </ul>
                             </div>
                           </div>
                           <div className="col-md-6">
                             <div className="activity-image-box">
-                              <img
-                                src={svc.imageUrl}
-                                className="radius-12"
-                                alt={svc.title || 'Imagen del servicio'}
-                              />
+                              <img src="/assets/images/gallery/activity.webp" className="radius-12" alt="Nuestros Servicios" loading="lazy" decoding="async" />
                             </div>
                           </div>
                         </div>
                       </div>
-                    ))
-                  ) : (
-                    <div className="tab-pane fade show active" id="tab1">
-                      <div className="row align-items-center">
-                        <div className="col-md-6">
-                          <div className="activity-content-box pl-lg-40">
-                            <h3 className="title">Tu próxima aventura, empezando aquí y ahora</h3>
-                            <ul className="check-list">
-                              <li><i className="fas fa-badge-check"></i>Tours Diarios</li>
-                              <li><i className="fas fa-badge-check"></i>Paquetes</li>
-                              <li><i className="fas fa-badge-check"></i>Experiencias únicas</li>
-                            </ul>
-                          </div>
-                        </div>
-                        <div className="col-md-6">
-                          <div className="activity-image-box">
-                            <img src="/assets/images/gallery/activity.webp" className="radius-12" alt="Nuestros Servicios" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Testimonial Section */}
-      {testimonial && (
-        <section className="testimonial-section pt-200">
-          <div className="container">
-            <div className="row justify-content-center">
-              <div className="col-xl-8">
-                <div className="section-title text-center mb-50 wow fadeInDown">
-                  <span className="sub-title">Testimoniales</span>
-                  <h2>Testimonios de nuestros viajeros</h2>
+        {/* Testimonial Section */}
+        {testimonial && (
+          <section className="testimonial-section pt-200">
+            <div className="container">
+              <div className="row justify-content-center">
+                <div className="col-xl-8">
+                  <div className="section-title text-center mb-50 wow fadeInDown">
+                    <span className="sub-title">Testimoniales</span>
+                    <h2>Testimonios de nuestros viajeros</h2>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="row align-items-xl-center">
-              <div className="col-xl-5 col-lg-12 order-2 order-xl-1">
-                <div className="testimonial-one_image-box mb-40 wow fadeInLeft">
-                  <img
-                    src={testimonial.photoUrl || '/assets/images/testimonial/testimonial-1.jpg'}
-                    alt={testimonial.name ? `Testimonial de ${testimonial.name}` : 'Testimonial Image'}
-                    width={875}
-                    height={565}
-                    style={{ width: '875px', height: '565px', objectFit: 'cover' }}
-                  />
+              <div className="row align-items-xl-center">
+                <div className="col-xl-5 col-lg-12 order-2 order-xl-1">
+                  <div className="testimonial-one_image-box mb-40 wow fadeInLeft">
+                    <img
+                      src={testimonial.photoUrl ? cloudinaryWidth(testimonial.photoUrl, 1200) : '/assets/images/testimonial/testimonial-1.jpg'}
+                      loading="lazy"
+                      decoding="async"
+                      alt={testimonial.name ? `Testimonial de ${testimonial.name}` : 'Testimonial Image'}
+                      width={875}
+                      height={565}
+                      style={{ width: '875px', height: '565px', objectFit: 'cover' }}
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="col-xl-7 col-lg-12 order-1 order-xl-2">
-                <div className="testimonial-slider-one pl-lg-55 mb-40 wow fadeInRight">
-                  <div className="gw-testimonial-item">
-                    <div className="testimonial-inner-content">
-                      <div className="quote-rating-box px-4">
-                        <div className="icon">
-                          <img src="/assets/images/testimonial/quote.png" alt="quote icon" />
+                <div className="col-xl-7 col-lg-12 order-1 order-xl-2">
+                  <div className="testimonial-slider-one pl-lg-55 mb-40 wow fadeInRight">
+                    <div className="gw-testimonial-item">
+                      <div className="testimonial-inner-content">
+                        <div className="quote-rating-box px-4">
+                          <div className="icon">
+                            <img src="/assets/images/testimonial/quote.png" alt="quote icon" />
+                          </div>
+                          <div className="ratings-box">
+                            <h3 className="h4">Calidad de Servicio</h3>
+                            <ul className="ratings">
+                              <li><i className="fas fa-star"></i></li>
+                              <li><i className="fas fa-star"></i></li>
+                              <li><i className="fas fa-star"></i></li>
+                              <li><i className="fas fa-star"></i></li>
+                              <li><i className="fas fa-star"></i></li>
+                            </ul>
+                          </div>
                         </div>
-                        <div className="ratings-box">
-                          <h4>Calidad de Servicio</h4>
-                          <ul className="ratings">
-                            <li><i className="fas fa-star"></i></li>
-                            <li><i className="fas fa-star"></i></li>
-                            <li><i className="fas fa-star"></i></li>
-                            <li><i className="fas fa-star"></i></li>
-                            <li><i className="fas fa-star"></i></li>
-                          </ul>
-                        </div>
-                      </div>
-                      <p className="px-4">
-                        {testimonial.testimonial || 'To take a trivial example which of usev undertakes laborious physical exercise excepto obtain advantage from has any right to find fault with man who chooses to enjoy'}
-                      </p>
-                      <div className="author-thumb-title px-4">
-                        <div className="author-thumb">
-                          <img
-                            src={testimonial.profilePhotoUrl || '/assets/images/testimonial/author-1.jpg'}
-                            alt={testimonial.name || 'Author Image'}
-                            width={80}
-                            height={80}
-                            style={{ width: '80px', height: '80px', objectFit: 'cover' }}
-                          />
-                        </div>
-                        <div className="author-title">
-                          <h3 className="title">{testimonial.name || 'Douglas D. Hall'}</h3>
-                          <p className="position">{testimonial.ocupation || 'CEO & Founder'}</p>
+                        <p className="px-4">
+                          {testimonial.testimonial || 'To take a trivial example which of usev undertakes laborious physical exercise excepto obtain advantage from has any right to find fault with man who chooses to enjoy'}
+                        </p>
+                        <div className="author-thumb-title px-4">
+                          <div className="author-thumb">
+                            <img
+                              src={testimonial.profilePhotoUrl ? cloudinaryWidth(testimonial.profilePhotoUrl, 160) : '/assets/images/testimonial/author-1.jpg'}
+                              loading="lazy"
+                              decoding="async"
+                              alt={testimonial.name || 'Author Image'}
+                              width={80}
+                              height={80}
+                              style={{ width: '80px', height: '80px', objectFit: 'cover' }}
+                            />
+                          </div>
+                          <div className="author-title">
+                            <h3 className="title">{testimonial.name || 'Douglas D. Hall'}</h3>
+                            <p className="position">{testimonial.ocupation || 'CEO & Founder'}</p>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -372,45 +383,45 @@ export default async function Home() {
                 </div>
               </div>
             </div>
-          </div>
-        </section>
-      )}
+          </section>
+        )}
 
-      {/* Seasonal Packages Section - Datos desde Strapi (Holiday), fallback como Testimonial */}
-      {seasons.length > 0 && (
-        <section className="seasonal-packages-section pt-200">
-          <div className="container">
-            <div className="row justify-content-center">
-              <div className="col-xl-6">
-                <div className="section-title text-center mb-45 wow fadeInDown">
-                  <span className="sub-title">Paquetes por temporada</span>
-                  <h2>Aprovecha nuestras mejores rutas y promociones por temporada</h2>
+        {/* Seasonal Packages Section - Datos desde Strapi (Holiday), fallback como Testimonial */}
+        {seasons.length > 0 && (
+          <section className="seasonal-packages-section pt-200">
+            <div className="container">
+              <div className="row justify-content-center">
+                <div className="col-xl-6">
+                  <div className="section-title text-center mb-45 wow fadeInDown">
+                    <span className="sub-title">Paquetes por temporada</span>
+                    <h2>Aprovecha nuestras mejores rutas y promociones por temporada</h2>
+                  </div>
                 </div>
               </div>
+              <div className="row justify-content-center">
+                {seasons.map((season, i) => (
+                  <SeasonPackageItem
+                    key={i}
+                    title={season.title}
+                    image={season.image}
+                    link={season.link}
+                    category={season.category}
+                    dateFormatted={season.dateFormatted}
+                    description={season.description}
+                    duration={season.duration}
+                    price={season.price}
+                    badge={season.badge}
+                  />
+                ))}
+              </div>
             </div>
-            <div className="row justify-content-center">
-              {seasons.map((season, i) => (
-                <SeasonPackageItem
-                  key={i}
-                  title={season.title}
-                  image={season.image}
-                  link={season.link}
-                  category={season.category}
-                  dateFormatted={season.dateFormatted}
-                  description={season.description}
-                  duration={season.duration}
-                  price={season.price}
-                  badge={season.badge}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+          </section>
+        )}
 
-      {/* Gallery Section - slider inicializado en cliente (igual que hero en Vercel) */}
-      <GallerySlider images={galleryImages.length > 0 ? galleryImages : GALLERY_FALLBACK_IMAGES} />
+        {/* Gallery Section - slider inicializado en cliente (igual que hero en Vercel) */}
+        <GallerySlider images={galleryImages.length > 0 ? galleryImages : GALLERY_FALLBACK_IMAGES} />
 
+      </main>
       <Footer />
     </>
   )

@@ -4,9 +4,9 @@ import Link from 'next/link'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { WhatsAppIcon } from '../WhatsAppIcon'
 import { whatsappHref } from '@/lib/contact'
+import { cloudinaryResize } from '@/lib/cloudinary'
 import {
   HERO_AUTOPLAY_MS,
-  cloudinaryResize,
   getHeroImageAlt,
   getHeroImageUrl,
   getHeroText,
@@ -183,8 +183,9 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
                 onAnimationEnd={() => isLeaving && setLeaving(null)}
                 aria-hidden={!isTop}
                 tabIndex={isTop && total > 1 ? 0 : -1}
-                aria-label={isTop && total > 1 ? `Ver siguiente postal: ${slides[(active + 1) % total].title}` : undefined}
               >
+                {/* Sin aria-label: el nombre accesible debe incluir el texto visible de la postal */}
+                {isTop && total > 1 && <span className="visually-hidden">Ver siguiente postal. </span>}
                 <picture className="hero-postal__photo">
                   {s.mobileImage && (
                     <source media="(max-width: 767px)" srcSet={cloudinaryResize(getHeroImageUrl(s.mobileImage), CARD_IMAGE_MOBILE)} />

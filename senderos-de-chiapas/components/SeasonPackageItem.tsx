@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { cloudinaryWidth } from '@/lib/cloudinary'
 
 interface SeasonPackageItemProps {
   title: string
@@ -86,7 +87,7 @@ function SeasonPackageCardBody({
                 : 'AGOTADO'}
           </span>
         ) : null}
-        <img src={image} alt={title || 'Paquete de temporada'} />
+        <img src={cloudinaryWidth(image, 800)} alt={title || 'Paquete de temporada'} loading="lazy" decoding="async" />
       </div>
       <Link href={href} className="tour-item-more-info-btn">
         Más información
