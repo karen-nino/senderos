@@ -49,7 +49,7 @@ export default function RootLayout({
         <link rel="icon" href="/assets/images/favicon.ico" type="image/x-icon" />
         <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
         <link rel="stylesheet" href="/assets/fonts/flaticon/flaticon_gowilds.css" />
-        <link rel="stylesheet" href="/assets/fonts/fontawesome/css/all.min.css" />
+        <link rel="stylesheet" href="/assets/fonts/fontawesome/css/subset.min.css" />
         <link rel="stylesheet" href="/assets/vendor/bootstrap/css/bootstrap.min.css" />
         {/* El CSS de slick, animate, magnific-popup y calendar lo carga <Scripts /> junto con sus plugins: no bloquea el primer pintado */}
         <link rel="stylesheet" href="/assets/css/default.css" />
