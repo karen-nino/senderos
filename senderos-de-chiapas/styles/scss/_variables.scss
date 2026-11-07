@@ -1,6 +1,7 @@
 // Font Family
 
-$font: "Prompt", sans-serif;
+// Prompt se sirve con next/font (app/layout.tsx), que la registra con un nombre generado: se usa su variable
+$font: var(--font-prompt), sans-serif;
 
 // Font Size
 
