@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import type { PointerEvent } from 'react'
 import { preload } from 'react-dom'
 import { WhatsAppIcon } from '../WhatsAppIcon'
 import { whatsappHref } from '@/lib/contact'
@@ -79,6 +80,76 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
   const navigate = (index: number) => {
     if (leaving) return
     goTo(index)
+  }
+
+  // Arrastre de la postal de arriba (mouse o dedo): a la izquierda la lanza (siguiente), a la derecha trae la anterior
+  const [dragX, setDragX] = useState<number | null>(null)
+  // Posición desde la que arranca el lanzamiento al soltar, para que no regrese al centro antes de salir
+  const [tossFrom, setTossFrom] = useState<string | null>(null)
+  const dragRef = useRef<{ id: number; startX: number; startY: number; x: number; width: number } | null>(null)
+  // Tras arrastrar, el navegador dispara un click al soltar: no debe contar como "siguiente"
+  const draggedRef = useRef(false)
+
+  useEffect(() => {
+    if (!leaving) setTossFrom(null)
+  }, [leaving])
+
+  // Si el autoplay cambia de postal a media arrastrada, se suelta la anterior
+  useEffect(() => {
+    dragRef.current = null
+    setDragX(null)
+  }, [active])
+
+  const dragTransform = (x: number) => `translateX(${x}px) rotate(${1.5 + x * 0.04}deg)`
+
+  const dragHandlers = {
+    onPointerDown: (e: PointerEvent<HTMLButtonElement>) => {
+      if (leaving || (e.pointerType === 'mouse' && e.button !== 0)) return
+      draggedRef.current = false
+      dragRef.current = {
+        id: e.pointerId,
+        startX: e.clientX,
+        startY: e.clientY,
+        x: 0,
+        width: e.currentTarget.offsetWidth,
+      }
+    },
+    onPointerMove: (e: PointerEvent<HTMLButtonElement>) => {
+      const drag = dragRef.current
+      if (!drag || drag.id !== e.pointerId) return
+      const x = e.clientX - drag.startX
+      if (!draggedRef.current) {
+        // Umbral para no confundir un clic o toque con un arrastre
+        if (Math.abs(x) < 6) return
+        // Gesto vertical: se deja al scroll de la página
+        if (Math.abs(e.clientY - drag.startY) > Math.abs(x)) {
+          dragRef.current = null
+          return
+        }
+        draggedRef.current = true
+        e.currentTarget.setPointerCapture(e.pointerId)
+      }
+      drag.x = x
+      setDragX(x)
+    },
+    onPointerUp: (e: PointerEvent<HTMLButtonElement>) => {
+      const drag = dragRef.current
+      if (!drag || drag.id !== e.pointerId) return
+      dragRef.current = null
+      if (!draggedRef.current) return
+      const threshold = Math.min(80, drag.width * 0.2)
+      if (drag.x < -threshold) {
+        setTossFrom(dragTransform(drag.x))
+        navigate(active + 1)
+      } else if (drag.x > threshold) {
+        navigate(active - 1)
+      }
+      setDragX(null)
+    },
+    onPointerCancel: () => {
+      dragRef.current = null
+      setDragX(null)
+    },
   }
 
   preload(FIELD_BACKGROUND, { as: 'image', fetchPriority: 'high' })
@@ -183,9 +254,21 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
                   `is-depth-${Math.min(depth, 3)}`,
                   isTop && total > 1 ? 'is-clickable' : '',
                   isLeaving ? `is-tossed-${leaving?.dir}` : '',
+                  isTop && dragX !== null ? 'is-dragging' : '',
                 ].join(' ')}
-                style={{ zIndex: total - depth }}
-                onClick={() => isTop && total > 1 && navigate(active + 1)}
+                style={{
+                  zIndex: total - depth,
+                  ...(isTop && dragX !== null && { ['--postal-drag' as string]: dragTransform(dragX) }),
+                  ...(isLeaving && leaving?.dir === 'next' && tossFrom && { ['--postal-drag' as string]: tossFrom }),
+                }}
+                {...(isTop && total > 1 ? dragHandlers : {})}
+                onClick={() => {
+                  if (draggedRef.current) {
+                    draggedRef.current = false
+                    return
+                  }
+                  if (isTop && total > 1) navigate(active + 1)
+                }}
                 onAnimationEnd={() => isLeaving && setLeaving(null)}
                 aria-hidden={!isTop}
                 tabIndex={isTop && total > 1 ? 0 : -1}

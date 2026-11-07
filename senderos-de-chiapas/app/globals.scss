@@ -2764,7 +2764,11 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
-.hero-postal__card.is-clickable { cursor: pointer; }
+.hero-postal__card.is-clickable {
+  cursor: pointer;
+  /* El arrastre horizontal cambia de postal; el vertical sigue haciendo scroll */
+  touch-action: pan-y;
+}
 /* Solo con mouse: en pantallas táctiles el hover se queda pegado tras un toque */
 @media (hover: hover) and (pointer: fine) {
   .hero-postal__card.is-depth-0:hover { --card-t: translateY(-8px) rotate(0deg); }
@@ -2772,6 +2776,12 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
 .hero-postal__card.is-depth-1 { --card-t: translate(-7%, 1.5%) rotate(-5deg); }
 .hero-postal__card.is-depth-2 { --card-t: translate(8%, 2%) rotate(7deg); }
 .hero-postal__card.is-depth-3 { --card-t: translate(8%, 2%) rotate(7deg); opacity: 0; }
+/* Mientras se arrastra, la postal sigue al puntero sin transición */
+.hero-postal__card.is-dragging {
+  transform: var(--postal-drag);
+  transition: none;
+  cursor: grabbing;
+}
 /* Con 4+ slides la postal lanzada pasa a .is-depth-3: debe seguir visible mientras vuela */
 .hero-postal__card.is-tossed-next,
 .hero-postal__card.is-tossed-prev {
@@ -2785,7 +2795,8 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   animation: hero-postal-toss-prev 0.9s cubic-bezier(0.65, 0, 0.35, 1) both;
 }
 @keyframes hero-postal-toss-next {
-  0% { transform: var(--postal-top); z-index: 50; }
+  /* Si se lanzó arrastrando, sale desde donde se soltó */
+  0% { transform: var(--postal-drag, var(--postal-top)); z-index: 50; }
   45% { transform: var(--postal-out); z-index: 50; }
   55% { z-index: 0; }
   100% { transform: var(--card-t); z-index: 0; }
