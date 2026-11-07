@@ -86,12 +86,16 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
   const [dragX, setDragX] = useState<number | null>(null)
   // Posición desde la que arranca el lanzamiento al soltar, para que no regrese al centro antes de salir
   const [tossFrom, setTossFrom] = useState<string | null>(null)
+  // Al arrastrar a la derecha, la anterior entra directo desde la izquierda, en el sentido del gesto
+  const [pulled, setPulled] = useState(false)
   const dragRef = useRef<{ id: number; startX: number; startY: number; x: number; width: number } | null>(null)
   // Tras arrastrar, el navegador dispara un click al soltar: no debe contar como "siguiente"
   const draggedRef = useRef(false)
 
   useEffect(() => {
-    if (!leaving) setTossFrom(null)
+    if (leaving) return
+    setTossFrom(null)
+    setPulled(false)
   }, [leaving])
 
   // Si el autoplay cambia de postal a media arrastrada, se suelta la anterior
@@ -142,6 +146,7 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
         setTossFrom(dragTransform(drag.x))
         navigate(active + 1)
       } else if (drag.x > threshold) {
+        setPulled(true)
         navigate(active - 1)
       }
       setDragX(null)
@@ -254,6 +259,7 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
                   `is-depth-${Math.min(depth, 3)}`,
                   isTop && total > 1 ? 'is-clickable' : '',
                   isLeaving ? `is-tossed-${leaving?.dir}` : '',
+                  isLeaving && leaving?.dir === 'prev' && pulled ? 'is-pulled' : '',
                   isTop && dragX !== null ? 'is-dragging' : '',
                 ].join(' ')}
                 style={{
