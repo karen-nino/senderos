@@ -37,9 +37,6 @@ export default ({ env }) => {
           }
         : {
             provider: 'local',
-            providerOptions: {
-              sizeLimit: 5 * 1024 * 1024,
-            },
             sizeLimit: 5 * 1024 * 1024,
             breakpoints: {
               large: 1000,
