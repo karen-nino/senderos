@@ -270,7 +270,7 @@
             & span{
                 display: inline-flex;
                 align-items: center;
-                font: 4600 18px $font;
+                font: 600 18px $font;
                 @extend %heading;
                 &:before{
                     content: '';

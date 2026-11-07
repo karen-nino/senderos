@@ -59,13 +59,18 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
   // La postal que acaba de salir se anima por encima antes de volver al fondo de la pila.
   // Se calcula antes de pintar para que no haya un frame con la postal ya movida al fondo.
   const lastRef = useRef(active)
+  // Dirección pedida por el usuario: con 2 postales "siguiente" y "anterior" llevan al mismo índice
+  const navDirRef = useRef<'next' | 'prev' | null>(null)
   const [leaving, setLeaving] = useState<{ index: number; dir: 'next' | 'prev' } | null>(null)
   useIsoLayoutEffect(() => {
     const last = lastRef.current
     if (last === active) return
     lastRef.current = active
+    const requested = navDirRef.current
+    navDirRef.current = null
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const dir = (last + 1) % total === active ? 'next' : 'prev'
+    // Sin dirección pedida es el autoplay, que siempre avanza
+    const dir = requested ?? ((last + 1) % total === active ? 'next' : 'prev')
     setLeaving({ index: dir === 'next' ? last : active, dir })
   }, [active, total])
 
@@ -96,9 +101,10 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
   }, [leaving])
 
   // Mientras una postal está en el aire se ignoran nuevos clics (si no, salta de golpe al fondo)
-  const navigate = (index: number) => {
+  const navigate = (dir: 'next' | 'prev') => {
     if (leaving) return
-    goTo(index)
+    navDirRef.current = dir
+    goTo(dir === 'next' ? active + 1 : active - 1)
   }
 
   // Arrastre de la postal de arriba (mouse o dedo): a la izquierda la lanza (siguiente), a la derecha trae la anterior
@@ -168,10 +174,10 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
       const threshold = Math.min(80, drag.width * 0.2)
       if (drag.x < -threshold) {
         setTossFrom(dragTransform(drag.x, drag.lifted))
-        navigate(active + 1)
+        navigate('next')
       } else if (drag.x > threshold) {
         setPulled(true)
-        navigate(active - 1)
+        navigate('prev')
       }
       setDragX(null)
     },
@@ -249,7 +255,7 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
 
         {total > 1 && (
           <div className="hero-postal__nav">
-            <button type="button" onClick={() => navigate(active - 1)} aria-label="Postal anterior">
+            <button type="button" onClick={() => navigate('prev')} aria-label="Postal anterior">
               <i className="fal fa-arrow-left" aria-hidden />
             </button>
             <div className="hero-postal__count">
@@ -262,7 +268,7 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
                 />
               </span>
             </div>
-            <button type="button" onClick={() => navigate(active + 1)} aria-label="Postal siguiente">
+            <button type="button" onClick={() => navigate('next')} aria-label="Postal siguiente">
               <i className="fal fa-arrow-right" aria-hidden />
             </button>
           </div>
@@ -299,7 +305,7 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
                     draggedRef.current = false
                     return
                   }
-                  if (isTop && total > 1) navigate(active + 1)
+                  if (isTop && total > 1) navigate('next')
                 }}
                 onAnimationEnd={(e) => isLeaving && e.target === e.currentTarget && endToss()}
                 aria-hidden={!isTop}
