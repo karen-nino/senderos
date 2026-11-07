@@ -4,6 +4,9 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
+  // Solo para desarrollo: en producción no debe exponer la URL de Strapi ni respuestas crudas
+  if (process.env.NODE_ENV === "production") return new NextResponse(null, { status: 404 });
+
   try {
     const url = "/api/tour";
     const response = await fetchStrapi(url);

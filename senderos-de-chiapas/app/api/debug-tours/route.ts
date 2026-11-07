@@ -6,6 +6,9 @@ export const dynamic = "force-dynamic";
 const TOURS_POPULATE = "populate=*";
 
 export async function GET() {
+  // Solo para desarrollo: en producción no debe exponer la URL de Strapi ni respuestas crudas
+  if (process.env.NODE_ENV === "production") return new NextResponse(null, { status: 404 });
+
   try {
     const baseUrl =
       process.env.STRAPI_URL ||
