@@ -15,7 +15,11 @@ export async function GET(
   if (!path?.length) {
     return NextResponse.json({ error: "Path required" }, { status: 400 });
   }
-  const pathStr = path.join("/");
+  // Solo nombres de archivo: un segmento ".." (aunque venga codificado) saldría de /uploads/ en Strapi
+  if (path.some((segment) => segment === "." || segment === ".." || /[\/\\]/.test(segment))) {
+    return NextResponse.json({ error: "Invalid path" }, { status: 400 });
+  }
+  const pathStr = path.map(encodeURIComponent).join("/");
   const base = STRAPI_URL.replace(/\/$/, "");
   const url = `${base}/uploads/${pathStr}`;
   try {
@@ -37,9 +41,6 @@ export async function GET(
     });
   } catch (e) {
     console.error("[strapi-uploads]", url, e);
-    return NextResponse.json(
-      { error: "Proxy error", details: String(e) },
-      { status: 502 }
-    );
+    return NextResponse.json({ error: "Proxy error" }, { status: 502 });
   }
 }

@@ -13,6 +13,38 @@ const LIMITS = {
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+/**
+ * Límite de envíos por IP para no quemar la cuota de Resend ni llenar el buzón de spam.
+ * Vive en memoria: en Vercel cada instancia lleva su propia cuenta, así que es un freno
+ * (no una garantía), suficiente contra ráfagas de un mismo cliente.
+ */
+const RATE_LIMIT = { max: 3, windowMs: 10 * 60 * 1000 };
+const sendsByIp = new Map<string, number[]>();
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const recent = (sendsByIp.get(ip) ?? []).filter((t) => now - t < RATE_LIMIT.windowMs);
+  if (recent.length >= RATE_LIMIT.max) {
+    sendsByIp.set(ip, recent);
+    return true;
+  }
+  recent.push(now);
+  sendsByIp.set(ip, recent);
+  // Limpieza para que el mapa no crezca sin fin con IPs que ya no envían
+  if (sendsByIp.size > 1000) {
+    sendsByIp.forEach((times, key) => {
+      if (times.every((t) => now - t >= RATE_LIMIT.windowMs)) sendsByIp.delete(key);
+    });
+  }
+  return false;
+}
+
+function getClientIp(request: Request): string {
+  // Vercel pone la IP real del cliente como primer valor de x-forwarded-for
+  const forwarded = request.headers.get("x-forwarded-for");
+  return forwarded?.split(",")[0]?.trim() || request.headers.get("x-real-ip") || "unknown";
+}
+
 type FieldErrors = Record<"name" | "email" | "subject" | "message", string | undefined>;
 
 function validate(body: Record<string, unknown>): { errors: FieldErrors } {
@@ -56,6 +88,14 @@ export async function POST(request: Request) {
     const hasErrors = Object.values(errors).some(Boolean);
     if (hasErrors) {
       return NextResponse.json({ errors }, { status: 400 });
+    }
+
+    // Después de validar: un error de captura no debe gastar intentos
+    if (isRateLimited(getClientIp(request))) {
+      return NextResponse.json(
+        { error: "Has enviado varios mensajes seguidos. Espera unos minutos e intenta de nuevo." },
+        { status: 429 }
+      );
     }
 
     const nameStr = String(name).trim();

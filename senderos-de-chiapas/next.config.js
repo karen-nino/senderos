@@ -23,8 +23,6 @@ const nextConfig = {
     ]
   },
   async rewrites() {
-    // Usar STRAPI_URL primero para que el proxy de imágenes apunte al mismo Strapi que la API (local vs Fly).
-    const strapiUrl = process.env.STRAPI_URL || process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1337'
     return [
       { source: '/destinos', destination: '/tours' },
       { source: '/tour-detalles/:path*', destination: '/tour-details/:path*' },
@@ -39,8 +37,25 @@ const nextConfig = {
       { source: '/paquetes/:path*', destination: '/packages/:path*' },
       { source: '/paquete-detalles/:path*', destination: '/package-details/:path*' },
       { source: '/internacional-detalles/:path*', destination: '/package-details/:path*' },
-      // Proxy de imágenes de Strapi para evitar CORS y permitir carga desde mismo origen
-      { source: '/strapi-uploads/:path*', destination: `${strapiUrl}/uploads/:path*` },
+      // Proxy de imágenes de Strapi (mismo origen). Pasa por la ruta de API, que valida el path
+      { source: '/strapi-uploads/:path*', destination: '/api/strapi-uploads/:path*' },
+    ]
+  },
+  // Cabeceras de seguridad para todo el sitio. Sin CSP por ahora: hay scripts y estilos inline del tema
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          // El sitio no se debe mostrar dentro de iframes de otros dominios (clickjacking)
+          { key: 'X-Frame-Options', value: 'DENY' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          // Sin includeSubDomains: no sabemos si todos los subdominios del dominio sirven HTTPS
+          { key: 'Strict-Transport-Security', value: 'max-age=31536000' },
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+        ],
+      },
     ]
   },
   images: {

@@ -75,6 +75,8 @@ export default function ContactForm() {
 
       if (!res.ok) {
         if (data?.errors && typeof data.errors === 'object') {
+          // Se desbloquea el formulario para que pueda corregir los campos
+          setStatus('idle')
           setFieldErrors({
             name: data.errors.name,
             email: data.errors.email,
