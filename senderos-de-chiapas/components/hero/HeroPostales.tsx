@@ -69,10 +69,29 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
     setLeaving({ index: dir === 'next' ? last : active, dir })
   }, [active, total])
 
+  // Al terminar el lanzamiento, Safari retoma una transición pendiente y la postal da un brinco atrás:
+  // se apaga la transición de esa postal un par de frames mientras se quita la animación
+  const [settling, setSettling] = useState<number | null>(null)
+  const endToss = () => {
+    if (!leaving) return
+    setSettling(leaving.index)
+    setLeaving(null)
+  }
+  useEffect(() => {
+    if (settling === null) return
+    let id = requestAnimationFrame(() => {
+      id = requestAnimationFrame(() => setSettling(null))
+    })
+    return () => cancelAnimationFrame(id)
+  }, [settling])
+
   // Respaldo por si animationend no llega (pestaña en segundo plano, cambio rápido de postal)
   useEffect(() => {
     if (!leaving) return
-    const id = window.setTimeout(() => setLeaving(null), TOSS_MS + 150)
+    const id = window.setTimeout(() => {
+      setSettling(leaving.index)
+      setLeaving(null)
+    }, TOSS_MS + 150)
     return () => clearTimeout(id)
   }, [leaving])
 
@@ -88,7 +107,7 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
   const [tossFrom, setTossFrom] = useState<string | null>(null)
   // Al arrastrar a la derecha, la anterior entra directo desde la izquierda, en el sentido del gesto
   const [pulled, setPulled] = useState(false)
-  const dragRef = useRef<{ id: number; startX: number; startY: number; x: number; width: number } | null>(null)
+  const dragRef = useRef<{ id: number; startX: number; startY: number; x: number; width: number; lifted: boolean } | null>(null)
   // Tras arrastrar, el navegador dispara un click al soltar: no debe contar como "siguiente"
   const draggedRef = useRef(false)
 
@@ -104,7 +123,11 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
     setDragX(null)
   }, [active])
 
-  const dragTransform = (x: number) => `translateX(${x}px) rotate(${1.5 + x * 0.04}deg)`
+  // Con mouse la postal está levantada por el hover: el arrastre parte de ahí para que no dé un brinco
+  const dragTransform = (x: number, lifted: boolean) =>
+    lifted
+      ? `translate(${x}px, -8px) rotate(${x * 0.04}deg)`
+      : `translateX(${x}px) rotate(${1.5 + x * 0.04}deg)`
 
   const dragHandlers = {
     onPointerDown: (e: PointerEvent<HTMLButtonElement>) => {
@@ -116,6 +139,7 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
         startY: e.clientY,
         x: 0,
         width: e.currentTarget.offsetWidth,
+        lifted: window.matchMedia('(hover: hover) and (pointer: fine)').matches && e.currentTarget.matches(':hover'),
       }
     },
     onPointerMove: (e: PointerEvent<HTMLButtonElement>) => {
@@ -143,7 +167,7 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
       if (!draggedRef.current) return
       const threshold = Math.min(80, drag.width * 0.2)
       if (drag.x < -threshold) {
-        setTossFrom(dragTransform(drag.x))
+        setTossFrom(dragTransform(drag.x, drag.lifted))
         navigate(active + 1)
       } else if (drag.x > threshold) {
         setPulled(true)
@@ -260,11 +284,13 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
                   isTop && total > 1 ? 'is-clickable' : '',
                   isLeaving ? `is-tossed-${leaving?.dir}` : '',
                   isLeaving && leaving?.dir === 'prev' && pulled ? 'is-pulled' : '',
+                  isLeaving && leaving?.dir === 'next' && tossFrom ? 'is-flung' : '',
+                  settling === index ? 'is-settling' : '',
                   isTop && dragX !== null ? 'is-dragging' : '',
                 ].join(' ')}
                 style={{
                   zIndex: total - depth,
-                  ...(isTop && dragX !== null && { ['--postal-drag' as string]: dragTransform(dragX) }),
+                  ...(isTop && dragX !== null && { ['--postal-drag' as string]: dragTransform(dragX, dragRef.current?.lifted ?? false) }),
                   ...(isLeaving && leaving?.dir === 'next' && tossFrom && { ['--postal-drag' as string]: tossFrom }),
                 }}
                 {...(isTop && total > 1 ? dragHandlers : {})}
@@ -275,7 +301,7 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
                   }
                   if (isTop && total > 1) navigate(active + 1)
                 }}
-                onAnimationEnd={() => isLeaving && setLeaving(null)}
+                onAnimationEnd={(e) => isLeaving && e.target === e.currentTarget && endToss()}
                 aria-hidden={!isTop}
                 tabIndex={isTop && total > 1 ? 0 : -1}
               >

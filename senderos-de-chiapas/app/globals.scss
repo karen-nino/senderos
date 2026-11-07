@@ -2787,6 +2787,13 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
 .hero-postal__card.is-tossed-prev {
   opacity: 1;
 }
+/* Sin transición de posición mientras vuela ni al quitar la animación: Safari la reanudaba al final
+   y la postal daba un brinco a la izquierda ya acomodada atrás */
+.hero-postal__card.is-tossed-next,
+.hero-postal__card.is-tossed-prev,
+.hero-postal__card.is-settling {
+  transition: opacity 0.4s ease;
+}
 
 .hero-postal__card.is-tossed-next {
   animation: hero-postal-toss-next 0.9s cubic-bezier(0.65, 0, 0.35, 1) both;
@@ -2795,9 +2802,18 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   animation: hero-postal-toss-prev 0.9s cubic-bezier(0.65, 0, 0.35, 1) both;
 }
 @keyframes hero-postal-toss-next {
-  /* Si se lanzó arrastrando, sale desde donde se soltó */
-  0% { transform: var(--postal-drag, var(--postal-top)); z-index: 50; }
+  0% { transform: var(--postal-top); z-index: 50; }
   45% { transform: var(--postal-out); z-index: 50; }
+  55% { z-index: 0; }
+  100% { transform: var(--card-t); z-index: 0; }
+}
+/* Lanzada arrastrando: sale desde donde se soltó y sin frenar, conservando el impulso del gesto */
+.hero-postal__card.is-tossed-next.is-flung {
+  animation-name: hero-postal-fling-next;
+}
+@keyframes hero-postal-fling-next {
+  0% { transform: var(--postal-drag); z-index: 50; animation-timing-function: cubic-bezier(0.2, 0.7, 0.4, 1); }
+  45% { transform: var(--postal-out); z-index: 50; animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1); }
   55% { z-index: 0; }
   100% { transform: var(--card-t); z-index: 0; }
 }
