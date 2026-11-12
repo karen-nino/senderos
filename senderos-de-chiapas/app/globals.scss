@@ -2892,6 +2892,16 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   font-weight: 800;
   transform: rotate(4deg);
 }
+.hero-postal__stamp--dates {
+  width: auto;
+  min-width: clamp(48px, 4vw, 60px);
+  max-width: 9.5rem;
+  padding: 0.35rem 0.6rem;
+  font-size: clamp(0.8rem, 0.7rem + 0.3vw, 0.95rem);
+  font-weight: 700;
+  line-height: 1.15;
+  text-align: center;
+}
 
 @keyframes hero-postal-rise {
   from { opacity: 0; transform: translateY(20px); }

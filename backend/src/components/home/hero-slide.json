@@ -32,6 +32,11 @@
       "allowedTypes": [
         "images"
       ]
+    },
+    "polaroid": {
+      "type": "component",
+      "component": "polaroid.polaroid",
+      "repeatable": false
     }
   },
   "config": {}

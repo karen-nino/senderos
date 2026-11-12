@@ -59,6 +59,7 @@ export interface HomeHeroSlide extends Struct.ComponentSchema {
     ctaText: Schema.Attribute.String;
     image: Schema.Attribute.Media<'images'>;
     mobileImage: Schema.Attribute.Media<'images'>;
+    polaroid: Schema.Attribute.Component<'polaroid.polaroid', false>;
     subtitle: Schema.Attribute.String;
     title: Schema.Attribute.String;
   };
@@ -128,8 +129,24 @@ export interface MapMapItem extends Struct.ComponentSchema {
   };
 }
 
+export interface PolaroidPolaroid extends Struct.ComponentSchema {
+  collectionName: 'components_polaroid_polaroids';
+  info: {
+    displayName: 'polaroid';
+  };
+  attributes: {
+    dates: Schema.Attribute.String;
+    duration: Schema.Attribute.String;
+    image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    mobileImage: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
+    title: Schema.Attribute.String;
+  };
+}
+
 declare module '@strapi/strapi' {
-  export module Public {
+  export namespace Public {
     export interface ComponentSchemas {
       'arrival.arrival-option': ArrivalArrivalOption;
       'departure.departure-option': DepartureDepartureOption;
@@ -141,6 +158,7 @@ declare module '@strapi/strapi' {
       'itinerary.activity-item': ItineraryActivityItem;
       'itinerary.itinerary-item': ItineraryItineraryItem;
       'map.map-item': MapMapItem;
+      'polaroid.polaroid': PolaroidPolaroid;
     }
   }
 }
