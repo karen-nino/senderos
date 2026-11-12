@@ -330,8 +330,8 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
                 <span className="hero-postal__foot">
                   <span className="hero-postal__foot-text">
                     <strong>{s.polaroidTitle?.trim() || s.title}</strong>
-                    {/* Bajo el título va la duración; sin duración capturada en Strapi queda el subtítulo */}
-                    {(s.duration?.trim() || sText) && <small>{s.duration?.trim() || sText}</small>}
+                    {/* Bajo el título va el subtítulo de la polaroid; sin él queda el subtítulo del slide */}
+                    {(s.polaroidSubtitle?.trim() || sText) && <small>{s.polaroidSubtitle?.trim() || sText}</small>}
                   </span>
                   {/* Con fechas capturadas en Strapi el sello las muestra; si no, queda el número de postal */}
                   {s.dates?.trim() ? (

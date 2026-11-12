@@ -9,8 +9,8 @@ export interface HeroSlide {
   subtitle?: string
   description?: string
   polaroidTitle?: string
+  polaroidSubtitle?: string
   dates?: string
-  duration?: string
   image?: {
     data?: {
       attributes?: {

@@ -57,8 +57,6 @@ export interface HomeHeroSlide extends Struct.ComponentSchema {
   attributes: {
     ctaLink: Schema.Attribute.String;
     ctaText: Schema.Attribute.String;
-    image: Schema.Attribute.Media<'images'>;
-    mobileImage: Schema.Attribute.Media<'images'>;
     polaroid: Schema.Attribute.Component<'polaroid.polaroid', false>;
     subtitle: Schema.Attribute.String;
     title: Schema.Attribute.String;
@@ -136,12 +134,12 @@ export interface PolaroidPolaroid extends Struct.ComponentSchema {
   };
   attributes: {
     dates: Schema.Attribute.String;
-    duration: Schema.Attribute.String;
     image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     mobileImage: Schema.Attribute.Media<
       'images' | 'files' | 'videos' | 'audios'
     >;
-    title: Schema.Attribute.String;
+    polaroidSubtitle: Schema.Attribute.String;
+    polaroidTitle: Schema.Attribute.String;
   };
 }
 

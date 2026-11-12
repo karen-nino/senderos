@@ -5,10 +5,10 @@
   },
   "options": {},
   "attributes": {
-    "title": {
+    "polaroidTitle": {
       "type": "string"
     },
-    "duration": {
+    "polaroidSubtitle": {
       "type": "string"
     },
     "dates": {

@@ -1,6 +1,6 @@
 /**
  * home controller
- * Fuerza populate de heroSlides e image para que la API siempre devuelva las imágenes (ej. fiesta-grande.webp).
+ * Fuerza populate de heroSlides (imágenes dentro de su polaroid) para que la API siempre devuelva las imágenes (ej. fiesta-grande.webp).
  */
 
 import { factories } from '@strapi/strapi';
@@ -12,7 +12,9 @@ export default factories.createCoreController('api::home.home', ({ strapi }) => 
       populate: {
         ...(typeof ctx.query?.populate === 'object' && ctx.query.populate !== null ? ctx.query.populate : {}),
         heroSlides: {
-          populate: ['image', 'mobileImage'],
+          populate: {
+            polaroid: { populate: ['image', 'mobileImage'] },
+          },
         },
         services: { populate: ['image'] },
         testimonial: { populate: ['profilePhoto', 'photo'] },

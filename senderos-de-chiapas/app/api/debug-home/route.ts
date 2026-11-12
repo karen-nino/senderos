@@ -17,7 +17,9 @@ export async function GET() {
     const rawSlides = Array.isArray(home?.heroSlides) ? home.heroSlides : [];
     const firstSlide = rawSlides[0] as Record<string, unknown> | undefined;
     const firstSlideKeys = firstSlide ? Object.keys(firstSlide) : [];
-    const firstSlideImage = firstSlide?.image;
+    // La imagen del slide vive en el componente polaroid
+    const firstPolaroid = firstSlide?.polaroid as Record<string, unknown> | null | undefined;
+    const firstSlideImage = firstPolaroid?.image;
 
     const tryHome = await fetchStrapi("/api/home?populate=*&status=published", { useToken: false });
     const tryHomes = await fetchStrapi("/api/homes?populate=*&status=published", { useToken: false });
@@ -27,12 +29,13 @@ export async function GET() {
     if (tryHomeStatus === 401) {
       fixHint = "401: En Strapi → Settings → Users & Permissions → Roles → Public → Home → marcar 'find'.";
     } else if (firstSlide && firstSlideKeys.length > 0) {
-      const hasImageField = "image" in firstSlide;
-      const imageVal = firstSlide.image;
-      if (!hasImageField || imageVal == null) {
-        fixHint = "Los slides no traen 'image'. En Strapi → Settings → Users & Permissions → Roles → Public → activa 'find' en 'Upload' (plugin) para que se devuelva la media o su id. Así el front puede pedir /api/upload/files/:id.";
+      const imageVal = firstPolaroid?.image;
+      if (firstPolaroid == null) {
+        fixHint = "El slide no trae 'polaroid'. En Strapi → Página Principal → Carrusel, agrega el componente polaroid al slide, o revisa que la consulta haga populate de heroSlides.polaroid.";
+      } else if (imageVal == null) {
+        fixHint = "La polaroid no trae 'image'. Sube la imagen en la polaroid del slide; si ya está, en Strapi → Settings → Users & Permissions → Roles → Public → activa 'find' en 'Upload' (plugin) para que se devuelva la media o su id. Así el front puede pedir /api/upload/files/:id.";
       } else if (typeof imageVal === "number" || (typeof imageVal === "object" && "id" in (imageVal as object))) {
-        fixHint = "El slide trae image como id. El front debería resolver la URL con /api/upload/files/:id. Revisa que Public tenga 'find' en Upload.";
+        fixHint = "La polaroid trae image como id. El front debería resolver la URL con /api/upload/files/:id. Revisa que Public tenga 'find' en Upload.";
       }
     }
 

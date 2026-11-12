@@ -157,10 +157,10 @@ async function fetchTourWithItineraryPopulated(
 const HOME_QUERY = "populate=*&status=published";
 const HOME_QUERY_ES = `${HOME_QUERY}&locale=es`;
 const HOME_QUERY_DEEP =
-  "populate[heroSlides][populate][image]=true&populate[heroSlides][populate][mobileImage]=true&populate[heroSlides][populate][polaroid][populate]=*&populate[services][populate]=*&populate[testimonial][populate]=*&populate[gallery]=*&status=published";
+  "populate[heroSlides][populate][polaroid][populate]=*&populate[services][populate]=*&populate[testimonial][populate]=*&populate[gallery]=*&status=published";
 /**
  * Single type puede ser /api/home o /api/homes. populate[X][populate]=* trae todos los campos del componente (incl. media).
- * La polaroid es un componente dentro del slide: sus imágenes necesitan un segundo nivel de populate.
+ * La imagen del slide vive en la polaroid (componente dentro del slide): necesita un segundo nivel de populate.
  */
 const HOME_URLS = [
   `/api/home?${HOME_QUERY_DEEP}`,
@@ -573,8 +573,9 @@ export interface AdaptedHeroSlide {
   description?: string;
   /** Título de la postal (componente polaroid); si no hay, la postal usa el título del slide. */
   polaroidTitle?: string;
+  /** Subtítulo de la postal (componente polaroid); si no hay, la postal usa el subtítulo del slide. */
+  polaroidSubtitle?: string;
   dates?: string;
-  duration?: string;
   image: string;
   mobileImage?: string;
   buttonText?: string;
@@ -604,10 +605,10 @@ export function parseHomeHeroSlides(homeData: unknown): AdaptedHeroSlide[] {
       : null;
   if (!Array.isArray(raw) || raw.length === 0) return [];
   return raw.map((s: Record<string, unknown>, i: number) => {
-    // Datos de la postal: si la polaroid trae su propia imagen, tiene prioridad sobre la del slide
+    // Los datos de la postal (título, subtítulo, fechas e imágenes) vienen del componente polaroid
     const polaroid = (s.polaroid as Record<string, unknown> | null | undefined) ?? {};
-    const image = polaroid.image ?? s.image;
-    const mobileImage = polaroid.mobileImage ?? s.mobileImage;
+    const image = polaroid.image;
+    const mobileImage = polaroid.mobileImage;
 
     const imageUrl = getImageUrl(image as StrapiDestinationItem["image"]);
     const fullUrl = imageUrl
@@ -624,9 +625,9 @@ export function parseHomeHeroSlides(homeData: unknown): AdaptedHeroSlide[] {
       title: (s.title as string) ?? "",
       subtitle: (s.subtitle as string) ?? undefined,
       description: (s.description as string) ?? undefined,
-      polaroidTitle: (polaroid.title as string) ?? undefined,
+      polaroidTitle: (polaroid.polaroidTitle as string) ?? undefined,
       dates: (polaroid.dates as string) ?? undefined,
-      duration: (polaroid.duration as string) ?? undefined,
+      polaroidSubtitle: (polaroid.polaroidSubtitle as string) ?? undefined,
       image: fullUrl,
       mobileImage: mobileFullUrl,
       buttonText: (s.buttonText as string) ?? undefined,
