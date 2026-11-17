@@ -1,7 +1,6 @@
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import TourItem from '@/components/TourItem'
-import SeasonPackageItem from '@/components/SeasonPackageItem'
+import PackageCard from '@/components/PackageCard'
 import HeroSlider from '@/components/HeroSlider'
 import GallerySlider from '@/components/GallerySlider'
 import ToursHomeSlider from '@/components/ToursHomeSlider'
@@ -10,6 +9,12 @@ import { fetchHome, fetchHomeHeroSlides, fetchDestinationsForHome, fetchPackages
 import { cloudinaryWidth } from '@/lib/cloudinary'
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
+
+/** Enlace al detalle de un paquete de aventura o temporada (Strapi puede traer ruta completa, slug o nada). */
+function packageDetailHref(link?: string): string {
+  if (!link?.trim() || link === '#') return '/paquetes'
+  return link.startsWith('/') ? link : `/paquete-detalles/${link}`
+}
 
 export default async function Home() {
   let heroSlides: Awaited<ReturnType<typeof fetchHomeHeroSlides>> = []
@@ -112,38 +117,17 @@ export default async function Home() {
               <div className="row g-2 g-md-3 justify-content-center">
                 {packages.map((pkg: AdaptedDestination, index: number) => (
                   <div key={index} className="col-12 col-md-6 col-xl-3 mb-30 mb-md-40">
-                    <Link
+                    <PackageCard
+                      className={`wow ${index % 2 === 0 ? 'fadeInUp' : 'fadeInDown'}`}
                       href={pkg.link || '#'}
-                      className={`package-card wow ${index % 2 === 0 ? 'fadeInUp' : 'fadeInDown'}`}
-                    >
-                      <div className="package-card__media">
-                        <div className="package-card__tags">
-                          <span className="package-card__tag">Paquete</span>
-                          {pkg.badge && pkg.badge !== 'oculto' && (
-                            <span className={`package-card__tag package-card__tag--${pkg.badge}`}>
-                              {pkg.badge === 'nuevo' ? '¡Nuevo!' : pkg.badge === 'pocos_lugares' ? 'Pocos lugares' : 'Agotado'}
-                            </span>
-                          )}
-                        </div>
-                        <img src={pkg.image && !pkg.image.includes('las-tres-tzimoleras') ? cloudinaryWidth(pkg.image, 800) : '/assets/images/place/single-place-1.jpg'} alt={pkg.title} loading="lazy" decoding="async" />
-                      </div>
-                      <div className="package-card__body">
-                        <h3 className="package-card__title">{pkg.title}</h3>
-                        {pkg.duration && (
-                          <p className="package-card__meta"><i className="far fa-clock" aria-hidden></i>{pkg.duration}</p>
-                        )}
-                        {pkg.route && (
-                          <p className="package-card__meta"><i className="far fa-map-marked-alt" aria-hidden></i><span className="package-card__route">{pkg.route}</span></p>
-                        )}
-                        <div className="package-card__foot">
-                          <div>
-                            <span className="package-card__price-label">Precio</span>
-                            <span className="package-card__price">{pkg.price || 'Consultar'}</span>
-                          </div>
-                          <span className="package-card__arrow" aria-hidden><i className="fas fa-arrow-right"></i></span>
-                        </div>
-                      </div>
-                    </Link>
+                      tag="Paquete"
+                      title={pkg.title}
+                      image={pkg.image && !pkg.image.includes('las-tres-tzimoleras') ? pkg.image : '/assets/images/place/single-place-1.jpg'}
+                      badge={pkg.badge}
+                      duration={pkg.duration}
+                      route={pkg.route}
+                      price={pkg.price}
+                    />
                   </div>
                 ))}
               </div>
@@ -151,35 +135,35 @@ export default async function Home() {
           </section>
         )}
 
-        {/* Adventure Packages Section - Datos desde Strapi (Adventure con home: true). Mismo layout que Tours. */}
+        {/* Adventure Packages Section - Datos desde Strapi (Adventure con home: true). Misma tarjeta que Paquetes. */}
         {adventures.length > 0 && (
-          <section className="services-seciton pt-160">
+          <section className="features-section pt-160">
             <div className="container">
               <div className="row justify-content-center">
                 <div className="col-xl-8 col-lg-10">
-                  <div className="section-title text-center mb-60 wow fadeInDown">
+                  <div className="section-title text-center mb-45 wow fadeInDown">
                     <span className="sub-title">Paquetes de Aventura</span>
                     <h2>Rutas llenas de adrenalina para los más aventureros</h2>
                   </div>
                 </div>
               </div>
-              <div className="places-section__container wow fadeInUp">
-                <ToursHomeSlider>
-                  {adventures.map((adventure: AdaptedSeason, index: number) => (
-                    <div key={adventure.link || index} className="places-section__item">
-                      <TourItem
-                        title={adventure.title}
-                        subtitle={adventure.category || adventure.description || ''}
-                        image={adventure.image}
-                        link={adventure.link}
-                        departureDate={adventure.dateFormatted}
-                        duration={adventure.duration}
-                        price={adventure.price}
-                        badge={adventure.badge}
-                      />
-                    </div>
-                  ))}
-                </ToursHomeSlider>
+              <div className="row g-2 g-md-3 justify-content-center">
+                {adventures.map((adventure: AdaptedSeason, index: number) => (
+                  <div key={adventure.link || index} className="col-12 col-md-6 col-xl-3 mb-30 mb-md-40">
+                    <PackageCard
+                      className={`wow ${index % 2 === 0 ? 'fadeInUp' : 'fadeInDown'}`}
+                      href={packageDetailHref(adventure.link)}
+                      tag="Aventura"
+                      title={adventure.title}
+                      image={adventure.image}
+                      badge={adventure.badge}
+                      description={adventure.category || adventure.description}
+                      departureDate={adventure.dateFormatted}
+                      duration={adventure.duration}
+                      price={adventure.price}
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           </section>
@@ -187,7 +171,7 @@ export default async function Home() {
 
         {/* Tours Section */}
         {destinations.length > 0 && (
-          <section className="services-seciton pt-160 pb-160">
+          <section className="services-seciton tours-home pt-160 pb-160">
             <div className="container">
               <div className="row justify-content-center">
                 <div className="col-xl-8 col-lg-10">
@@ -201,15 +185,16 @@ export default async function Home() {
                 <ToursHomeSlider>
                   {destinations.map((destination: AdaptedDestination, index: number) => (
                     <div key={index} className="places-section__item">
-                      <TourItem
+                      <PackageCard
+                        href={getTourDetailHref(destination)}
+                        tag="Tour"
                         title={destination.title}
-                        subtitle={tourCardSubtitle(destination)}
                         image={destination.image}
-                        link={getTourDetailHref(destination)}
+                        badge={destination.badge}
+                        description={tourCardSubtitle(destination)}
                         departureDate={destination.departureDate}
                         duration={destination.duration}
                         price={destination.price}
-                        badge={destination.badge}
                       />
                     </div>
                   ))}
@@ -414,20 +399,22 @@ export default async function Home() {
                   </div>
                 </div>
               </div>
-              <div className="row justify-content-center">
-                {seasons.map((season, i) => (
-                  <SeasonPackageItem
-                    key={i}
-                    title={season.title}
-                    image={season.image}
-                    link={season.link}
-                    category={season.category}
-                    dateFormatted={season.dateFormatted}
-                    description={season.description}
-                    duration={season.duration}
-                    price={season.price}
-                    badge={season.badge}
-                  />
+              <div className="row g-2 g-md-3 justify-content-center">
+                {seasons.map((season: AdaptedSeason, index: number) => (
+                  <div key={season.link || index} className="col-12 col-md-6 col-xl-3 mb-30 mb-md-40">
+                    <PackageCard
+                      className={`wow ${index % 2 === 0 ? 'fadeInUp' : 'fadeInDown'}`}
+                      href={packageDetailHref(season.link)}
+                      tag="Temporada"
+                      title={season.title}
+                      image={season.image}
+                      badge={season.badge}
+                      description={season.category || season.description}
+                      departureDate={season.dateFormatted}
+                      duration={season.duration}
+                      price={season.price}
+                    />
+                  </div>
                 ))}
               </div>
             </div>

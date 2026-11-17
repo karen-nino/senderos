@@ -633,6 +633,32 @@ button,
   border-color: transparent;
 }
 
+/* Tours (inicio): la tarjeta de paquetes dentro del carrusel, con el mismo ancho que en el grid de paquetes */
+.tours-home {
+  --tour-card-w: 312px;
+  @media (max-width: 1399px) { --tour-card-w: 267px; }
+  @media (max-width: 1199px) { --tour-card-w: 460px; }
+  @media (max-width: 991px) { --tour-card-w: 340px; }
+  @media (max-width: 767px) { --tour-card-w: min(340px, calc(100vw - 48px)); }
+}
+.services-seciton.tours-home .slider-destinations-grid .places-section__item {
+  width: var(--tour-card-w);
+  min-width: var(--tour-card-w);
+  padding: 6px 0 24px; /* deja ver la sombra y el movimiento del hover */
+}
+/* Todas las tarjetas del carrusel con la misma altura: el track estira cada slide y el slide estira la tarjeta */
+.services-seciton.tours-home .slick-track {
+  display: flex;
+}
+.services-seciton.tours-home .slick-slide {
+  display: flex;
+  height: auto;
+}
+.services-seciton.tours-home .slick-slide .package-card {
+  width: 100%;
+  height: auto;
+}
+
 /* Responsive: items más pequeños en pantallas chicas para que quepan */
 @media (max-width: 480px) {
   .services-seciton .slider-destinations-grid .places-section__item {
@@ -1219,8 +1245,8 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   text-decoration: none;
 }
 
-/* Tarjetas de paquetes (inicio): foto arriba, información abajo */
-.features-section .package-card {
+/* Tarjetas de paquetes, aventura y temporada (inicio): foto arriba, información abajo */
+.package-card {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -1238,7 +1264,7 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
     margin-right: auto;
   }
 }
-.features-section .package-card:hover {
+.package-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 14px 34px rgba(30, 40, 20, 0.14);
 }
@@ -1295,24 +1321,40 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   display: flex;
   flex-direction: column;
   flex: 1;
-  gap: 8px;
-  padding: 18px 20px 20px;
+  gap: 12px;
+  padding: 20px 20px 22px;
 }
 .package-card .package-card__title {
   margin: 0 0 2px;
-  font-size: clamp(18px, 1.4vw, 21px);
+  font-size: clamp(20px, 1.7vw, 24px);
   font-weight: 600;
   line-height: 1.25;
   color: #1f2a1a;
+  transition: color 0.3s ease;
+}
+.package-card:hover .package-card__title,
+.package-card:focus-visible .package-card__title {
+  color: #63ab45; /* mismo verde que el botón de flecha en hover */
+}
+.package-card__desc {
+  margin: 0;
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: #3f3f3f;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 .package-card__meta {
   display: flex;
   align-items: flex-start;
   gap: 8px;
   margin: 0;
-  font-size: 14px;
+  font-size: 15.5px;
+  font-weight: 500;
   line-height: 1.4;
-  color: #5a5a5a;
+  color: #333;
 }
 .package-card__meta i {
   flex: none;
@@ -1328,25 +1370,42 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
 }
 .package-card__foot {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
   margin-top: auto;
-  padding-top: 14px;
+  padding-top: 16px;
   border-top: 1px solid #ecebe4;
 }
 .package-card__price-label {
   display: block;
-  font-size: 12px;
-  color: #6b6b6b;
+  margin-bottom: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   line-height: 1.2;
+  color: #6b6b6b;
 }
 .package-card__price {
   display: block;
-  font-size: 20px;
+  font-size: 23px;
   font-weight: 700;
-  line-height: 1.25;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
   color: #b85f08; /* naranja oscurecido: contraste AA sobre blanco */
+}
+.package-card__currency {
+  margin-left: 5px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #9a5a1c;
+}
+.package-card__price--ask {
+  font-size: 17px;
+  font-weight: 600;
 }
 .package-card__arrow {
   flex: none;
@@ -1359,6 +1418,10 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   color: #fff;
   font-size: 14px;
   transition: background-color 0.3s ease, transform 0.3s ease;
+}
+.package-card:focus-visible {
+  outline: 3px solid #63ab45;
+  outline-offset: 3px;
 }
 .package-card:hover .package-card__arrow {
   background: #63ab45;
