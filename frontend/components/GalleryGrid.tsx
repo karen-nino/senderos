@@ -37,7 +37,7 @@ export default function GalleryGrid({ title, images }: GalleryGridProps) {
                     }}
                     aria-label="Ver imagen ampliada"
                   >
-                    <i className="far fa-plus"></i>
+                    <i className="far fa-eye"></i>
                   </a>
                 </div>
               </div>

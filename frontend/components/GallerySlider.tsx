@@ -109,7 +109,7 @@ export default function GallerySlider({ images, embed = false }: GallerySliderPr
                 onClick={(e) => openLightbox(e, i)}
                 aria-label="Ver imagen ampliada"
               >
-                <i className="far fa-plus"></i>
+                <i className="far fa-eye"></i>
               </a>
             </div>
           </div>
