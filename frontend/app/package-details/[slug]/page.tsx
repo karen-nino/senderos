@@ -238,7 +238,7 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                 <div className="sidebar-widget booking-info-widget wow fadeInUp mb-40">
                   <h4 className="widget-title">Detalles del paquete</h4>
                   <ul className="info-list info-list--stack">
-                    <li><span><i className="fal fa-box-usd"></i>Precio Nacional<span>{pkg.price}</span></span></li>
+                    <li><span><i className="fal fa-box-usd"></i>{pkg.priceInternational ? 'Precio Nacional' : 'Precio desde'}<span>{pkg.price}</span></span></li>
                     {pkg.priceInternational && <li><span><i className="fal fa-box-usd"></i>Precio Internacional<span>{pkg.priceInternational}</span></span></li>}
                     <li><span><i className="fal fa-clock"></i>Duración<span>{pkg.duration || 'Variable'}</span></span></li>
                     {pkg.accommodation && <li><span><i className="far fa-bed"></i>Alojamiento<span>{pkg.accommodation}</span></span></li>}
@@ -470,7 +470,7 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                       <div className="sidebar-widget booking-info-widget wow fadeInUp mb-100">
                         <h4 className="widget-title">Detalles del paquete</h4>
                         <ul className="info-list">
-                          <li><span><i className="fal fa-box-usd"></i>Precio Nacional<span>{pkg.price}</span></span></li>
+                          <li><span><i className="fal fa-box-usd"></i>{pkg.priceInternational ? 'Precio Nacional' : 'Precio desde'}<span>{pkg.price}</span></span></li>
                           {pkg.priceInternational && <li className="info-list__item--wrap"><span><i className="fal fa-box-usd"></i>Precio Internacional<span>{pkg.priceInternational}</span></span></li>}
                           <li><span><i className="fal fa-clock"></i>Duración<span>{pkg.duration || 'Variable'}</span></span></li>
                           {pkg.accommodation && <li><span><i className="far fa-bed"></i>Alojamiento<span>{pkg.accommodation}</span></span></li>}
