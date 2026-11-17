@@ -61,7 +61,7 @@ export default function PackageCard({
           <p className="package-card__meta"><i className="far fa-clock" aria-hidden></i>{duration}</p>
         )}
         {route && (
-          <p className="package-card__meta"><i className="far fa-map-marked-alt" aria-hidden></i><span className="package-card__route">{route}</span></p>
+          <p className="package-card__meta package-card__meta--route"><i className="far fa-map-marked-alt" aria-hidden></i><span className="package-card__route">{route}</span></p>
         )}
         <div className="package-card__foot">
           {price ? (

@@ -124,6 +124,7 @@ export default async function Home() {
                       title={pkg.title}
                       image={pkg.image && !pkg.image.includes('las-tres-tzimoleras') ? pkg.image : '/assets/images/place/single-place-1.jpg'}
                       badge={pkg.badge}
+                      description={pkg.route ? undefined : pkg.description}
                       duration={pkg.duration}
                       route={pkg.route}
                       price={pkg.price}
