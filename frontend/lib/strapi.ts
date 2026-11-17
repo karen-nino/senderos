@@ -1765,6 +1765,12 @@ export function slugify(title: string): string {
 }
 
 /** Devuelve la URL de la página de detalle de un tour (para usar en enlaces desde listados). Usa slug legible (título) o documentId como fallback; solo devuelve /tours si no hay ninguno. */
+/** Enlace al detalle de un paquete de aventura o temporada (Strapi puede traer ruta completa, slug o nada). */
+export function getPackageDetailHref(link?: string): string {
+  if (!link?.trim() || link === '#') return '/paquetes';
+  return link.startsWith('/') ? link : `/paquete-detalles/${link}`;
+}
+
 export function getTourDetailHref(destination: {
   slug?: string;
   link?: string;

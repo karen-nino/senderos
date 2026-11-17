@@ -3,7 +3,7 @@ import React from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import FilteredCardsList from '@/components/FilteredCardsList'
-import TourItem from '@/components/TourItem'
+import PackageCard from '@/components/PackageCard'
 import Link from 'next/link'
 import { fetchTourPageData, STRAPI_REVALIDATE_SECONDS, getTourDetailHref, tourCardSubtitle, type AdaptedDestination } from '@/lib/strapi'
 import { cloudinaryWidth } from '@/lib/cloudinary'
@@ -68,19 +68,22 @@ export default async function ToursPage() {
                     groupKey: departure || '__sin_departure__',
                     groupLabel: departure ? `Saliendo de ${departure}` : '',
                     content: (
-                      <TourItem
+                      <PackageCard
+                        href={getTourDetailHref(d)}
+                        tag="Tour"
+                        noPriceText="Más información"
                         title={d.title}
-                        subtitle={tourCardSubtitle(d)}
                         image={d.image}
-                        link={getTourDetailHref(d)}
+                        badge={d.badge}
+                        description={tourCardSubtitle(d)}
                         departureDate={d.departureDate}
                         duration={d.duration}
                         price={d.price}
-                        badge={d.badge}
                       />
                     ),
                   }
                 })}
+                gridClassName="places-section__grid places-section__grid--cards container"
                 searchPlaceholder="Buscar tour por nombre"
                 emptyMessage="No encontramos tours que coincidan con tu búsqueda."
               />

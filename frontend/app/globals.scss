@@ -1309,9 +1309,9 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
 /* Estado (¡Nuevo!, Pocos lugares, Agotado): banderín que cuelga del borde superior de la tarjeta.
    Colores de las píldoras originales de las tarjetas de tour (fondo pastel, texto oscuro del mismo tono). */
 .package-card__stamp {
-  --ribbon-bg: #bbdefb;
-  --ribbon-fg: #0d47a1; /* 6.2:1 sobre el fondo */
-  --ribbon-fold: #7fb3e6;
+  --ribbon-bg: #d4ecc4;
+  --ribbon-fg: #2a5c1a; /* 6.3:1 sobre el fondo */
+  --ribbon-fold: #9ccb84;
   position: absolute;
   top: -8px;
   right: 18px;
@@ -2499,6 +2499,30 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
     max-width: 100%;
     flex: 0 0 100%;
   }
+}
+
+/* Grid de tarjetas (páginas Tours y Paquetes): mismas columnas que en el inicio
+   (4 en xl, 2 en md/lg, 1 en móvil hasta 340px), con la última fila centrada */
+.places-section__grid--cards {
+  gap: 30px 16px;
+  @media (min-width: 768px) {
+    row-gap: 40px;
+  }
+}
+.places-section__grid--cards > .places-section__item {
+  flex: 0 0 100%;
+  min-width: 0;
+  max-width: 340px;
+  @media (min-width: 768px) {
+    flex-basis: calc((100% - 16px) / 2);
+    max-width: none;
+  }
+  @media (min-width: 1200px) {
+    flex-basis: calc((100% - 48px) / 4);
+  }
+}
+.places-section__grid--cards > .places-section__item > div {
+  height: 100%;
 }
 
 /* Política de Privacidad */

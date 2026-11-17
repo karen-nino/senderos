@@ -5,16 +5,10 @@ import HeroSlider from '@/components/HeroSlider'
 import GallerySlider from '@/components/GallerySlider'
 import ToursHomeSlider from '@/components/ToursHomeSlider'
 import Link from 'next/link'
-import { fetchHome, fetchHomeHeroSlides, fetchDestinationsForHome, fetchPackages, fetchSeasonsForHome, fetchAdventuresForHome, parseHomeServices, parseHomeTestimonial, parseHomeGallery, GALLERY_FALLBACK_IMAGES, STRAPI_REVALIDATE_SECONDS, getTourDetailHref, tourCardSubtitle, type AdaptedDestination, type AdaptedHomeService, type AdaptedSeason } from '@/lib/strapi'
+import { fetchHome, fetchHomeHeroSlides, fetchDestinationsForHome, fetchPackages, fetchSeasonsForHome, fetchAdventuresForHome, parseHomeServices, parseHomeTestimonial, parseHomeGallery, GALLERY_FALLBACK_IMAGES, STRAPI_REVALIDATE_SECONDS, getTourDetailHref, getPackageDetailHref, tourCardSubtitle, type AdaptedDestination, type AdaptedHomeService, type AdaptedSeason } from '@/lib/strapi'
 import { cloudinaryWidth } from '@/lib/cloudinary'
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
-
-/** Enlace al detalle de un paquete de aventura o temporada (Strapi puede traer ruta completa, slug o nada). */
-function packageDetailHref(link?: string): string {
-  if (!link?.trim() || link === '#') return '/paquetes'
-  return link.startsWith('/') ? link : `/paquete-detalles/${link}`
-}
 
 export default async function Home() {
   let heroSlides: Awaited<ReturnType<typeof fetchHomeHeroSlides>> = []
@@ -153,7 +147,7 @@ export default async function Home() {
                   <div key={adventure.link || index} className="col-12 col-md-6 col-xl-3 mb-30 mb-md-40">
                     <PackageCard
                       className={`wow ${index % 2 === 0 ? 'fadeInUp' : 'fadeInDown'}`}
-                      href={packageDetailHref(adventure.link)}
+                      href={getPackageDetailHref(adventure.link)}
                       tag="Aventura"
                       title={adventure.title}
                       image={adventure.image}
@@ -189,6 +183,7 @@ export default async function Home() {
                       <PackageCard
                         href={getTourDetailHref(destination)}
                         tag="Tour"
+                        noPriceText="Más información"
                         title={destination.title}
                         image={destination.image}
                         badge={destination.badge}
@@ -405,7 +400,7 @@ export default async function Home() {
                   <div key={season.link || index} className="col-12 col-md-6 col-xl-3 mb-30 mb-md-40">
                     <PackageCard
                       className={`wow ${index % 2 === 0 ? 'fadeInUp' : 'fadeInDown'}`}
-                      href={packageDetailHref(season.link)}
+                      href={getPackageDetailHref(season.link)}
                       tag="Temporada"
                       title={season.title}
                       image={season.image}

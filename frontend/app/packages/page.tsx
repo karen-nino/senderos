@@ -2,11 +2,10 @@ import type { Metadata } from 'next'
 import React from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import PackageItem from '@/components/PackageItem'
-import SeasonPackageItem from '@/components/SeasonPackageItem'
+import PackageCard from '@/components/PackageCard'
 import FilteredCardsList from '@/components/FilteredCardsList'
 import Link from 'next/link'
-import { fetchPackagesPageData, fetchSeasonsForPackagesPage, fetchAdventuresForPackagesPage, STRAPI_REVALIDATE_SECONDS, type AdaptedDestination, type AdaptedSeason } from '@/lib/strapi'
+import { fetchPackagesPageData, fetchSeasonsForPackagesPage, fetchAdventuresForPackagesPage, STRAPI_REVALIDATE_SECONDS, getPackageDetailHref, type AdaptedDestination, type AdaptedSeason } from '@/lib/strapi'
 import { cloudinaryWidth } from '@/lib/cloudinary'
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
@@ -80,21 +79,20 @@ export default async function PackagesPage() {
                   <p className="packages-group__subtitle pb-60">
                     Aprovecha rutas y promociones por fechas especiales
                   </p>
-                  <div className="places-section__grid places-section__grid--seasonal">
+                  <div className="places-section__grid places-section__grid--cards container">
                     {seasons.map((season, index) => (
                       <div key={season.link || index} className="places-section__item">
                         <div className="wow fadeInUp">
-                          <SeasonPackageItem
-                            variant="card"
+                          <PackageCard
+                            href={getPackageDetailHref(season.link)}
+                            tag="Temporada"
                             title={season.title}
                             image={season.image}
-                            link={season.link}
-                            category={season.category}
-                            dateFormatted={season.dateFormatted}
-                            description={season.description}
+                            badge={season.badge}
+                            description={season.category || season.description}
+                            departureDate={season.dateFormatted}
                             duration={season.duration}
                             price={season.price}
-                            badge={season.badge}
                           />
                         </div>
                       </div>
@@ -112,21 +110,20 @@ export default async function PackagesPage() {
                   <p className="packages-group__subtitle pb-60">
                     Rutas llenas de adrenalina para los más aventureros
                   </p>
-                  <div className="places-section__grid places-section__grid--seasonal">
+                  <div className="places-section__grid places-section__grid--cards container">
                     {adventures.map((adventure, index) => (
                       <div key={adventure.link || index} className="places-section__item">
                         <div className="wow fadeInUp">
-                          <SeasonPackageItem
-                            variant="card"
+                          <PackageCard
+                            href={getPackageDetailHref(adventure.link)}
+                            tag="Aventura"
                             title={adventure.title}
                             image={adventure.image}
-                            link={adventure.link}
-                            category={adventure.category}
-                            dateFormatted={adventure.dateFormatted}
-                            description={adventure.description}
+                            badge={adventure.badge}
+                            description={adventure.category || adventure.description}
+                            departureDate={adventure.dateFormatted}
                             duration={adventure.duration}
                             price={adventure.price}
-                            badge={adventure.badge}
                           />
                         </div>
                       </div>
@@ -153,18 +150,21 @@ export default async function PackagesPage() {
                       title: pkg.title,
                       key: String(pkg.slug || pkg.title || i),
                       content: (
-                        <PackageItem
+                        <PackageCard
+                          href={pkg.slug ? `/paquete-detalles/${pkg.slug}` : (pkg.link || '/paquetes')}
+                          tag="Paquete"
                           title={pkg.title}
-                          description={pkg.description}
                           image={pkg.image && !pkg.image.includes('las-tres-tzimoleras') ? pkg.image : DEFAULT_IMAGE}
-                          link={pkg.slug ? `/paquete-detalles/${pkg.slug}` : (pkg.link || '/paquetes')}
+                          badge={pkg.badge}
+                          description={pkg.route ? undefined : pkg.description}
                           departureDate={pkg.departureDate}
                           duration={pkg.duration}
+                          route={pkg.route}
                           price={pkg.price}
-                          badge={pkg.badge}
                         />
                       ),
                     }))}
+                    gridClassName="places-section__grid places-section__grid--cards container"
                     searchPlaceholder="Buscar paquete por nombre"
                     emptyMessage="No encontramos paquetes que coincidan con tu búsqueda."
                   />

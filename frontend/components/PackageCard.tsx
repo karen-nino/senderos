@@ -14,6 +14,8 @@ interface PackageCardProps {
   route?: string
   price?: string
   priceLabel?: string
+  /** Texto del pie cuando no hay precio. */
+  noPriceText?: string
   className?: string
 }
 
@@ -38,6 +40,7 @@ export default function PackageCard({
   route,
   price,
   priceLabel = 'Precios desde',
+  noPriceText = 'Consultar precio',
   className = '',
 }: PackageCardProps) {
   return (
@@ -72,7 +75,7 @@ export default function PackageCard({
               <PriceAmount price={price} />
             </div>
           ) : (
-            <span className="package-card__price package-card__price--ask">Consultar precio</span>
+            <span className="package-card__price package-card__price--ask">{noPriceText}</span>
           )}
           <span className="package-card__arrow" aria-hidden><i className="fas fa-arrow-right"></i></span>
         </div>
