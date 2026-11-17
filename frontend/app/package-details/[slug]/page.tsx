@@ -190,22 +190,10 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
               {/* Tour Title Wrapper */}
               <div className="tour-title-wrapper pb-30 wow fadeInUp">
                 <div className="row">
-                  <div className="col-xl-6">
+                  <div className="col-12">
                     <div className="tour-title mb-20">
                       <span className="tour-label">PAQUETE</span>
                       <h1 className="title">{pkg.title}</h1>
-                    </div>
-                  </div>
-                  <div className="col-xl-6 d-none d-xl-block">
-                    <div className="tour-widget-info">
-                      <div className="info-box mb-20">
-                        <div className="icon"><i className="fal fa-box-usd"></i></div>
-                        <div className="info"><h4><span>Desde</span>{pkg.price}</h4></div>
-                      </div>
-                      <div className="info-box mb-20">
-                        <div className="icon"><i className="fal fa-clock"></i></div>
-                        <div className="info"><h4><span>Duración</span>{pkg.duration || 'Variable'}</h4></div>
-                      </div>
                     </div>
                   </div>
                 </div>
