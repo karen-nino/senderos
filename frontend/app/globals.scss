@@ -1336,6 +1336,10 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
 .package-card:focus-visible .package-card__title {
   color: #4f8f35; /* mismo verde que el botón de flecha en hover; 4:1 sobre blanco */
 }
+/* El subtítulo va pegado al título (un solo bloque); el resto de los renglones conserva el espacio del body */
+.package-card__title + .package-card__desc {
+  margin-top: -8px;
+}
 .package-card__desc {
   margin: 0;
   font-size: 15.5px;
