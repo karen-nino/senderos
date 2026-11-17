@@ -2525,6 +2525,11 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   height: 100%;
 }
 
+/* Galería: toda la foto abre el visor, no solo el botón redondo */
+.single-gallery-item .gallery-img {
+  cursor: pointer;
+}
+
 /* Política de Privacidad */
 .privacy-content .privacy-block h3.title {
   font-size: 1.25rem;

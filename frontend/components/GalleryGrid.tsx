@@ -20,7 +20,7 @@ export default function GalleryGrid({ title, images }: GalleryGridProps) {
         {images.map((imgUrl, idx) => (
           <div key={idx} className="col-lg-4 col-md-6 col-sm-6 col-6">
             <div className="single-gallery-item mb-30 wow fadeInUp">
-              <div className="gallery-img">
+              <div className="gallery-img" onClick={() => setLightboxIndex(idx)}>
                 <img
                   src={cloudinaryWidth(imgUrl, 800)}
                   alt={`${title} ${idx + 1}`}
@@ -33,6 +33,7 @@ export default function GalleryGrid({ title, images }: GalleryGridProps) {
                     className="icon-btn"
                     onClick={(e) => {
                       e.preventDefault()
+                      e.stopPropagation()
                       setLightboxIndex(idx)
                     }}
                     aria-label="Ver imagen ampliada"
