@@ -780,6 +780,11 @@ function extractDepartureString(
   return trimmed ? canonicalizeDeparture(trimmed) : undefined;
 }
 
+/** Quita los centavos en cero de un precio: "$10,200.00 MXN" → "$10,200 MXN". */
+function stripZeroCents(price: string | undefined): string | undefined {
+  return price?.replace(/\.00(?!\d)/g, "");
+}
+
 /** Adapta un item de Strapi al formato de DestinationItem / InternationalItem */
 export function adaptStrapiDestination(
   d: StrapiDestinationItem,
@@ -794,7 +799,7 @@ export function adaptStrapiDestination(
     link: d.link,
     icons: Array.isArray(d.icons) ? d.icons : undefined,
     departureDate: d.departureDate,
-    price: d.price,
+    price: stripZeroCents(d.price),
     accommodation: d.accommodation,
     duration: d.duration,
     badge: normalizeBadge(d.badge),
@@ -965,7 +970,7 @@ function adaptStrapiPackageItem(p: StrapiPackageItem): AdaptedDestination {
     image: fullImageUrl,
     link: slug ? `/paquete-detalles/${slug}` : undefined,
     duration: p.duration,
-    price: p.price,
+    price: stripZeroCents(p.price),
     route: blocksToSingleString(p.route),
     includes: blocksToList(p.includes as StrapiDestinationItem["includes"]),
     slug,
@@ -1075,7 +1080,7 @@ function adaptStrapiSeasonItem(
     image: fullImageUrl,
     description: description || undefined,
     duration: s.duration?.trim() || undefined,
-    price: s.price?.trim() || undefined,
+    price: stripZeroCents(s.price?.trim()) || undefined,
     badge: normalizeBadge(s.badge),
   };
 }
@@ -1307,7 +1312,7 @@ function adaptPackageOrHolidayToDetail(item: StrapiPackageItem): AdaptedPackageD
     image: adapted.image,
     imagesDetails: imagesDetails.length > 0 ? imagesDetails : undefined,
     price: adapted.price ?? "Consultar",
-    priceInternational: item.priceInternational?.trim() || undefined,
+    priceInternational: stripZeroCents(item.priceInternational?.trim()) || undefined,
     duration: adapted.duration,
     route: adapted.route,
     routeList: routeList ?? undefined,
@@ -1613,11 +1618,11 @@ function mapArrivalList(
       value: typeof item?.value === "string" ? item.value.trim() : "",
       arrivalNationalPrice:
         typeof item?.arrivalNationalPrice === "string"
-          ? item.arrivalNationalPrice.trim() || undefined
+          ? stripZeroCents(item.arrivalNationalPrice.trim()) || undefined
           : undefined,
       arrivalInternationalPrice:
         typeof item?.arrivalInternationalPrice === "string"
-          ? item.arrivalInternationalPrice.trim() || undefined
+          ? stripZeroCents(item.arrivalInternationalPrice.trim()) || undefined
           : undefined,
       arrivalHour:
         typeof item?.arrivalHour === "string"
@@ -1729,7 +1734,7 @@ function adaptToInternationalDetail(
     description: descriptionFromBlocks(d.description),
     image: fullImageUrl,
     imagesDetails,
-    price: d.price ?? "Consultar",
+    price: stripZeroCents(d.price) ?? "Consultar",
     duration: d.duration ?? "Variable",
     accommodation: d.accommodation,
     departureDate: d.departureDate,
