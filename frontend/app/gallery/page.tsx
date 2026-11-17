@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
+import GalleryGrid from '@/components/GalleryGrid'
 import { fetchGalleryPageData, STRAPI_REVALIDATE_SECONDS } from '@/lib/strapi'
 import { cloudinaryWidth } from '@/lib/cloudinary'
 
@@ -62,25 +63,7 @@ export default async function Gallery() {
                       <h2 className="gallery-group-title">{group.title}</h2>
                     </div>
                   )}
-                  <div className="row">
-                    {group.images.map((imgUrl, idx) => (
-                      <div key={`${groupIdx}-${idx}`} className="col-lg-4 col-md-6 col-sm-6 col-6">
-                        <div className="single-gallery-item mb-30 wow fadeInUp">
-                          <div className="gallery-img">
-                            <img
-                              src={cloudinaryWidth(imgUrl, 800)}
-                              alt={`${group.title} ${idx + 1}`}
-                              loading="lazy"
-                              decoding="async"
-                            />
-                            <div className="hover-overlay">
-                              <a href={cloudinaryWidth(imgUrl, 1600)} className="icon-btn img-popup"><i className="far fa-plus"></i></a>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                  <GalleryGrid title={group.title} images={group.images} />
                 </div>
               ))}
             </div>

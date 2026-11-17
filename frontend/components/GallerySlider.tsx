@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { cloudinaryWidth } from '@/lib/cloudinary'
+import GalleryLightbox from '@/components/GalleryLightbox'
 
 interface GallerySliderProps {
   images: string[]
@@ -20,27 +21,6 @@ export default function GallerySlider({ images, embed = false }: GallerySliderPr
   }, [])
 
   const closeLightbox = useCallback(() => setLightboxIndex(null), [])
-
-  const goPrev = useCallback(() => {
-    if (lightboxIndex === null) return
-    setLightboxIndex(lightboxIndex <= 0 ? list.length - 1 : lightboxIndex - 1)
-  }, [lightboxIndex, list.length])
-
-  const goNext = useCallback(() => {
-    if (lightboxIndex === null) return
-    setLightboxIndex(lightboxIndex >= list.length - 1 ? 0 : lightboxIndex + 1)
-  }, [lightboxIndex, list.length])
-
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (lightboxIndex === null) return
-      if (e.key === 'Escape') closeLightbox()
-      if (e.key === 'ArrowLeft') goPrev()
-      if (e.key === 'ArrowRight') goNext()
-    }
-    window.addEventListener('keydown', handleKey)
-    return () => window.removeEventListener('keydown', handleKey)
-  }, [lightboxIndex, closeLightbox, goPrev, goNext])
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -148,101 +128,12 @@ export default function GallerySlider({ images, embed = false }: GallerySliderPr
         </section>
       )}
 
-      {lightboxIndex !== null && (
-        <div
-          className="gallery-lightbox"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Vista ampliada de imagen"
-          onClick={closeLightbox}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 10000,
-            background: 'rgba(0,0,0,0.9)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '2rem',
-          }}
-        >
-          <button
-            type="button"
-            onClick={closeLightbox}
-            aria-label="Cerrar"
-            style={{
-              position: 'absolute',
-              top: '1rem',
-              right: '1rem',
-              background: 'rgba(255,255,255,0.2)',
-              border: 'none',
-              borderRadius: '50%',
-              width: 48,
-              height: 48,
-              color: '#fff',
-              cursor: 'pointer',
-              fontSize: '1.5rem',
-              zIndex: 1,
-            }}
-          >
-            ×
-          </button>
-          {list.length > 1 && (
-            <>
-              <button
-                type="button"
-                onClick={(e) => { e.stopPropagation(); goPrev() }}
-                aria-label="Anterior"
-                style={{
-                  position: 'absolute',
-                  left: '1rem',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  background: 'rgba(255,255,255,0.2)',
-                  border: 'none',
-                  borderRadius: '50%',
-                  width: 48,
-                  height: 48,
-                  color: '#fff',
-                  cursor: 'pointer',
-                  fontSize: '1.25rem',
-                  zIndex: 1,
-                }}
-              >
-                ‹
-              </button>
-              <button
-                type="button"
-                onClick={(e) => { e.stopPropagation(); goNext() }}
-                aria-label="Siguiente"
-                style={{
-                  position: 'absolute',
-                  right: '1rem',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  background: 'rgba(255,255,255,0.2)',
-                  border: 'none',
-                  borderRadius: '50%',
-                  width: 48,
-                  height: 48,
-                  color: '#fff',
-                  cursor: 'pointer',
-                  fontSize: '1.25rem',
-                  zIndex: 1,
-                }}
-              >
-                ›
-              </button>
-            </>
-          )}
-          <img
-            src={cloudinaryWidth(list[lightboxIndex], 1600)}
-            alt={`Galería ${lightboxIndex + 1}`}
-            onClick={(e) => e.stopPropagation()}
-            style={{ maxWidth: '100%', maxHeight: '90vh', objectFit: 'contain' }}
-          />
-        </div>
-      )}
+      <GalleryLightbox
+        images={list}
+        index={lightboxIndex}
+        onChange={setLightboxIndex}
+        onClose={closeLightbox}
+      />
     </>
   )
 }
