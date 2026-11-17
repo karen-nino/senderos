@@ -644,7 +644,7 @@ button,
 .services-seciton.tours-home .slider-destinations-grid .places-section__item {
   width: var(--tour-card-w);
   min-width: var(--tour-card-w);
-  padding: 6px 0 24px; /* deja ver la sombra y el movimiento del hover */
+  padding: 20px 0 24px; /* deja ver el sello, la sombra y el movimiento del hover */
 }
 /* Todas las tarjetas del carrusel con la misma altura: el track estira cada slide y el slide estira la tarjeta */
 .services-seciton.tours-home .slick-track {
@@ -1251,9 +1251,9 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   flex-direction: column;
   height: 100%;
   min-width: 0; /* evita overflow en grid */
+  position: relative;
   background: #fff;
   border-radius: 20px;
-  overflow: hidden;
   box-shadow: 0 6px 24px rgba(30, 40, 20, 0.08);
   color: inherit;
   text-decoration: none;
@@ -1272,6 +1272,7 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   position: relative;
   aspect-ratio: 4 / 3;
   overflow: hidden;
+  border-radius: 20px 20px 0 0; /* el recorte va aquí y no en la tarjeta, para que el sello pueda salirse */
 }
 .package-card__media img {
   width: 100%;
@@ -1305,17 +1306,67 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   border-radius: 20px;
   backdrop-filter: blur(6px);
 }
-.package-card__tag--nuevo {
-  background: #2f6b1f;
-  border-color: #2f6b1f;
+/* Estado (¡Nuevo!, Pocos lugares, Agotado): banderín que cuelga del borde superior de la tarjeta.
+   Colores de las píldoras originales de las tarjetas de tour (fondo pastel, texto oscuro del mismo tono). */
+.package-card__stamp {
+  --ribbon-bg: #bbdefb;
+  --ribbon-fg: #0d47a1; /* 6.2:1 sobre el fondo */
+  --ribbon-fold: #7fb3e6;
+  position: absolute;
+  top: -8px;
+  right: 18px;
+  z-index: 3;
+  display: block;
+  width: 66px;
+  filter: drop-shadow(0 6px 8px rgba(28, 35, 31, 0.22));
+  transform-origin: top center;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
 }
-.package-card__tag--pocos_lugares {
-  background: #d9730d;
-  border-color: #d9730d;
+.package-card__stamp--pocos_lugares {
+  --ribbon-bg: #ffe0b2;
+  --ribbon-fg: #a8320b; /* 5.3:1 */
+  --ribbon-fold: #f0b46a;
 }
-.package-card__tag--agotado {
-  background: #b3261e;
-  border-color: #b3261e;
+.package-card__stamp--agotado {
+  --ribbon-bg: #e9ecef;
+  --ribbon-fg: #495057; /* 6.9:1 */
+  --ribbon-fold: #b8bec4;
+}
+/* Doblez: la parte de la cinta que pasa por detrás del borde de la tarjeta */
+.package-card__stamp::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -6px;
+  width: 6px;
+  height: 8px;
+  background: var(--ribbon-fold);
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+.package-card__stamp-face {
+  display: grid;
+  place-items: center;
+  min-height: 62px;
+  padding: 12px 4px 20px;
+  background: var(--ribbon-bg);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 10px), 0 100%);
+  font-family: var(--font-prompt), sans-serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--ribbon-fg);
+}
+.package-card:hover .package-card__stamp {
+  transform: translateY(3px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .package-card__stamp {
+    transition: none;
+  }
 }
 .package-card__body {
   display: flex;

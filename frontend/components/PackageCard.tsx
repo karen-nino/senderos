@@ -23,6 +23,8 @@ function splitCurrency(price: string): [string, string | undefined] {
   return match && match[1] ? [match[1], match[2].toUpperCase()] : [price, undefined]
 }
 
+const BADGE_TEXT = { nuevo: '¡Nuevo!', pocos_lugares: 'Pocos lugares', agotado: 'Agotado' } as const
+
 /** Tarjeta de paquete del inicio: foto arriba, información abajo y precio al pie. */
 export default function PackageCard({
   title,
@@ -40,14 +42,14 @@ export default function PackageCard({
 }: PackageCardProps) {
   return (
     <Link href={href} className={`package-card ${className}`.trim()}>
+      {badge && badge !== 'oculto' && (
+        <span className={`package-card__stamp package-card__stamp--${badge}`}>
+          <span className="package-card__stamp-face">{BADGE_TEXT[badge]}</span>
+        </span>
+      )}
       <div className="package-card__media">
         <div className="package-card__tags">
           <span className="package-card__tag">{tag}</span>
-          {badge && badge !== 'oculto' && (
-            <span className={`package-card__tag package-card__tag--${badge}`}>
-              {badge === 'nuevo' ? '¡Nuevo!' : badge === 'pocos_lugares' ? 'Pocos lugares' : 'Agotado'}
-            </span>
-          )}
         </div>
         <img src={cloudinaryWidth(image, 800)} alt={title} loading="lazy" decoding="async" />
       </div>
