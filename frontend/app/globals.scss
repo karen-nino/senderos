@@ -1219,75 +1219,53 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   text-decoration: none;
 }
 
-/* Tarjetas de paquetes más altas */
-.features-section .single-features-item-two {
+/* Tarjetas de paquetes (inicio): foto arriba, información abajo */
+.features-section .package-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   min-width: 0; /* evita overflow en grid */
+  background: #fff;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(30, 40, 20, 0.08);
+  color: inherit;
+  text-decoration: none;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   @media (max-width: 767px) {
-    max-width: 300px;
+    max-width: 340px;
     margin-left: auto;
     margin-right: auto;
   }
 }
-.features-section .single-features-item-two .img-holder {
-  aspect-ratio: 3 / 4;
-  min-height: 280px;
+.features-section .package-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 34px rgba(30, 40, 20, 0.14);
 }
-.features-section .single-features-item-two .img-holder img {
+.package-card__media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+.package-card__media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.4s ease;
 }
-
-/* Contenido de tarjetas de paquetes - layout y espaciado */
-.single-features-item-two .item-overlay .content {
+.package-card:hover .package-card__media img {
+  transform: scale(1.06);
+}
+.package-card__tags {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 2;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 100%;
+  flex-wrap: wrap;
   gap: 6px;
 }
-.single-features-item-two .item-overlay .content h3.title {
-  margin-bottom: 0;
-  font-size: clamp(16px, 2.2vw, 20px);
-  line-height: 1.3;
-  max-width: 100%;
-}
-
-/* Ruta en tarjetas de paquetes */
-.single-features-item-two .item-overlay .content .package-route {
-  margin: 0;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.9);
-  line-height: 1.35;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.single-features-item-two .item-overlay .content .package-route i {
-  opacity: 0.9;
-  margin-right: 4px;
-}
-
-/* Precio llamativo en tarjetas de paquetes (features) */
-.single-features-item-two .item-overlay .content .package-price {
-  display: inline-block;
-  margin: 4px 0 0;
-  padding: 6px 14px;
-  font-size: 19px; /* 19px en negrita cuenta como texto grande: basta contraste 3:1 */
-  font-weight: 700;
-  color: #fff;
-  background-color: #d9730d; /* secondary oscurecido: 3.3:1 con texto blanco */
-  border-radius: 4px;
-  line-height: 1.2;
-}
-
-/* Etiqueta "Paquete" en tarjetas de features */
-.single-features-item-two .img-holder .package-badge {
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  z-index: 2;
+.package-card__tag {
   font-family: var(--font-prompt), sans-serif;
   font-weight: 600;
   font-size: 11px;
@@ -1300,7 +1278,91 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 20px;
   backdrop-filter: blur(6px);
-  display: inline-block;
+}
+.package-card__tag--nuevo {
+  background: #2f6b1f;
+  border-color: #2f6b1f;
+}
+.package-card__tag--pocos_lugares {
+  background: #d9730d;
+  border-color: #d9730d;
+}
+.package-card__tag--agotado {
+  background: #b3261e;
+  border-color: #b3261e;
+}
+.package-card__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 8px;
+  padding: 18px 20px 20px;
+}
+.package-card .package-card__title {
+  margin: 0 0 2px;
+  font-size: clamp(18px, 1.4vw, 21px);
+  font-weight: 600;
+  line-height: 1.25;
+  color: #1f2a1a;
+}
+.package-card__meta {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #5a5a5a;
+}
+.package-card__meta i {
+  flex: none;
+  width: 16px;
+  margin-top: 3px;
+  color: #63ab45;
+}
+.package-card__route {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.package-card__foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid #ecebe4;
+}
+.package-card__price-label {
+  display: block;
+  font-size: 12px;
+  color: #6b6b6b;
+  line-height: 1.2;
+}
+.package-card__price {
+  display: block;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #b85f08; /* naranja oscurecido: contraste AA sobre blanco */
+}
+.package-card__arrow {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #2f6b1f;
+  color: #fff;
+  font-size: 14px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+.package-card:hover .package-card__arrow {
+  background: #63ab45;
+  transform: translateX(3px);
 }
 
 /* Estilos del slider horizontal en Popular Services */

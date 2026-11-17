@@ -111,20 +111,36 @@ export default async function Home() {
               </div>
               <div className="row g-2 g-md-3 justify-content-center">
                 {packages.map((pkg: AdaptedDestination, index: number) => (
-                  <div key={index} className="col-12 col-md-6 col-xl-3">
+                  <div key={index} className="col-12 col-md-6 col-xl-3 mb-30 mb-md-40">
                     <Link
                       href={pkg.link || '#'}
-                      className={`single-features-item-two mb-30 mb-md-40 wow ${index % 2 === 0 ? 'fadeInUp' : 'fadeInDown'} d-block w-100`}
+                      className={`package-card wow ${index % 2 === 0 ? 'fadeInUp' : 'fadeInDown'}`}
                     >
-                      <div className="img-holder">
-                        <span className="package-badge">Paquete</span>
+                      <div className="package-card__media">
+                        <div className="package-card__tags">
+                          <span className="package-card__tag">Paquete</span>
+                          {pkg.badge && pkg.badge !== 'oculto' && (
+                            <span className={`package-card__tag package-card__tag--${pkg.badge}`}>
+                              {pkg.badge === 'nuevo' ? '¡Nuevo!' : pkg.badge === 'pocos_lugares' ? 'Pocos lugares' : 'Agotado'}
+                            </span>
+                          )}
+                        </div>
                         <img src={pkg.image && !pkg.image.includes('las-tres-tzimoleras') ? cloudinaryWidth(pkg.image, 800) : '/assets/images/place/single-place-1.jpg'} alt={pkg.title} loading="lazy" decoding="async" />
-                        <div className="item-overlay">
-                          <div className="content text-center">
-                            <h3 className="title">{pkg.title}</h3>
-                            {pkg.route && <p className="package-route"><i className="far fa-map-marked-alt"></i>{pkg.route}</p>}
-                            <p className="package-price">{pkg.price || 'Consultar'}</p>
+                      </div>
+                      <div className="package-card__body">
+                        <h3 className="package-card__title">{pkg.title}</h3>
+                        {pkg.duration && (
+                          <p className="package-card__meta"><i className="far fa-clock" aria-hidden></i>{pkg.duration}</p>
+                        )}
+                        {pkg.route && (
+                          <p className="package-card__meta"><i className="far fa-map-marked-alt" aria-hidden></i><span className="package-card__route">{pkg.route}</span></p>
+                        )}
+                        <div className="package-card__foot">
+                          <div>
+                            <span className="package-card__price-label">Precio</span>
+                            <span className="package-card__price">{pkg.price || 'Consultar'}</span>
                           </div>
+                          <span className="package-card__arrow" aria-hidden><i className="fas fa-arrow-right"></i></span>
                         </div>
                       </div>
                     </Link>
