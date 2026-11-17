@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState, useCallback } from 'react'
-import { cloudinaryWidth } from '@/lib/cloudinary'
+import { cloudinaryResize, cloudinaryWidth } from '@/lib/cloudinary'
 import GalleryLightbox from '@/components/GalleryLightbox'
 
 interface GallerySliderProps {
@@ -101,7 +101,7 @@ export default function GallerySlider({ images, embed = false }: GallerySliderPr
       {list.map((src, i) => (
         <div key={i} className="single-gallery-item">
           <div className="gallery-img" onClick={() => setLightboxIndex(i)}>
-            <img src={cloudinaryWidth(src, 600)} alt={`Gallery Image ${i + 1}`} loading="lazy" decoding="async" />
+            <img src={embed ? cloudinaryResize(src, 'f_auto,q_auto,c_limit,w_1600') : cloudinaryWidth(src, 600)} alt={`Gallery Image ${i + 1}`} loading="lazy" decoding="async" />
             <div className="hover-overlay">
               <a
                 href={cloudinaryWidth(src, 1600)}
