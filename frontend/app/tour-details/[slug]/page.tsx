@@ -172,21 +172,12 @@ export default async function TourDetailPage({ params }: PageProps) {
               {/* Tour Title Wrapper */}
               <div className="tour-title-wrapper pb-30 wow fadeInUp">
                 <div className="row">
-                  <div className="col-xl-6">
+                  <div className="col-12">
                     <div className="tour-title mb-10">
                       <h1 className="title">{destination.title}</h1>
                       {destination.subtitle ? (
                         <p className="text-muted mb-0 mt-2">{destination.subtitle}</p>
                       ) : null}
-                    </div>
-                  </div>
-                  <div className="col-xl-6 d-none d-xl-block">
-                    <div className="tour-widget-info">
-                      {/* <div className="info-box mb-20">
-                        <div className="submit-button">
-                          <button type="submit" className="main-btn primary-btn">Reservar<WhatsAppIcon className="whatsapp-icon" /></button>
-                        </div>
-                      </div> */}
                     </div>
                   </div>
                 </div>
