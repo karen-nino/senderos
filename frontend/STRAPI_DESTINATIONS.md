@@ -51,7 +51,7 @@ npm run dev
 ### Terminal 2 - Frontend Next.js
 
 ```bash
-cd senderos-de-chiapas
+cd frontend
 npm run dev
 ```
 

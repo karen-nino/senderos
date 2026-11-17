@@ -2,7 +2,7 @@
 
 ## Resumen
 
-- **Frontend:** Next.js (App Router), desplegado en Vercel. Carpeta: `senderos-de-chiapas`.
+- **Frontend:** Next.js (App Router), desplegado en Vercel. Carpeta: `frontend`.
 - **Backend:** Strapi v5 (TypeScript), desplegado en Fly.io.
 - **Base de datos:** Neon (PostgreSQL), compartida entre local y producción.
 
@@ -14,7 +14,7 @@
 |--------|---------|
 | Framework | Next.js (App Router) |
 | Hosting | Vercel |
-| Carpeta | `senderos-de-chiapas` (raíz del repo: `senderos`) |
+| Carpeta | `frontend` (raíz del repo: `senderos`) |
 | Rutas dinámicas | `/tour-details/[slug]`, `/package-details/[slug]`, etc. |
 | Listado de tours | `/tours` |
 | Datos | Fetch desde Strapi con populate estructurado |

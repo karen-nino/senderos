@@ -28,7 +28,7 @@ node_modules
 # Builds (global)
 dist
 # magnific-popup se publica desde su carpeta dist (el sitio la carga en producción)
-!senderos-de-chiapas/public/assets/vendor/magnific-popup/dist/
+!frontend/public/assets/vendor/magnific-popup/dist/
 build
 .next
 out
@@ -37,13 +37,13 @@ coverage
 ############################
 # NEXT.JS
 ############################
-senderos-de-chiapas/.next
-senderos-de-chiapas/out
-senderos-de-chiapas/build
-senderos-de-chiapas/coverage
-senderos-de-chiapas/*.tsbuildinfo
-senderos-de-chiapas/.turbo
-senderos-de-chiapas/.vercel
+frontend/.next
+frontend/out
+frontend/build
+frontend/coverage
+frontend/*.tsbuildinfo
+frontend/.turbo
+frontend/.vercel
 
 ############################
 # STRAPI

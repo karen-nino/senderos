@@ -28,7 +28,7 @@ npm start
 ## 📁 Estructura del Proyecto
 
 ```
-senderos-de-chiapas/
+frontend/
 ├── app/                    # Páginas y rutas de Next.js (App Router)
 │   ├── layout.tsx         # Layout principal
 │   ├── page.tsx           # Página de inicio

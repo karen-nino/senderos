@@ -25,7 +25,7 @@ Or run them separately: `npm run dev:backend` and `npm run dev:frontend` in two 
 
 | Package | Path | Description |
 |--------|------|-------------|
-| **Frontend** | `senderos-de-chiapas/` | Next.js 14 (App Router), React 18, Bootstrap 5 |
+| **Frontend** | `frontend/` | Next.js 14 (App Router), React 18, Bootstrap 5 |
 | **Backend** | `backend/` | Strapi 5 (headless CMS, SQLite by default) |
 
 ## Prerequisites
@@ -42,7 +42,7 @@ git clone <repository-url>
 cd senderos
 
 # Install frontend dependencies
-cd senderos-de-chiapas && npm install && cd ..
+cd frontend && npm install && cd ..
 
 # Install backend dependencies
 cd backend && npm install && cd ..
@@ -53,7 +53,7 @@ cd backend && npm install && cd ..
 Create the required `.env` files in each package (see [Environment variables](#environment-variables) below). You can copy from the examples:
 
 ```bash
-cp senderos-de-chiapas/.env.example senderos-de-chiapas/.env.local
+cp frontend/.env.example frontend/.env.local
 cp backend/.env.example backend/.env
 ```
 
@@ -63,7 +63,7 @@ Then edit each file and set the real values (especially Strapi secrets and `RESE
 
 ## Environment variables
 
-### Frontend (`senderos-de-chiapas/`)
+### Frontend (`frontend/`)
 
 | Variable | Required | Description |
 |----------|----------|-------------|
@@ -109,7 +109,7 @@ npm run dev
 **Terminal 2 – Next.js (frontend):**
 
 ```bash
-cd senderos-de-chiapas
+cd frontend
 npm run dev
 ```
 
@@ -136,7 +136,7 @@ npm start
 ### Frontend (Next.js)
 
 ```bash
-cd senderos-de-chiapas
+cd frontend
 npm run build
 npm start
 ```
