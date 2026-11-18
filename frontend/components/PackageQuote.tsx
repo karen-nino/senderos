@@ -61,6 +61,7 @@ export default function PackageQuote({ price, priceInternational, pricePerPerson
   return (
     <>
       {tier ? (
+        <>
         <li className="package-quote">
           <span className="package-quote__label" id={labelId}>
             <i className="fal fa-users" aria-hidden></i>¿Cuántas personas viajan?
@@ -88,12 +89,15 @@ export default function PackageQuote({ price, priceInternational, pricePerPerson
               <i className="far fa-plus" aria-hidden></i>
             </button>
           </div>
+        </li>
+        <li className="package-quote">
           <div className="package-quote__price">
             <span className="package-quote__price-label">Precio desde</span>
             <span className="package-quote__price-amount">{tier.price}</span>
             <span className="package-quote__price-note">por persona</span>
           </div>
         </li>
+        </>
       ) : (
         <>
           <li><span><i className="fal fa-box-usd"></i>{priceInternational ? 'Precio Nacional' : 'Precio desde'}<span>{price}</span></span></li>

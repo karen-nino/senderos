@@ -2613,6 +2613,9 @@ ul.info-list > li.package-quote {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+  align-self: flex-start;
+  width: 220px;
+  max-width: 100%;
   padding: 6px;
   border: 1.5px solid #d6dfd0;
   border-radius: 999px;
@@ -2626,14 +2629,14 @@ ul.info-list > li.package-quote {
   height: 44px;
   border: none;
   border-radius: 50%;
-  background: #2f6b1f;
+  background: #f7921e; /* naranja del sitio (secondary), como el botón de la galería */
   color: #fff;
   font-size: 15px;
   cursor: pointer;
   transition: background-color 0.2s ease, opacity 0.2s ease;
 }
 .sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__btn:hover:not(:disabled) {
-  background: #4f8f35;
+  background: #d9730d;
 }
 .sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__btn:disabled {
   background: #e3e8df;
@@ -2641,7 +2644,7 @@ ul.info-list > li.package-quote {
   cursor: not-allowed;
 }
 .sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__btn:focus-visible {
-  outline: 3px solid #63ab45;
+  outline: 3px solid #f7921e;
   outline-offset: 2px;
 }
 .sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__count {
@@ -2658,14 +2661,16 @@ ul.info-list > li.package-quote {
 }
 .sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__price-label {
   flex-basis: 100%;
-  font-size: 14px;
-  color: #6b6b6b;
+  margin-bottom: 2px;
+  font-size: 18px;
+  font-weight: 300; /* como las demás etiquetas de la caja (Duración, Transporte…) */
+  color: #212529;
 }
 .sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__price-amount {
-  font-size: 28px;
-  font-weight: 700;
-  line-height: 1.2;
-  color: #2f6b1f;
+  font-size: 24px;
+  font-weight: 500; /* como los valores de la caja (Terrestre, 2 Días…) */
+  line-height: 1.4;
+  color: #1c231f;
   font-variant-numeric: tabular-nums;
 }
 .sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__price-note {
