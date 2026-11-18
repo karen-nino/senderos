@@ -63,9 +63,7 @@ export default function TourDepartures({ departures, idPrefix, className = '' }:
               ))}
             </div>
           </>
-        ) : (
-          dep.departure && <h5 className="fw-light">Salida {dep.departure}</h5>
-        )}
+        ) : null}
       </div>
       <ul
         className="info-list pt-3"
