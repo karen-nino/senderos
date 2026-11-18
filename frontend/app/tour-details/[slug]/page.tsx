@@ -444,8 +444,8 @@ export default async function TourDetailPage({ params }: PageProps) {
                       {(destination.departures && destination.departures.length > 0
                         ? destination.departures
                         : [{ departure: destination.departure, transport: destination.transport, minimumParticipants: destination.minimumParticipants, arrival: destination.arrival }]
-                      ).map((dep, depIdx) => (
-                        <div key={`departure-desktop-${depIdx}`} className="sidebar-widget booking-info-widget wow fadeInUp mb-100">
+                      ).map((dep, depIdx, deps) => (
+                        <div key={`departure-desktop-${depIdx}`} className={`sidebar-widget booking-info-widget wow fadeInUp ${depIdx === deps.length - 1 ? 'mb-100' : 'mb-30'}`}>
                           <div className="pb-2 border-bottom">
                             <h4 className="">Detalles del Tour</h4>
                             <h5 className="fw-light">Salida {dep.departure}</h5>
