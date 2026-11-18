@@ -2530,6 +2530,13 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   cursor: pointer;
 }
 
+/* Nosotros: los glifos de flaticon se dibujan arriba de la línea base y quedaban ~6px altos dentro del círculo */
+.fancy-icon-box-two .icon i {
+  display: block;
+  line-height: 1;
+  transform: translateY(3px);
+}
+
 /* Política de Privacidad */
 .privacy-content .privacy-block h3.title {
   font-size: 1.25rem;
