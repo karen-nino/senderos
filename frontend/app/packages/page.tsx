@@ -2,11 +2,9 @@ import type { Metadata } from 'next'
 import React from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import PackageCard from '@/components/PackageCard'
-import FilteredCardsList from '@/components/FilteredCardsList'
+import PackagesExplorer from '@/components/PackagesExplorer'
 import Link from 'next/link'
 import { fetchPackagesPageData, fetchSeasonsForPackagesPage, fetchAdventuresForPackagesPage, STRAPI_REVALIDATE_SECONDS, getPackageDetailHref, type AdaptedDestination, type AdaptedSeason } from '@/lib/strapi'
-import { cloudinaryWidth } from '@/lib/cloudinary'
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
 
@@ -21,7 +19,6 @@ export default async function PackagesPage() {
   let packagesList: AdaptedDestination[] = []
   let seasons: AdaptedSeason[] = []
   let adventures: AdaptedSeason[] = []
-  let imageBannerUrl: string | null = null
 
   try {
     const [data, seasonsData, adventuresData] = await Promise.all([
@@ -30,7 +27,6 @@ export default async function PackagesPage() {
       fetchAdventuresForPackagesPage(),
     ])
     packagesList = data.packages
-    imageBannerUrl = data.imageBannerUrl
     seasons = seasonsData
     adventures = adventuresData
   } catch (error) {
@@ -42,143 +38,95 @@ export default async function PackagesPage() {
   )
   const hasDataFromStrapi =
     displayPackages.length > 0 || seasons.length > 0 || adventures.length > 0
-  const bannerBg = imageBannerUrl || '/assets/images/bg/page-bg.jpg'
 
   return (
     <React.Fragment>
       <Header />
       <main>
 
-        {hasDataFromStrapi && (
-          <section className="page-banner overlay pt-220 pb-220 bg_cover" style={{ backgroundImage: `url(${cloudinaryWidth(bannerBg, 1920)})` }}>
-            <div className="container">
-              <div className="row justify-content-center">
-                <div className="col-lg-10 mx-auto text-center">
-                  <div className="page-banner-content text-center text-white">
-                    <h1 className="page-title">Paquetes</h1>
-                    <ul className="breadcrumb-link text-white d-flex justify-content-center flex-wrap list-unstyled mb-0">
-                      <li><Link href="/">Home</Link></li>
-                      <li className="active">Paquetes</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
 
         {hasDataFromStrapi ? (
-          <section className="places-section pt-80 pb-180">
-            <div className="places-section__container">
-              {/* Grupo 1: Paquetes de temporada — solo se muestra si hay datos (no mostrar sección vacía) */}
-              {seasons.length > 0 && (
-                <div className="packages-group packages-group--seasonal pb-80">
-                  <h2 className="packages-group__title">
-                    Paquetes por temporada
-                  </h2>
-                  <p className="packages-group__subtitle pb-60">
-                    Aprovecha rutas y promociones por fechas especiales
+          <section className="packages-page pb-160">
+            <header className="packages-page__hero">
+              <div className="container">
+                <div className="packages-page__head">
+                  <h1 className="packages-page__title">Paquetes</h1>
+                  <p className="packages-page__intro">
+                    Recorre Chiapas con un paquete por temporada, de aventura o elige entre todos nuestros recorridos.
                   </p>
-                  <div className="places-section__grid places-section__grid--cards container">
-                    {seasons.map((season, index) => (
-                      <div key={season.link || index} className="places-section__item">
-                        <div className="wow fadeInUp">
-                          <PackageCard
-                            href={getPackageDetailHref(season.link)}
-                            tag="Temporada"
-                            title={season.title}
-                            image={season.image}
-                            badge={season.badge}
-                            description={season.category || season.description}
-                            departureDate={season.dateFormatted}
-                            duration={season.duration}
-                            price={season.price}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
                 </div>
-              )}
-
-              {/* Grupo 2: Paquetes de aventura — solo se muestra si hay datos (no mostrar sección vacía) */}
-              {adventures.length > 0 && (
-                <div className="packages-group packages-group--adventure pb-80">
-                  <h2 className="packages-group__title">
-                    Paquetes de Aventura
-                  </h2>
-                  <p className="packages-group__subtitle pb-60">
-                    Rutas llenas de adrenalina para los más aventureros
-                  </p>
-                  <div className="places-section__grid places-section__grid--cards container">
-                    {adventures.map((adventure, index) => (
-                      <div key={adventure.link || index} className="places-section__item">
-                        <div className="wow fadeInUp">
-                          <PackageCard
-                            href={getPackageDetailHref(adventure.link)}
-                            tag="Aventura"
-                            title={adventure.title}
-                            image={adventure.image}
-                            badge={adventure.badge}
-                            description={adventure.category || adventure.description}
-                            departureDate={adventure.dateFormatted}
-                            duration={adventure.duration}
-                            price={adventure.price}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Grupo 3: Todos los paquetes — título y subtítulo solo si hay otra sección arriba */}
-              {displayPackages.length > 0 && (
-                <div className="packages-group packages-group--all">
-                  {(seasons.length > 0 || adventures.length > 0) && (
-                    <>
-                      <h2 className="packages-group__title">
-                        Todos los paquetes
-                      </h2>
-                      <p className="packages-group__subtitle pb-60">
-                        Explora todas nuestras opciones disponibles
-                      </p>
-                    </>
-                  )}
-                  <FilteredCardsList
-                    items={displayPackages.map((pkg, i) => ({
-                      title: pkg.title,
+              </div>
+              {/* Sendero punteado con pin, como el de las postales del hero del inicio (solo escritorio) */}
+              <div className="packages-page__trail" aria-hidden>
+                <svg viewBox="0 0 400 200" preserveAspectRatio="none">
+                  <path d="M 0 190 C 70 185, 90 120, 160 118 C 230 116, 250 160, 310 120 C 350 94, 360 50, 382 30" />
+                </svg>
+                <span className="packages-page__trail-pin"><i className="fas fa-map-marker-alt"></i></span>
+              </div>
+            </header>
+            <div className="container">
+              <PackagesExplorer
+                groups={[
+                  {
+                    id: 'temporada',
+                    icon: 'far fa-calendar-alt',
+                    label: 'Por temporada',
+                    title: 'Paquetes por temporada',
+                    subtitle: 'Aprovecha rutas y promociones por fechas especiales',
+                    items: seasons.map((season, index) => ({
+                      key: season.link || String(index),
+                      href: getPackageDetailHref(season.link),
+                      tag: 'Temporada',
+                      title: season.title,
+                      image: season.image,
+                      badge: season.badge,
+                      description: season.category || season.description,
+                      departureDate: season.dateFormatted,
+                      duration: season.duration,
+                      price: season.price,
+                    })),
+                  },
+                  {
+                    id: 'aventura',
+                    icon: 'fas fa-mountain',
+                    label: 'De aventura',
+                    title: 'Paquetes de Aventura',
+                    subtitle: 'Rutas llenas de adrenalina para los más aventureros',
+                    items: adventures.map((adventure, index) => ({
+                      key: adventure.link || String(index),
+                      href: getPackageDetailHref(adventure.link),
+                      tag: 'Aventura',
+                      title: adventure.title,
+                      image: adventure.image,
+                      badge: adventure.badge,
+                      description: adventure.category || adventure.description,
+                      departureDate: adventure.dateFormatted,
+                      duration: adventure.duration,
+                      price: adventure.price,
+                    })),
+                  },
+                  {
+                    id: 'paquetes',
+                    icon: 'fas fa-suitcase-rolling',
+                    label: 'Paquetes',
+                    title: 'Paquetes',
+                    subtitle: 'Explora todas nuestras opciones disponibles',
+                    items: displayPackages.map((pkg, i) => ({
                       key: String(pkg.slug || pkg.title || i),
-                      content: (
-                        <PackageCard
-                          href={pkg.slug ? `/paquete-detalles/${pkg.slug}` : (pkg.link || '/paquetes')}
-                          tag="Paquete"
-                          title={pkg.title}
-                          image={pkg.image && !pkg.image.includes('las-tres-tzimoleras') ? pkg.image : DEFAULT_IMAGE}
-                          badge={pkg.badge}
-                          description={pkg.route ? undefined : pkg.description}
-                          departureDate={pkg.departureDate}
-                          duration={pkg.duration}
-                          route={pkg.route}
-                          price={pkg.price}
-                        />
-                      ),
-                    }))}
-                    gridClassName="places-section__grid places-section__grid--cards container"
-                    searchPlaceholder="Buscar paquete por nombre"
-                    emptyMessage="No encontramos paquetes que coincidan con tu búsqueda."
-                  />
-                </div>
-              )}
-            </div>
-            <div className="container text-center mt-50">
-              <Link
-                href="/"
-                className="main-btn wow fadeInUp"
-                style={{ padding: '16px 45px', backgroundColor: 'rgba(99, 171, 69, 0.2)', color: '#63ab45' }}
-              >
-                Regresar a Home
-              </Link>
+                      href: pkg.slug ? `/paquete-detalles/${pkg.slug}` : (pkg.link || '/paquetes'),
+                      tag: 'Paquete',
+                      title: pkg.title,
+                      image: pkg.image && !pkg.image.includes('las-tres-tzimoleras') ? pkg.image : DEFAULT_IMAGE,
+                      badge: pkg.badge,
+                      description: pkg.route ? undefined : pkg.description,
+                      departureDate: pkg.departureDate,
+                      duration: pkg.duration,
+                      route: pkg.route,
+                      price: pkg.price,
+                    })),
+                  },
+                ].filter((group) => group.items.length > 0)}
+              />
             </div>
           </section>
         ) : (

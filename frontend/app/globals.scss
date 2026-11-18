@@ -1306,6 +1306,18 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   border-radius: 20px;
   backdrop-filter: blur(6px);
 }
+/* Etiqueta con el color de su tipo (mismos tonos que las categorías de la página Paquetes) */
+.package-card__tag--temporada,
+.package-card__tag--aventura,
+.package-card__tag--paquetes {
+  background: var(--tone-bg);
+  border-color: transparent;
+  color: var(--tone-fg);
+  backdrop-filter: none;
+}
+.package-card__tag--temporada { --tone-bg: #f6dcee; --tone-fg: #8e1f6b; }
+.package-card__tag--aventura { --tone-bg: #d6e8fb; --tone-fg: #0d47a1; }
+.package-card__tag--paquetes { --tone-bg: #d4ecc4; --tone-fg: #2a5c1a; }
 /* Estado (¡Nuevo!, Pocos lugares, Agotado): banderín que cuelga del borde superior de la tarjeta.
    Colores de las píldoras originales de las tarjetas de tour (fondo pastel, texto oscuro del mismo tono). */
 .package-card__stamp {
@@ -2602,6 +2614,304 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
     margin-top: 2.75rem;
     padding-top: 1.25rem;
   }
+}
+
+/* Página Paquetes: encabezado compacto, buscador + filtros por categoría y secciones por categoría.
+   Ritmo: 8 (dentro de un grupo) · 24 (encabezado → tarjetas) · 32 (encabezado de página → buscador) · 56 (entre categorías) */
+/* Color de cada tipo de paquete: título de categoría, filtro y etiqueta de la tarjeta.
+   Fondo pastel + texto oscuro del mismo tono (6.3–6.9:1). */
+.category-tone--temporada {
+  --tone-bg: #f6dcee;
+  --tone-fg: #8e1f6b;
+}
+.category-tone--aventura {
+  --tone-bg: #d6e8fb;
+  --tone-fg: #0d47a1;
+}
+.category-tone--paquetes {
+  --tone-bg: #d4ecc4;
+  --tone-fg: #2a5c1a;
+}
+
+/* Franja crema (continúa el header) con el título; la barra de búsqueda se monta sobre su borde inferior */
+.packages-page__hero {
+  position: relative;
+  overflow: hidden;
+  padding: 56px 0 88px;
+  background: #fffbf2;
+  @media (min-width: 992px) {
+    padding: 80px 0 112px;
+  }
+}
+.packages-page__head {
+  position: relative;
+  z-index: 1;
+  max-width: 640px;
+}
+.packages-page__title {
+  margin: 0;
+  font-size: clamp(2.5rem, 1.9rem + 2.6vw, 4.25rem);
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  color: #2f6b1f;
+}
+.packages-page__intro {
+  margin: 16px 0 0;
+  max-width: 52ch;
+  font-size: clamp(17px, 16px + 0.3vw, 19px);
+  line-height: 1.55;
+  color: #4a4f47;
+}
+.packages-page__trail {
+  display: none;
+  position: absolute;
+  right: max(4vw, calc((100vw - 1320px) / 2));
+  bottom: 56px;
+  width: min(44vw, 560px);
+  height: 200px;
+  pointer-events: none;
+  @media (min-width: 992px) {
+    display: block;
+  }
+}
+.packages-page__trail svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.packages-page__trail path {
+  fill: none;
+  stroke: #63ab45;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 0.1 12;
+  vector-effect: non-scaling-stroke;
+  animation: hero-postal-walk 2.4s linear infinite;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+.packages-page__trail-pin {
+  position: absolute;
+  right: 4%;
+  top: 15%;
+  transform: translate(50%, -100%);
+  color: #2f6b1f;
+  font-size: 34px;
+  line-height: 1;
+  filter: drop-shadow(0 6px 8px rgba(28, 35, 31, 0.2));
+}
+/* Tarjeta blanca montada sobre el borde de la franja crema */
+.packages-explorer__toolbar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 16px;
+  margin-top: -40px;
+  padding: 16px;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 12px 32px rgba(30, 40, 20, 0.1), 0 2px 6px rgba(30, 40, 20, 0.05);
+  @media (min-width: 992px) {
+    margin-top: -48px;
+    padding: 16px 16px 16px 20px;
+  }
+}
+.packages-explorer__toolbar .packages-explorer__search {
+  flex: 1 1 320px;
+  max-width: 420px;
+  margin: 0;
+}
+.packages-explorer__chips {
+  display: flex;
+  gap: 8px;
+  @media (max-width: 767px) {
+    /* En móvil los filtros se desplazan de lado en vez de saltar de línea */
+    flex-wrap: nowrap;
+    width: calc(100% + 16px);
+    margin-right: -16px;
+    padding-right: 16px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
+.packages-explorer__chip {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1.5px solid #d6dfd0;
+  border-radius: 999px;
+  background: #fff;
+  color: #1f2a1a;
+  font-size: 15px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.packages-explorer__chip:hover {
+  border-color: #63ab45;
+}
+.packages-explorer__chip.is-active {
+  background: var(--tone-fg, #2f6b1f);
+  border-color: var(--tone-fg, #2f6b1f);
+  color: #fff;
+}
+.packages-explorer__chip-icon {
+  color: var(--tone-fg);
+  font-size: 14px;
+}
+.packages-explorer__chip.is-active .packages-explorer__chip-icon {
+  color: #fff;
+}
+.packages-explorer__chip:focus-visible {
+  outline: 3px solid #63ab45;
+  outline-offset: 2px;
+}
+.packages-explorer__chip-count {
+  min-width: 22px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--tone-bg, rgba(47, 107, 31, 0.1));
+  color: var(--tone-fg, #2f6b1f);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.packages-explorer__chip.is-active .packages-explorer__chip-count {
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+}
+/* Cuadrícula común (4 · 2 · 1 columnas, mismas medidas que el inicio). Cada categoría usa subgrid para que
+   sus tarjetas caigan en las mismas columnas; las categorías chicas comparten fila. */
+.packages-explorer__groups {
+  display: grid;
+  grid-template-columns: minmax(0, 340px);
+  justify-content: center;
+  column-gap: 16px;
+  row-gap: 72px;
+  @media (min-width: 768px) {
+    column-gap: 24px;
+  }
+  margin-top: 56px;
+  @media (min-width: 992px) {
+    row-gap: 104px;
+    margin-top: 72px;
+  }
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-content: stretch;
+  }
+  @media (min-width: 1200px) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: 40px; /* aire entre categorías que comparten fila (temporada · aventura) */
+  }
+}
+.packages-explorer__group {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  align-content: start;
+  row-gap: 30px;
+  @media (min-width: 768px) {
+    row-gap: 40px;
+  }
+}
+.packages-explorer__group--span-1 {
+  @media (min-width: 768px) {
+    grid-column: span 1;
+  }
+}
+.packages-explorer__group--span-2 {
+  @media (min-width: 768px) {
+    grid-column: span 2;
+  }
+}
+.packages-explorer__group > .packages-explorer__group-head {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 14px;
+  align-items: start;
+  margin-bottom: -6px; /* 24px al llegar a las tarjetas (row-gap 30px) */
+  @media (min-width: 768px) {
+    margin-bottom: -16px;
+  }
+}
+.packages-explorer__item {
+  min-width: 0;
+}
+.packages-explorer__group-icon {
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--tone-bg);
+  color: var(--tone-fg);
+  font-size: 20px;
+}
+.packages-explorer__group-title {
+  margin: 0;
+  align-self: center;
+  text-wrap: balance;
+  font-size: clamp(1.4rem, 1.2rem + 0.6vw, 1.75rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: #1f2a1a;
+}
+.packages-explorer__group-count {
+  margin-left: 8px;
+  vertical-align: 0.15em;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--tone-fg, #6b6b6b);
+  font-variant-numeric: tabular-nums;
+}
+.packages-explorer__group-subtitle {
+  margin: 4px 0 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #6b6b6b;
+}
+.packages-explorer__empty {
+  padding: 64px 16px;
+  text-align: center;
+  color: #555;
+  font-size: 16px;
+}
+.packages-explorer__empty p {
+  margin: 0 0 16px;
+}
+.packages-explorer__reset {
+  min-height: 44px;
+  padding: 0 20px;
+  border: 1.5px solid #2f6b1f;
+  border-radius: 999px;
+  background: #fff;
+  color: #2f6b1f;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.packages-explorer__reset:hover {
+  background: #2f6b1f;
+  color: #fff;
 }
 
 /* Tour detalle: selector de punto de salida (cada salida es una alternativa con su propio regreso y precio) */
