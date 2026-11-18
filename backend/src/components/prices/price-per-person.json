@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_prices_price_per_people",
+  "info": {
+    "displayName": "pricePerPerson"
+  },
+  "options": {},
+  "attributes": {
+    "occupation": {
+      "type": "string"
+    },
+    "price": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

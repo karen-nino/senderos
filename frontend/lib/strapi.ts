@@ -918,6 +918,8 @@ export interface StrapiPackageItem {
   mapItem?:
     | { map?: string; title?: string }
     | Array<{ map?: string; title?: string }>;
+  /** Tabla de precio por persona según ocupación (componente repetible prices.price-per-person; hoy solo en Adventure). */
+  pricePerPerson?: Array<{ occupation?: string; price?: string }>;
   accommodation?: string;
   departure?: string;
   transport?: string;
@@ -1130,7 +1132,7 @@ export async function fetchSeasonsForPackagesPage(): Promise<AdaptedSeason[]> {
 
 /** Collection Type Adventure (paquetes de aventura): GET /api/adventures. Mismo populate profundo que holidays. */
 const STRAPI_ADVENTURES_POPULATE =
-  "populate[itineraryItem][populate][activity]=*&populate[image]=true&populate[imagesDetails]=true&populate[mapItem]=true";
+  "populate[itineraryItem][populate][activity]=*&populate[image]=true&populate[imagesDetails]=true&populate[mapItem]=true&populate[pricePerPerson]=true";
 const STRAPI_ADVENTURES_URL = `/api/adventures?${STRAPI_ADVENTURES_POPULATE}`;
 
 /** Obtiene los paquetes de aventura desde Strapi Collection Type /api/adventures (Adventure). Mismo shape que Holiday. */
@@ -1244,6 +1246,8 @@ export interface AdaptedPackageDetail {
   calendarEnd?: string;
   /** Lista de bloques de mapa desde Strapi (mapItem[].map, mapItem[].title) */
   mapItem?: Array<{ map?: string; title?: string }>;
+  /** Precio por persona según ocupación ("2 personas" → "$7,300") */
+  pricePerPerson?: Array<{ occupation: string; price: string }>;
   accommodation?: string;
   departure?: string;
   transport?: string;
@@ -1328,6 +1332,15 @@ function adaptPackageOrHolidayToDetail(item: StrapiPackageItem): AdaptedPackageD
         ? canonicalizeDeparture(item.departure)
         : item.departure,
     transport: item.transport,
+    pricePerPerson: (() => {
+      const rows = (Array.isArray(item.pricePerPerson) ? item.pricePerPerson : [])
+        .map((r) => ({
+          occupation: typeof r?.occupation === "string" ? r.occupation.trim() : "",
+          price: stripZeroCents(typeof r?.price === "string" ? r.price.trim() : "") ?? "",
+        }))
+        .filter((r) => r.occupation && r.price);
+      return rows.length ? rows : undefined;
+    })(),
     mapItem: (() => {
       const raw = item.mapItem;
       if (!raw) return undefined;

@@ -2537,6 +2537,58 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   transform: translateY(3px);
 }
 
+/* Detalle de paquete: tabla "Precio por persona" (ocupación → costo) */
+.price-per-person {
+  margin: 8px 0 40px;
+}
+.price-per-person__table {
+  width: 100%;
+  max-width: 560px;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid #dfe6d9;
+  border-radius: 14px;
+  overflow: hidden;
+  font-variant-numeric: tabular-nums;
+}
+.price-per-person__table th,
+.price-per-person__table td {
+  width: 50%;
+  padding: 14px 20px;
+  text-align: center;
+  font-size: 16px;
+  line-height: 1.4;
+}
+.price-per-person__table th {
+  background: #2f6b1f;
+  color: #fff;
+  font-weight: 600;
+}
+.price-per-person__table th + th,
+.price-per-person__table td + td {
+  border-left: 1px solid #dfe6d9;
+}
+.price-per-person__table th + th {
+  border-left-color: rgba(255, 255, 255, 0.25);
+}
+.price-per-person__table td {
+  color: #1f2a1a;
+  border-top: 1px solid #dfe6d9;
+}
+.price-per-person__table td + td {
+  font-weight: 600;
+}
+.price-per-person__table tbody tr:nth-child(even) td {
+  background: #f7faf4;
+}
+@media (max-width: 575px) {
+  .price-per-person__table th,
+  .price-per-person__table td {
+    padding: 12px 10px;
+    font-size: 15px;
+  }
+}
+
 /* Política de Privacidad */
 .privacy-content .privacy-block h3.title {
   font-size: 1.25rem;

@@ -32,6 +32,11 @@
     "description": {
       "type": "blocks"
     },
+    "pricePerPerson": {
+      "type": "component",
+      "component": "prices.price-per-person",
+      "repeatable": true
+    },
     "idealFor": {
       "type": "text"
     },

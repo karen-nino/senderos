@@ -513,6 +513,7 @@ export interface ApiAdventureAdventure extends Struct.CollectionTypeSchema {
     noIncludes: Schema.Attribute.Blocks;
     price: Schema.Attribute.String;
     priceInternational: Schema.Attribute.String;
+    pricePerPerson: Schema.Attribute.Component<'prices.price-per-person', true>;
     publishedAt: Schema.Attribute.DateTime;
     recommendation: Schema.Attribute.Blocks;
     route: Schema.Attribute.Blocks;
@@ -683,37 +684,6 @@ export interface ApiHomeHome extends Struct.SingleTypeSchema {
   };
 }
 
-export interface ApiInternationalPageInternationalPage
-  extends Struct.SingleTypeSchema {
-  collectionName: 'international_pages';
-  info: {
-    displayName: 'Internacional - P\u00E1gina';
-    pluralName: 'international-pages';
-    singularName: 'international-page';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    imageBanner: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios'
-    >;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::international-page.international-page'
-    > &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
 export interface ApiInternationalInternational
   extends Struct.CollectionTypeSchema {
   collectionName: 'internationals';
@@ -814,36 +784,6 @@ export interface ApiPackagePackage extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface ApiPackagesPagePackagesPage extends Struct.SingleTypeSchema {
-  collectionName: 'packages_pages';
-  info: {
-    displayName: 'Paquetes - P\u00E1gina';
-    pluralName: 'packages-pages';
-    singularName: 'packages-page';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    imageBanner: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios'
-    >;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::packages-page.packages-page'
-    > &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
 export interface ApiTourTour extends Struct.CollectionTypeSchema {
   collectionName: 'tours';
   info: {
@@ -880,36 +820,6 @@ export interface ApiTourTour extends Struct.CollectionTypeSchema {
     route: Schema.Attribute.Blocks;
     subtitle: Schema.Attribute.String;
     title: Schema.Attribute.String;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
-export interface ApiToursPageToursPage extends Struct.SingleTypeSchema {
-  collectionName: 'tours_pages';
-  info: {
-    displayName: 'Tours - P\u00E1gina';
-    pluralName: 'tours-pages';
-    singularName: 'tours-page';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    imageBanner: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios'
-    >;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::tours-page.tours-page'
-    > &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1433,12 +1343,9 @@ declare module '@strapi/strapi' {
       'api::gallery.gallery': ApiGalleryGallery;
       'api::holiday.holiday': ApiHolidayHoliday;
       'api::home.home': ApiHomeHome;
-      'api::international-page.international-page': ApiInternationalPageInternationalPage;
       'api::international.international': ApiInternationalInternational;
       'api::package.package': ApiPackagePackage;
-      'api::packages-page.packages-page': ApiPackagesPagePackagesPage;
       'api::tour.tour': ApiTourTour;
-      'api::tours-page.tours-page': ApiToursPageToursPage;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

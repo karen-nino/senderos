@@ -143,6 +143,17 @@ export interface PolaroidPolaroid extends Struct.ComponentSchema {
   };
 }
 
+export interface PricesPricePerPerson extends Struct.ComponentSchema {
+  collectionName: 'components_prices_price_per_people';
+  info: {
+    displayName: 'pricePerPerson';
+  };
+  attributes: {
+    occupation: Schema.Attribute.String;
+    price: Schema.Attribute.String;
+  };
+}
+
 declare module '@strapi/strapi' {
   export namespace Public {
     export interface ComponentSchemas {
@@ -157,6 +168,7 @@ declare module '@strapi/strapi' {
       'itinerary.itinerary-item': ItineraryItineraryItem;
       'map.map-item': MapMapItem;
       'polaroid.polaroid': PolaroidPolaroid;
+      'prices.price-per-person': PricesPricePerPerson;
     }
   }
 }

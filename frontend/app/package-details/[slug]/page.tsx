@@ -51,6 +51,7 @@ const FALLBACK = {
   calendarStart: undefined as string | undefined,
   calendarEnd: undefined as string | undefined,
   mapItem: undefined as Array<{ map?: string; title?: string }> | undefined,
+  pricePerPerson: undefined as Array<{ occupation: string; price: string }> | undefined,
   accommodation: undefined as string | undefined,
   departure: undefined as string | undefined,
   transport: undefined as string | undefined,
@@ -288,6 +289,27 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                         <h4 className="title">Descripción</h4>
                         <p>{pkg.description}</p>
                       </>
+                    )}
+                    {pkg.pricePerPerson && pkg.pricePerPerson.length > 0 && (
+                      <div className="price-per-person">
+                        <h4 className="title">Precio por persona</h4>
+                        <table className="price-per-person__table">
+                          <thead>
+                            <tr>
+                              <th scope="col">Ocupación</th>
+                              <th scope="col">Costo por persona</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {pkg.pricePerPerson.map((row, i) => (
+                              <tr key={i}>
+                                <td>{row.occupation}</td>
+                                <td>{row.price}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
                     )}
                     <h4 className="title">Ruta</h4>
                     <p>Lugares que recorre este paquete:</p>
