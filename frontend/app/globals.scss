@@ -1306,18 +1306,6 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   border-radius: 20px;
   backdrop-filter: blur(6px);
 }
-/* Etiqueta con el color de su tipo (mismos tonos que las categorías de la página Paquetes) */
-.package-card__tag--temporada,
-.package-card__tag--aventura,
-.package-card__tag--paquetes {
-  background: var(--tone-bg);
-  border-color: transparent;
-  color: var(--tone-fg);
-  backdrop-filter: none;
-}
-.package-card__tag--temporada { --tone-bg: #f6dcee; --tone-fg: #8e1f6b; }
-.package-card__tag--aventura { --tone-bg: #d6e8fb; --tone-fg: #0d47a1; }
-.package-card__tag--paquetes { --tone-bg: #d4ecc4; --tone-fg: #2a5c1a; }
 /* Estado (¡Nuevo!, Pocos lugares, Agotado): banderín que cuelga del borde superior de la tarjeta.
    Colores de las píldoras originales de las tarjetas de tour (fondo pastel, texto oscuro del mismo tono). */
 .package-card__stamp {
@@ -3015,7 +3003,7 @@ html:has(.gallery-intro__nav) {
   }
   @media (min-width: 1200px) {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    column-gap: 40px; /* aire entre categorías que comparten fila (temporada · aventura) */
+    column-gap: 40px;
   }
 }
 .packages-explorer__group {
@@ -3026,16 +3014,6 @@ html:has(.gallery-intro__nav) {
   row-gap: 30px;
   @media (min-width: 768px) {
     row-gap: 40px;
-  }
-}
-.packages-explorer__group--span-1 {
-  @media (min-width: 768px) {
-    grid-column: span 1;
-  }
-}
-.packages-explorer__group--span-2 {
-  @media (min-width: 768px) {
-    grid-column: span 2;
   }
 }
 .packages-explorer__group > .packages-explorer__group-head {

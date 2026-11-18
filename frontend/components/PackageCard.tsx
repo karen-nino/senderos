@@ -25,9 +25,6 @@ function splitCurrency(price: string): [string, string | undefined] {
   return match && match[1] ? [match[1], match[2].toUpperCase()] : [price, undefined]
 }
 
-/** Color de la etiqueta según el tipo (mismos tonos que las categorías de la página Paquetes). */
-const TAG_TONE: Record<string, string> = { Temporada: 'temporada', Aventura: 'aventura', Paquete: 'paquetes' }
-
 const BADGE_TEXT = { nuevo: '¡Nuevo!', pocos_lugares: 'Pocos lugares', agotado: 'Agotado' } as const
 
 /** Tarjeta de paquete del inicio: foto arriba, información abajo y precio al pie. */
@@ -55,7 +52,7 @@ export default function PackageCard({
       )}
       <div className="package-card__media">
         <div className="package-card__tags">
-          <span className={`package-card__tag package-card__tag--${TAG_TONE[tag] ?? 'neutro'}`}>{tag}</span>
+          <span className="package-card__tag">{tag}</span>
         </div>
         <img src={cloudinaryWidth(image, 800)} alt={title} loading="lazy" decoding="async" />
       </div>

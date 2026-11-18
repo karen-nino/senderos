@@ -129,8 +129,7 @@ export default function CardsExplorer({
         {visibleGroups.map((group) => (
           <section
             key={group.id}
-            // Con 1 o 2 tarjetas la categoría ocupa solo esas columnas y puede compartir fila con la siguiente
-            className={`packages-explorer__group category-tone--${group.tone ?? group.id}${group.items.length <= 2 ? ` packages-explorer__group--span-${group.items.length}` : ''}`}
+            className={`packages-explorer__group category-tone--${group.tone ?? group.id}`}
             aria-labelledby={`grupo-${group.id}`}
           >
             <header className="packages-explorer__group-head">
