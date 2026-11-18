@@ -32,9 +32,20 @@ jobs:
         with:
           node-version: 22
 
+      # @strapi/plugin-seo lleva su propia versión (2.x) pero el upgrade tool lo trata como core
+      # y lo intenta subir a la versión de Strapi; se saca antes y se regresa después
+      - name: Apartar plugin SEO
+        id: seo
+        run: |
+          echo "range=$(node -p "require('./package.json').dependencies['@strapi/plugin-seo']")" >> "$GITHUB_OUTPUT"
+          npm pkg delete dependencies.@strapi/plugin-seo
+
       # Solo minor/patch dentro de Strapi 5; los saltos de versión mayor se hacen a mano
       - name: Correr la herramienta de upgrade de Strapi
         run: npx --yes @strapi/upgrade minor --yes
+
+      - name: Regresar plugin SEO
+        run: npm pkg set "dependencies.@strapi/plugin-seo=${{ steps.seo.outputs.range }}"
 
       # El Dockerfile usa npm ci, así que package-lock.json tiene que quedar sincronizado
       - name: Sincronizar lockfiles
