@@ -177,7 +177,7 @@ export default function Header() {
                     className="main-btn secondary-btn"
                     onClick={closeMenu}
                   >
-                    Contáctanos<WhatsAppIcon className="whatsapp-icon" />
+                    WhatsApp<WhatsAppIcon className="whatsapp-icon" />
                   </a>
                 </div>
               </div>
@@ -191,7 +191,7 @@ export default function Header() {
                     rel="noopener noreferrer"
                     className="main-btn primary-btn"
                   >
-                    Contáctanos<WhatsAppIcon className="whatsapp-icon" />
+                    WhatsApp<WhatsAppIcon className="whatsapp-icon" />
                   </a>
                 </div>
                 <button
