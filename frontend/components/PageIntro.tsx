@@ -24,23 +24,16 @@ export default function PageIntro({ title, intro, art }: PageIntroProps) {
   )
 }
 
-/* Colores: verde oscuro #2f6b1f (trazo), verde #63ab45 (sendero), verde pálido #e3f0d9 (colinas),
+/* Colores: verde oscuro #2f6b1f (trazo), verde #63ab45 (detalles), verde pálido #e3f0d9 (colinas),
    naranja #f7921e (acentos), crema #fffdf8 (rellenos). */
 
-/** Paquetes: recorrido de varios días; el sendero pasa por tres paradas y llega a la maleta. */
+/** Paquetes: maleta de viaje entre colinas. */
 function PackagesArt() {
   return (
     <svg viewBox="0 0 560 220" preserveAspectRatio="xMaxYMax meet">
       {/* Colinas */}
       <path className="page-intro__hill" d="M 120 220 C 180 170, 250 160, 320 190 C 360 205, 400 200, 440 186 C 490 170, 530 176, 560 190 L 560 220 Z" />
       <path className="page-intro__hill page-intro__hill--back" d="M 220 220 C 270 150, 330 130, 390 168 C 420 186, 450 180, 470 172 L 470 220 Z" />
-      {/* Sendero con paradas */}
-      <path className="page-intro__route" d="M 0 206 C 60 204, 80 160, 140 156 C 200 152, 210 196, 270 192 C 330 188, 330 130, 380 128 C 420 126, 420 176, 446 184" />
-      <g className="page-intro__stop">
-        <circle cx="140" cy="156" r="7" />
-        <circle cx="270" cy="192" r="7" />
-        <circle cx="380" cy="128" r="7" />
-      </g>
       {/* Maleta */}
       <g className="page-intro__ink">
         <path d="M 472 74 L 472 44 Q 472 38 478 38 L 506 38 Q 512 38 512 44 L 512 74" />
@@ -57,7 +50,7 @@ function PackagesArt() {
   )
 }
 
-/** Tours: paisaje de montañas y pinos con el sendero que llega al pin. */
+/** Tours: paisaje de montañas y pinos. */
 function ToursArt() {
   return (
     <svg viewBox="0 0 560 220" preserveAspectRatio="xMaxYMax meet">
@@ -72,9 +65,6 @@ function ToursArt() {
         <path d="M 196 206 L 210 162 L 224 206 Z" />
       </g>
       <path className="page-intro__ink-thin" d="M 516 196 L 516 206 M 540 200 L 540 212 M 210 206 L 210 214" />
-      {/* Sendero */}
-      <path className="page-intro__route" d="M 0 210 C 80 208, 140 196, 220 200 C 300 204, 340 200, 400 198 C 430 197, 452 193, 468 188" />
-      <circle className="page-intro__end" cx="468" cy="188" r="6" />
     </svg>
   )
 }

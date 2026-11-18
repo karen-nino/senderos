@@ -2903,23 +2903,6 @@ html:has(.gallery-intro__nav) {
 .page-intro__leaf path:nth-child(2) {
   fill: #2f6b1f;
 }
-.page-intro__route {
-  fill: none;
-  stroke: #63ab45;
-  stroke-width: 3;
-  stroke-linecap: round;
-  stroke-dasharray: 0.1 12;
-  animation: hero-postal-walk 2.4s linear infinite;
-  @media (prefers-reduced-motion: reduce) {
-    animation: none;
-  }
-}
-.page-intro__stop circle,
-.page-intro__end {
-  fill: #2f6b1f;
-  stroke: #fffbf2;
-  stroke-width: 3;
-}
 /* Tarjeta blanca montada sobre el borde de la franja crema */
 .packages-explorer__toolbar {
   position: relative;
