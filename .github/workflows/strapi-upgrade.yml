@@ -1,0 +1,72 @@
+name: Actualizar Strapi
+
+on:
+  schedule:
+    # Lunes 9:00 hora de Chiapas (15:00 UTC)
+    - cron: "0 15 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  upgrade:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Solo minor/patch dentro de Strapi 5; los saltos de versión mayor se hacen a mano
+      - name: Correr la herramienta de upgrade de Strapi
+        run: npx --yes @strapi/upgrade minor --yes
+
+      # El Dockerfile usa npm ci, así que package-lock.json tiene que quedar sincronizado
+      - name: Sincronizar lockfiles
+        run: |
+          npm install --package-lock-only --no-audit --no-fund
+          pnpm install --lockfile-only
+
+      - name: Verificar que compile
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+
+      - name: Leer versión nueva
+        id: version
+        run: echo "strapi=$(node -p "require('./package.json').dependencies['@strapi/strapi']")" >> "$GITHUB_OUTPUT"
+
+      - name: Abrir pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: chore/strapi-upgrade
+          delete-branch: true
+          add-paths: |
+            backend/package.json
+            backend/package-lock.json
+            backend/pnpm-lock.yaml
+            backend/src/**
+            backend/config/**
+          commit-message: actualizar Strapi a ${{ steps.version.outputs.strapi }}
+          title: Actualizar Strapi a ${{ steps.version.outputs.strapi }}
+          body: |
+            PR generado automáticamente por `@strapi/upgrade minor`.
+
+            Antes de hacer merge (main despliega a Fly):
+            - Revisar las [release notes](https://github.com/strapi/strapi/releases)
+            - Probar el admin y el frontend en local con esta rama

@@ -446,7 +446,7 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
 export interface ApiAboutAbout extends Struct.SingleTypeSchema {
   collectionName: 'abouts';
   info: {
-    displayName: 'Nosotros - P\u00E1gina';
+    displayName: 'Nosotros';
     pluralName: 'abouts';
     singularName: 'about';
   };
@@ -526,10 +526,38 @@ export interface ApiAdventureAdventure extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiContactContact extends Struct.SingleTypeSchema {
+  collectionName: 'contacts';
+  info: {
+    displayName: 'Cont\u00E1ctanos';
+    pluralName: 'contacts';
+    singularName: 'contact';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::contact.contact'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiFaqFaq extends Struct.SingleTypeSchema {
   collectionName: 'faqs';
   info: {
-    displayName: 'Preguntas Frecuentes - P\u00E1gina';
+    displayName: 'Preguntas Frecuentes';
     pluralName: 'faqs';
     singularName: 'faq';
   };
@@ -554,7 +582,7 @@ export interface ApiFaqFaq extends Struct.SingleTypeSchema {
 export interface ApiGalleryGallery extends Struct.SingleTypeSchema {
   collectionName: 'galleries';
   info: {
-    displayName: 'Experiencias - P\u00E1gina';
+    displayName: 'Experiencias';
     pluralName: 'galleries';
     singularName: 'gallery';
   };
@@ -1339,6 +1367,7 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::about.about': ApiAboutAbout;
       'api::adventure.adventure': ApiAdventureAdventure;
+      'api::contact.contact': ApiContactContact;
       'api::faq.faq': ApiFaqFaq;
       'api::gallery.gallery': ApiGalleryGallery;
       'api::holiday.holiday': ApiHolidayHoliday;

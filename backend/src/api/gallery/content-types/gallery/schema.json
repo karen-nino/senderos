@@ -4,7 +4,7 @@
   "info": {
     "singularName": "gallery",
     "pluralName": "galleries",
-    "displayName": "Experiencias - Página"
+    "displayName": "Experiencias"
   },
   "options": {
     "draftAndPublish": true
