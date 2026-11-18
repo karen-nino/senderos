@@ -3214,14 +3214,44 @@ html:has(.gallery-intro__nav) {
   line-height: 1.5;
   color: #6b6b6b;
 }
+/* Aviso sin resultados: tarjeta suave con el ícono de la categoría, título y texto de apoyo */
 .packages-explorer__empty {
-  padding: 64px 16px;
+  max-width: 520px;
+  margin: 56px auto 0;
+  padding: 40px 24px 36px;
+  border: 1.5px dashed #e3e0d4;
+  border-radius: 24px;
+  background: #fffdf8;
   text-align: center;
-  color: #555;
-  font-size: 16px;
 }
-.packages-explorer__empty p {
-  margin: 0 0 16px;
+.packages-explorer__empty-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 18px;
+  border-radius: 50%;
+  background: var(--tone-bg, #eef2ea);
+  color: var(--tone-fg, #2f6b1f);
+  font-size: 24px;
+}
+.packages-explorer__empty-title {
+  margin: 0;
+  font-family: var(--font-prompt), sans-serif; /* misma letra que los títulos del sitio */
+  font-size: clamp(19px, 1.2vw + 14px, 22px);
+  font-weight: 600;
+  line-height: 1.35;
+  color: #1f2a1a;
+  text-wrap: balance;
+}
+.packages-explorer__empty-text {
+  margin: 6px 0 0;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #5a5f57;
+}
+.packages-explorer__empty .packages-explorer__reset {
+  margin-top: 24px;
 }
 .packages-explorer__reset {
   min-height: 44px;

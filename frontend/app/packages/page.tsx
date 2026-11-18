@@ -62,6 +62,7 @@ export default async function PackagesPage() {
                     label: 'Por temporada',
                     title: 'Paquetes por temporada',
                     subtitle: 'Aprovecha rutas y promociones por fechas especiales',
+                    emptyText: 'Por ahora no hay paquetes de temporada.\nPronto tendremos nuevas fechas.',
                     items: seasons.map((season, index) => ({
                       key: season.link || String(index),
                       href: getPackageDetailHref(season.link),
@@ -114,7 +115,7 @@ export default async function PackagesPage() {
                       price: pkg.price,
                     })),
                   },
-                ].filter((group) => group.items.length > 0)}
+                ]}
               />
             </div>
           </section>

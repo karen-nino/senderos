@@ -15,6 +15,8 @@ export interface CardsGroup {
   label: string
   title: string
   subtitle?: string
+  /** Aviso cuando la categoría no tiene tarjetas (\n = salto de línea); si falta, se usa uno genérico. */
+  emptyText?: string
   items: Array<PackageCardProps & { key: string }>
 }
 
@@ -69,6 +71,17 @@ export default function CardsExplorer({
   )
   const total = filtered.reduce((n, g) => n + g.items.length, 0)
   const showFilters = groups.length > 1
+
+  // Aviso sin resultados: la primera línea va como título y el resto como texto de apoyo
+  const activeGroup = filtered.find((g) => g.id === category)
+  const [emptyTitle, ...emptyRest] = (
+    query
+      ? `No encontramos ${noun} que coincidan con «${query}».\nPrueba con otro nombre o lugar.`
+      : activeGroup?.emptyText ?? `Por el momento no hay ${noun} en esta categoría.`
+  ).split('\n')
+  const emptyDetail = emptyRest.join(' ').trim()
+  const emptyIcon = query ? 'far fa-search' : activeGroup?.icon || 'far fa-search'
+  const emptyTone = query ? 'neutro' : activeGroup?.tone ?? activeGroup?.id ?? 'neutro'
 
   const clearAll = () => {
     setQuery('')
@@ -149,8 +162,10 @@ export default function CardsExplorer({
         ))}
         </div>
       ) : (
-        <div className="packages-explorer__empty">
-          <p>{query ? <>No encontramos {noun} que coincidan con «{query}».</> : `No hay ${noun} en esta categoría.`}</p>
+        <div className={`packages-explorer__empty category-tone--${emptyTone}`}>
+          <span className="packages-explorer__empty-icon" aria-hidden><i className={emptyIcon}></i></span>
+          <p className="packages-explorer__empty-title">{emptyTitle}</p>
+          {emptyDetail && <p className="packages-explorer__empty-text">{emptyDetail}</p>}
           <button type="button" className="packages-explorer__reset" onClick={clearAll}>
             Ver todos los {noun}
           </button>
