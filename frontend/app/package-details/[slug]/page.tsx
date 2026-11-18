@@ -213,7 +213,7 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
               {pkg.idealFor && (
                 <div className="package-ideal-for d-block d-xl-none mb-40" role="note">
                   <div className="package-ideal-for__box">
-                    <i className="fas fa-users" aria-hidden></i>
+                    <i className="fas fa-exclamation-triangle" aria-hidden></i>
                     <p>
                       <strong>Este paquete es ideal para </strong>
                       {pkg.idealFor}
@@ -273,7 +273,7 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                   {pkg.idealFor && (
                     <div className="package-ideal-for d-none d-xl-block pt-45 wow fadeInUp" role="note">
                       <div className="package-ideal-for__box">
-                        <i className="fas fa-users" aria-hidden></i>
+                        <i className="fas fa-exclamation-triangle" aria-hidden></i>
                         <p>
                           <strong>Este paquete es ideal para </strong>
                           {pkg.idealFor}
