@@ -2592,6 +2592,87 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   }
 }
 
+/* Detalle de paquete: contador de personas y precio por persona del grupo elegido */
+ul.info-list > li.package-quote {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 17px;
+  color: #1f2a1a;
+}
+.sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__label i {
+  color: #63ab45;
+}
+.sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px;
+  border: 1.5px solid #d6dfd0;
+  border-radius: 999px;
+  background: #fff;
+}
+.sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__btn {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: #2f6b1f;
+  color: #fff;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+.sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__btn:hover:not(:disabled) {
+  background: #4f8f35;
+}
+.sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__btn:disabled {
+  background: #e3e8df;
+  color: #8b9085;
+  cursor: not-allowed;
+}
+.sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__btn:focus-visible {
+  outline: 3px solid #63ab45;
+  outline-offset: 2px;
+}
+.sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__count {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2a1a;
+  font-variant-numeric: tabular-nums;
+}
+.sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 8px;
+}
+.sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__price-label {
+  flex-basis: 100%;
+  font-size: 14px;
+  color: #6b6b6b;
+}
+.sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__price-amount {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #2f6b1f;
+  font-variant-numeric: tabular-nums;
+}
+.sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__price-note {
+  font-size: 15px;
+  color: #6b6b6b;
+}
+
 /* Política de Privacidad */
 .privacy-content .privacy-block h3.title {
   font-size: 1.25rem;

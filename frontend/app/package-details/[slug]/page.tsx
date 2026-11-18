@@ -3,13 +3,12 @@ import React from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
-import { WhatsAppIcon } from '@/components/WhatsAppIcon'
 // import PlaceSlider from '@/components/PlaceSlider'
 import GallerySlider from '@/components/GallerySlider'
 import RichNote from '@/components/RichNote'
+import PackageQuote from '@/components/PackageQuote'
 import { JsonLd, buildProductJsonLd } from '@/components/JsonLd'
 import { fetchPackageBySlug, fetchHolidayBySlug, fetchAdventureBySlug, fetchPackages, STRAPI_REVALIDATE_SECONDS } from '@/lib/strapi'
-import { whatsappHref } from '@/lib/contact'
 import { cloudinaryWidth } from '@/lib/cloudinary'
 
 const SITE_URL = 'https://senderosdechiapas.com.mx'
@@ -229,20 +228,12 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                     {pkg.accommodation && <li><span><i className="far fa-bed"></i>Alojamiento<span>{pkg.accommodation}</span></span></li>}
                     {pkg.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida<span>{pkg.departure}</span></span></li>}
                     {pkg.transport && <li><span><i className="fal fa-bus"></i>Transporte<span>{pkg.transport}</span></span></li>}
-                    <li><span><i className="fal fa-box-usd"></i>{pkg.priceInternational ? 'Precio Nacional' : 'Precio desde'}<span>{pkg.price}</span></span></li>
-                    {pkg.priceInternational && <li><span><i className="fal fa-box-usd"></i>Precio Internacional<span>{pkg.priceInternational}</span></span></li>}
-                    <li>
-                      <div className="submit-button">
-                        <a
-                          href={whatsappHref(whatsappMessage)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="main-btn primary-btn"
-                        >
-                          Cotizar por WhatsApp<WhatsAppIcon className="whatsapp-icon" />
-                        </a>
-                      </div>
-                    </li>
+                    <PackageQuote
+                      price={pkg.price}
+                      priceInternational={pkg.priceInternational}
+                      pricePerPerson={pkg.pricePerPerson}
+                      whatsappMessage={whatsappMessage}
+                    />
                   </ul>
                 </div>
                 {(pkg.calendarStart || pkg.calendarEnd) && (
@@ -479,20 +470,12 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                           {pkg.accommodation && <li><span><i className="far fa-bed"></i>Alojamiento<span>{pkg.accommodation}</span></span></li>}
                           {pkg.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida<span>{pkg.departure}</span></span></li>}
                           {pkg.transport && <li><span><i className="fal fa-bus"></i>Transporte<span>{pkg.transport}</span></span></li>}
-                          <li><span><i className="fal fa-box-usd"></i>{pkg.priceInternational ? 'Precio Nacional' : 'Precio desde'}<span>{pkg.price}</span></span></li>
-                          {pkg.priceInternational && <li><span><i className="fal fa-box-usd"></i>Precio Internacional<span>{pkg.priceInternational}</span></span></li>}
-                          <li>
-                            <div className="submit-button">
-                              <a
-                                href={whatsappHref(whatsappMessage)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="main-btn primary-btn"
-                              >
-                                Cotizar por WhatsApp<WhatsAppIcon className="whatsapp-icon" />
-                              </a>
-                            </div>
-                          </li>
+                          <PackageQuote
+                            price={pkg.price}
+                            priceInternational={pkg.priceInternational}
+                            pricePerPerson={pkg.pricePerPerson}
+                            whatsappMessage={whatsappMessage}
+                          />
                         </ul>
                       </div>
                       {(pkg.calendarStart || pkg.calendarEnd) && (
