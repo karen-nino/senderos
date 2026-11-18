@@ -2541,6 +2541,9 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
 .price-per-person {
   margin: 8px 0 40px;
 }
+.tour-details-wrapper .package-description-route .price-per-person > h4.title {
+  margin-bottom: 24px; /* más aire que los demás títulos de la sección (5px) */
+}
 .price-per-person__table {
   width: 100%;
   max-width: 560px;

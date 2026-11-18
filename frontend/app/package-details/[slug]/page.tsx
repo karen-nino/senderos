@@ -292,7 +292,7 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                     )}
                     {pkg.pricePerPerson && pkg.pricePerPerson.length > 0 && (
                       <div className="price-per-person">
-                        <h4 className="title">Precio por persona</h4>
+                        <h4 className="title">Precio por grupo de personas</h4>
                         <table className="price-per-person__table">
                           <thead>
                             <tr>
