@@ -420,7 +420,7 @@ export default async function TourDetailPage({ params }: PageProps) {
                           .map((entry, i) => (
                             <div
                               key={i}
-                              className="map-box mb-0 tour-details-map-box wow fadeInUp"
+                              className="map-box tour-details-map-box wow fadeInUp"
                             >
                               <h4 className="title pb-4">{entry.title}</h4>
                               <iframe
