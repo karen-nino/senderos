@@ -2,7 +2,8 @@ import type { Metadata } from 'next'
 import React from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import PackagesExplorer from '@/components/PackagesExplorer'
+import CardsExplorer from '@/components/CardsExplorer'
+import PageIntro from '@/components/PageIntro'
 import Link from 'next/link'
 import { fetchPackagesPageData, fetchSeasonsForPackagesPage, fetchAdventuresForPackagesPage, STRAPI_REVALIDATE_SECONDS, getPackageDetailHref, type AdaptedDestination, type AdaptedSeason } from '@/lib/strapi'
 
@@ -46,26 +47,13 @@ export default async function PackagesPage() {
 
 
         {hasDataFromStrapi ? (
-          <section className="packages-page pb-160">
-            <header className="packages-page__hero">
-              <div className="container">
-                <div className="packages-page__head">
-                  <h1 className="packages-page__title">Paquetes</h1>
-                  <p className="packages-page__intro">
-                    Recorre Chiapas con un paquete por temporada, de aventura o elige entre todos nuestros recorridos.
-                  </p>
-                </div>
-              </div>
-              {/* Sendero punteado con pin, como el de las postales del hero del inicio (solo escritorio) */}
-              <div className="packages-page__trail" aria-hidden>
-                <svg viewBox="0 0 400 200" preserveAspectRatio="none">
-                  <path d="M 0 190 C 70 185, 90 120, 160 118 C 230 116, 250 160, 310 120 C 350 94, 360 50, 382 30" />
-                </svg>
-                <span className="packages-page__trail-pin"><i className="fas fa-map-marker-alt"></i></span>
-              </div>
-            </header>
+          <section className="listing-page pb-160">
+            <PageIntro
+              title="Paquetes"
+              intro="Recorre Chiapas con un paquete por temporada, de aventura o elige entre todos nuestros recorridos."
+            />
             <div className="container">
-              <PackagesExplorer
+              <CardsExplorer
                 groups={[
                   {
                     id: 'temporada',

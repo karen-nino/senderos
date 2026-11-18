@@ -5,9 +5,10 @@ import PackageCard from '@/components/PackageCard'
 
 type PackageCardProps = ComponentProps<typeof PackageCard>
 
-export interface PackagesGroup {
-  /** También define el color de la categoría (temporada · aventura · paquetes). */
+export interface CardsGroup {
   id: string
+  /** Color de la categoría (temporada · aventura · paquetes · salida); por defecto el id. */
+  tone?: string
   /** Clase de Font Awesome del ícono de la categoría. */
   icon: string
   /** Texto del filtro ("Por temporada"). */
@@ -17,8 +18,12 @@ export interface PackagesGroup {
   items: Array<PackageCardProps & { key: string }>
 }
 
-interface PackagesExplorerProps {
-  groups: PackagesGroup[]
+interface CardsExplorerProps {
+  groups: CardsGroup[]
+  /** Sustantivo en plural para mensajes ("paquetes", "tours"). */
+  noun?: string
+  searchPlaceholder?: string
+  filterLabel?: string
 }
 
 const DIACRITICS_RE = /[̀-ͯ]/g
@@ -32,8 +37,13 @@ function searchableText(item: PackageCardProps): string {
   return normalize([item.title, item.route, item.description].filter(Boolean).join(' '))
 }
 
-/** Página de paquetes: buscador y filtros por categoría arriba; secciones por categoría con sus tarjetas. */
-export default function PackagesExplorer({ groups }: PackagesExplorerProps) {
+/** Listado con buscador y filtros por categoría arriba, y secciones por categoría con sus tarjetas (páginas Paquetes y Tours). */
+export default function CardsExplorer({
+  groups,
+  noun = 'paquetes',
+  searchPlaceholder = 'Buscar por nombre o destino',
+  filterLabel = 'Filtrar por categoría',
+}: CardsExplorerProps) {
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState<string>('todos')
   const searchId = useId()
@@ -69,14 +79,14 @@ export default function PackagesExplorer({ groups }: PackagesExplorerProps) {
     <div className="packages-explorer">
       <div className="packages-explorer__toolbar">
         <div className="tours-filters__search packages-explorer__search">
-          <label htmlFor={searchId} className="visually-hidden">Buscar paquete</label>
+          <label htmlFor={searchId} className="visually-hidden">{searchPlaceholder}</label>
           <i className="far fa-search tours-filters__search-icon" aria-hidden />
           <input
             id={searchId}
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Buscar por nombre o destino"
+            placeholder={searchPlaceholder}
             className="tours-filters__input"
           />
           {query && (
@@ -92,13 +102,13 @@ export default function PackagesExplorer({ groups }: PackagesExplorerProps) {
         </div>
 
         {showFilters && (
-          <div className="packages-explorer__chips" role="group" aria-label="Filtrar por categoría">
-            {[{ id: 'todos', label: 'Todos', icon: '', count: total }, ...filtered.map((g) => ({ id: g.id, label: g.label, icon: g.icon, count: g.items.length }))].map((chip) => (
+          <div className="packages-explorer__chips" role="group" aria-label={filterLabel}>
+            {[{ id: 'todos', label: 'Todos', icon: '', count: total }, ...filtered.map((g) => ({ id: g.id, tone: g.tone ?? g.id, label: g.label, icon: g.icon, count: g.items.length }))].map((chip) => (
               <button
                 key={chip.id}
                 type="button"
                 aria-pressed={category === chip.id}
-                className={`packages-explorer__chip category-tone--${chip.id}${category === chip.id ? ' is-active' : ''}`}
+                className={`packages-explorer__chip category-tone--${'tone' in chip ? chip.tone : chip.id}${category === chip.id ? ' is-active' : ''}`}
                 onClick={() => setCategory(chip.id)}
               >
                 {chip.icon && <i className={`${chip.icon} packages-explorer__chip-icon`} aria-hidden></i>}
@@ -111,7 +121,7 @@ export default function PackagesExplorer({ groups }: PackagesExplorerProps) {
       </div>
 
       <p className="visually-hidden" aria-live="polite">
-        {visibleGroups.reduce((n, g) => n + g.items.length, 0)} paquetes encontrados
+        {visibleGroups.reduce((n, g) => n + g.items.length, 0)} {noun} encontrados
       </p>
 
       {visibleGroups.length > 0 ? (
@@ -120,7 +130,7 @@ export default function PackagesExplorer({ groups }: PackagesExplorerProps) {
           <section
             key={group.id}
             // Con 1 o 2 tarjetas la categoría ocupa solo esas columnas y puede compartir fila con la siguiente
-            className={`packages-explorer__group category-tone--${group.id}${group.items.length <= 2 ? ` packages-explorer__group--span-${group.items.length}` : ''}`}
+            className={`packages-explorer__group category-tone--${group.tone ?? group.id}${group.items.length <= 2 ? ` packages-explorer__group--span-${group.items.length}` : ''}`}
             aria-labelledby={`grupo-${group.id}`}
           >
             <header className="packages-explorer__group-head">
@@ -141,9 +151,9 @@ export default function PackagesExplorer({ groups }: PackagesExplorerProps) {
         </div>
       ) : (
         <div className="packages-explorer__empty">
-          <p>{query ? <>No encontramos paquetes que coincidan con «{query}».</> : 'No hay paquetes en esta categoría.'}</p>
+          <p>{query ? <>No encontramos {noun} que coincidan con «{query}».</> : `No hay ${noun} en esta categoría.`}</p>
           <button type="button" className="packages-explorer__reset" onClick={clearAll}>
-            Ver todos los paquetes
+            Ver todos los {noun}
           </button>
         </div>
       )}

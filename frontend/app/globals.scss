@@ -2632,9 +2632,13 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   --tone-bg: #d4ecc4;
   --tone-fg: #2a5c1a;
 }
+.category-tone--salida {
+  --tone-bg: #d4ecc4;
+  --tone-fg: #2a5c1a;
+}
 
 /* Franja crema (continúa el header) con el título; la barra de búsqueda se monta sobre su borde inferior */
-.packages-page__hero {
+.page-intro {
   position: relative;
   overflow: hidden;
   padding: 56px 0 88px;
@@ -2643,12 +2647,12 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
     padding: 80px 0 112px;
   }
 }
-.packages-page__head {
+.page-intro__head {
   position: relative;
   z-index: 1;
   max-width: 640px;
 }
-.packages-page__title {
+.page-intro__title {
   margin: 0;
   font-size: clamp(2.5rem, 1.9rem + 2.6vw, 4.25rem);
   font-weight: 700;
@@ -2656,14 +2660,14 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   letter-spacing: -0.02em;
   color: #2f6b1f;
 }
-.packages-page__intro {
+.page-intro__text {
   margin: 16px 0 0;
   max-width: 52ch;
   font-size: clamp(17px, 16px + 0.3vw, 19px);
   line-height: 1.55;
   color: #4a4f47;
 }
-.packages-page__trail {
+.page-intro__trail {
   display: none;
   position: absolute;
   right: max(4vw, calc((100vw - 1320px) / 2));
@@ -2675,13 +2679,13 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
     display: block;
   }
 }
-.packages-page__trail svg {
+.page-intro__trail svg {
   display: block;
   width: 100%;
   height: 100%;
   overflow: visible;
 }
-.packages-page__trail path {
+.page-intro__trail path {
   fill: none;
   stroke: #63ab45;
   stroke-width: 3;
@@ -2693,7 +2697,7 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
     animation: none;
   }
 }
-.packages-page__trail-pin {
+.page-intro__trail-pin {
   position: absolute;
   right: 4%;
   top: 15%;
@@ -2802,18 +2806,16 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   grid-template-columns: minmax(0, 340px);
   justify-content: center;
   column-gap: 16px;
-  row-gap: 72px;
-  @media (min-width: 768px) {
-    column-gap: 24px;
-  }
+  row-gap: 96px; /* entre categorías (Saliendo de Tuxtla · Saliendo de Palenque · …) */
   margin-top: 56px;
-  @media (min-width: 992px) {
-    row-gap: 104px;
-    margin-top: 72px;
-  }
   @media (min-width: 768px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     justify-content: stretch;
+    column-gap: 24px;
+  }
+  @media (min-width: 992px) {
+    row-gap: 144px;
+    margin-top: 72px;
   }
   @media (min-width: 1200px) {
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -2846,16 +2848,17 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   grid-template-columns: auto 1fr;
   column-gap: 14px;
   align-items: start;
-  margin-bottom: -6px; /* 24px al llegar a las tarjetas (row-gap 30px) */
+  margin-bottom: 6px; /* 36px al llegar a las tarjetas (row-gap 30px) */
   @media (min-width: 768px) {
-    margin-bottom: -16px;
+    margin-bottom: 8px; /* 48px (row-gap 40px) */
   }
 }
 .packages-explorer__item {
   min-width: 0;
 }
 .packages-explorer__group-icon {
-  grid-row: span 2;
+  grid-row: 1;
+  align-self: center; /* centrado con el título; el subtítulo queda debajo, alineado al texto */
   display: grid;
   place-items: center;
   width: 48px;
@@ -2883,6 +2886,7 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   font-variant-numeric: tabular-nums;
 }
 .packages-explorer__group-subtitle {
+  grid-column: 2;
   margin: 4px 0 0;
   font-size: 15px;
   line-height: 1.5;

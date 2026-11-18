@@ -2,11 +2,10 @@ import type { Metadata } from 'next'
 import React from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import FilteredCardsList from '@/components/FilteredCardsList'
-import PackageCard from '@/components/PackageCard'
+import CardsExplorer, { type CardsGroup } from '@/components/CardsExplorer'
+import PageIntro from '@/components/PageIntro'
 import Link from 'next/link'
 import { fetchTourPageData, STRAPI_REVALIDATE_SECONDS, getTourDetailHref, tourCardSubtitle, type AdaptedDestination } from '@/lib/strapi'
-import { cloudinaryWidth } from '@/lib/cloudinary'
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
 
@@ -17,12 +16,10 @@ export const metadata: Metadata = {
 
 export default async function ToursPage() {
   let destinations: AdaptedDestination[] = []
-  let imageBannerUrl: string | null = null
 
   try {
     const data = await fetchTourPageData()
     destinations = data.destinations
-    imageBannerUrl = data.imageBannerUrl
   } catch (error) {
     console.error('Error fetching tours from Strapi:', error)
   }
@@ -31,71 +28,58 @@ export default async function ToursPage() {
     (d) => (d.badge || '') !== 'oculto'
   )
   const hasDataFromStrapi = displayDestinations.length > 0
-  const bannerBg = imageBannerUrl || '/assets/images/bg/page-bg.jpg'
+
+  // Una categoría por punto de salida, en el orden en que llegan de Strapi
+  const departureGroups: CardsGroup[] = []
+  displayDestinations.forEach((d, i) => {
+    const departure = d.departure?.trim()
+    const id = departure ? `salida-${departure}` : 'salida-otros'
+    let group = departureGroups.find((g) => g.id === id)
+    if (!group) {
+      group = {
+        id,
+        tone: 'salida',
+        icon: 'far fa-map-marker-alt',
+        label: departure || 'Otros',
+        title: departure ? `Saliendo de ${departure}` : 'Otros tours',
+        items: [],
+      }
+      departureGroups.push(group)
+    }
+    group.items.push({
+      key: String(d.link || d.title || i),
+      href: getTourDetailHref(d),
+      tag: 'Tour',
+      noPriceText: 'Más información',
+      title: d.title,
+      image: d.image,
+      badge: d.badge,
+      description: tourCardSubtitle(d),
+      departureDate: d.departureDate,
+      duration: d.duration,
+      price: d.price,
+    })
+  })
 
   return (
     <React.Fragment>
       <Header />
       <main>
 
-        {hasDataFromStrapi && (
-          <section className="page-banner overlay pt-220 pb-220 bg_cover" style={{ backgroundImage: `url(${cloudinaryWidth(bannerBg, 1920)})` }}>
-            <div className="container">
-              <div className="row justify-content-center">
-                <div className="col-lg-10 mx-auto text-center">
-                  <div className="page-banner-content text-center text-white">
-                    <h1 className="page-title">Explorar Tours</h1>
-                    <ul className="breadcrumb-link text-white d-flex justify-content-center flex-wrap list-unstyled mb-0">
-                      <li><Link href="/">Home</Link></li>
-                      <li className="active">Tours</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
 
         {hasDataFromStrapi ? (
-          <section className="places-section pt-80 pb-180">
-            <div className="places-section__container">
-              <FilteredCardsList
-                items={displayDestinations.map((d, i) => {
-                  const departure = d.departure?.trim()
-                  return {
-                    title: d.title,
-                    key: String(d.link || d.title || i),
-                    groupKey: departure || '__sin_departure__',
-                    groupLabel: departure ? `Saliendo de ${departure}` : '',
-                    content: (
-                      <PackageCard
-                        href={getTourDetailHref(d)}
-                        tag="Tour"
-                        noPriceText="Más información"
-                        title={d.title}
-                        image={d.image}
-                        badge={d.badge}
-                        description={tourCardSubtitle(d)}
-                        departureDate={d.departureDate}
-                        duration={d.duration}
-                        price={d.price}
-                      />
-                    ),
-                  }
-                })}
-                gridClassName="places-section__grid places-section__grid--cards container"
-                searchPlaceholder="Buscar tour por nombre"
-                emptyMessage="No encontramos tours que coincidan con tu búsqueda."
+          <section className="listing-page pb-160">
+            <PageIntro
+              title="Tours"
+              intro="Elige el punto de salida que te quede mejor y descubre cascadas, zonas arqueológicas, pueblos y selva de Chiapas."
+            />
+            <div className="container">
+              <CardsExplorer
+                noun="tours"
+                searchPlaceholder="Buscar por nombre o lugar"
+                filterLabel="Filtrar por punto de salida"
+                groups={departureGroups}
               />
-            </div>
-            <div className="container text-center mt-50">
-              <Link
-                href="/"
-                className="main-btn wow fadeInUp"
-                style={{ padding: '16px 45px', backgroundColor: 'rgba(99, 171, 69, 0.2)', color: '#63ab45' }}
-              >
-                Regresar a Home
-              </Link>
             </div>
           </section>
         ) : (
