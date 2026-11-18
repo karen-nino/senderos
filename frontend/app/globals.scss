@@ -2604,6 +2604,55 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   }
 }
 
+/* Tour detalle: selector de punto de salida (cada salida es una alternativa con su propio regreso y precio) */
+.tour-departures__question {
+  margin: 0.35rem 0 0.75rem;
+  font-size: 15px;
+  line-height: 1.45;
+  color: #555;
+}
+.tour-departures__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 0.75rem;
+}
+.tour-departures__tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border: 1.5px solid #d6dfd0;
+  border-radius: 999px;
+  background: #fff;
+  color: #1f2a1a;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.tour-departures__tab i {
+  color: #63ab45;
+  transition: color 0.2s ease;
+}
+.tour-departures__tab:hover {
+  border-color: #63ab45;
+}
+.tour-departures__tab.is-active {
+  background: #2f6b1f;
+  border-color: #2f6b1f;
+  color: #fff;
+}
+.tour-departures__tab.is-active i {
+  color: #fff;
+}
+.tour-departures__tab:focus-visible {
+  outline: 3px solid #63ab45;
+  outline-offset: 2px;
+}
+
 /* Tour detalle: separación entre mapas */
 .tour-details-map-section {
   display: flow-root;

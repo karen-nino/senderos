@@ -3,12 +3,11 @@ import React from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
-import { WhatsAppIcon } from '@/components/WhatsAppIcon'
+import TourDepartures from '@/components/TourDepartures'
 // import PlaceSlider from '@/components/PlaceSlider'
 import GallerySlider from '@/components/GallerySlider'
 import { JsonLd, buildProductJsonLd } from '@/components/JsonLd'
 import { fetchTourBySlug, fetchTourPageData, STRAPI_REVALIDATE_SECONDS } from '@/lib/strapi'
-import { whatsappHref } from '@/lib/contact'
 import { cloudinaryWidth } from '@/lib/cloudinary'
 
 const SITE_URL = 'https://senderosdechiapas.com.mx'
@@ -112,29 +111,38 @@ export default async function TourDetailPage({ params }: PageProps) {
     return raw.filter((u) => (seen.has(u) ? false : (seen.add(u), true)))
   })()
 
-  // Mensaje de WhatsApp con todos los detalles del tour
+  // Salidas del tour: cada una es una alternativa (punto de salida distinto) con su propio regreso y precios
+  const departureList = destination.departures && destination.departures.length > 0
+    ? destination.departures
+    : [{ departure: destination.departure, transport: destination.transport, minimumParticipants: destination.minimumParticipants, arrival: destination.arrival }]
+
+  // Mensaje de WhatsApp con todos los detalles del tour y la salida elegida
   const routeList = destination.routeList ?? (destination.route ? [destination.route] : [])
-  const whatsappLines = [
-    `Hola, me gustaría cotizar el siguiente tour:`,
-    ``,
-    ``,
-    `*${destination.title}*`,
-    ``,
-    `*Detalles:*`,
-    destination.location ? `• Ubicación: ${destination.location}` : null,
-    destination.departure ? `• Punto de salida: ${destination.departure}` : null,
-    destination.arrival && destination.arrival.length > 0
-      ? destination.arrival.length === 1
-        ? `• Punto de regreso: ${destination.arrival[0].value}${destination.arrival[0].arrivalNationalPrice ? `\n• Precio regreso: ${destination.arrival[0].arrivalNationalPrice}` : ''}`
-        : destination.arrival.map((a, i) => `• Punto de regreso (Opc. ${i + 1}): ${a.value}${a.arrivalNationalPrice ? `\n• Precio regreso (Opc. ${i + 1}): ${a.arrivalNationalPrice}` : ''}`).join('\n')
-      : null,
-    destination.transport ? `• Transporte: ${destination.transport}` : null,
-    routeList.length > 0 ? `• Ruta: ${routeList.join(' → ')}` : null,
-    destination.itinerary && destination.itinerary.length > 0
-      ? `\n📅 *Itinerario:*\n${destination.itinerary.map((item) => `• ${item.dayTitle}${item.time ? ` (${item.time})` : ''}: ${item.activity}`).join('\n')}`
-      : null,
-  ].filter(Boolean) as string[]
-  const whatsappMessage = whatsappLines.join('\n')
+  const buildWhatsappMessage = (dep: (typeof departureList)[number]) => {
+    const arrival = dep.arrival
+    const lines = [
+      `Hola, me gustaría cotizar el siguiente tour:`,
+      ``,
+      ``,
+      `*${destination.title}*`,
+      ``,
+      `*Detalles:*`,
+      destination.location ? `• Ubicación: ${destination.location}` : null,
+      dep.departure ? `• Punto de salida: ${dep.departure}` : null,
+      arrival && arrival.length > 0
+        ? arrival.length === 1
+          ? `• Punto de regreso: ${arrival[0].value}${arrival[0].arrivalNationalPrice ? `\n• Precio regreso: ${arrival[0].arrivalNationalPrice}` : ''}`
+          : arrival.map((a, i) => `• Punto de regreso (Opc. ${i + 1}): ${a.value}${a.arrivalNationalPrice ? `\n• Precio regreso (Opc. ${i + 1}): ${a.arrivalNationalPrice}` : ''}`).join('\n')
+        : null,
+      dep.transport ? `• Transporte: ${dep.transport}` : null,
+      routeList.length > 0 ? `• Ruta: ${routeList.join(' → ')}` : null,
+      destination.itinerary && destination.itinerary.length > 0
+        ? `\n📅 *Itinerario:*\n${destination.itinerary.map((item) => `• ${item.dayTitle}${item.time ? ` (${item.time})` : ''}: ${item.activity}`).join('\n')}`
+        : null,
+    ].filter(Boolean) as string[]
+    return lines.join('\n')
+  }
+  const tourDepartures = departureList.map((dep) => ({ ...dep, whatsappMessage: buildWhatsappMessage(dep) }))
 
   const tourJsonLd = buildProductJsonLd({
     name: destination.title,
@@ -194,53 +202,7 @@ export default async function TourDetailPage({ params }: PageProps) {
 
               {/* Booking Info + Calendar - Visible only on mobile/tablet, right after Tour Title (misma info que desktop) */}
               <div className="sidebar-widget-area d-block d-xl-none pb-30">
-                {(destination.departures && destination.departures.length > 0
-                  ? destination.departures
-                  : [{ departure: destination.departure, transport: destination.transport, minimumParticipants: destination.minimumParticipants, arrival: destination.arrival }]
-                ).map((dep, depIdx) => (
-                  <div key={`departure-mobile-${depIdx}`} className="sidebar-widget booking-info-widget wow fadeInUp mb-40">
-                    <div className="pb-2 border-bottom">
-                      <h4 className="">Detalles del Tour</h4>
-                      <h5 className="fw-light">Salida {dep.departure}</h5>
-                    </div>
-                    <ul className="info-list pt-3">
-                      {dep.minimumParticipants && <li><span><i className="fal fa-users"></i>Mínimo de participantes<span style={{ float: 'none' }}>{dep.minimumParticipants}</span></span></li>}
-                      {dep.transport && <li><span><i className="fal fa-bus"></i>Transporte<span style={{ float: 'none' }}>{dep.transport}</span></span></li>}
-                      {dep.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida desde<span style={{ float: 'none', display: 'block' }}>{dep.departure}</span></span></li>}
-                      {dep.arrival && dep.arrival.length > 0 && (
-                        dep.arrival.length === 1 ? (
-                          <React.Fragment>
-                            <li><span><i className="far fa-map-marker-alt"></i>Regreso hacia<span style={{ float: 'none', display: 'block'}}>{dep.arrival[0].value}</span><span style={{ float: 'none', display: 'block' }}>{dep.arrival[0].arrivalHour}</span></span></li>
-                            {dep.arrival[0].arrivalNationalPrice && (
-                              <li><span><i className="fal fa-box-usd"></i>Precio Nacional desde<span style={{ float: 'none' }}>{dep.arrival[0].arrivalNationalPrice}</span></span></li>
-                            )}
-                            {dep.arrival[0].arrivalInternationalPrice && (
-                              <li><span><i className="fal fa-box-usd"></i>Precio Internacional desde<span style={{ float: 'none' }}>{dep.arrival[0].arrivalInternationalPrice}</span></span></li>
-                            )}
-                          </React.Fragment>
-                        ) : (
-                          dep.arrival.map((a, i) => (
-                            <React.Fragment key={`arrival-${depIdx}-${i}`}>
-                              <li><span><i className="far fa-map-marker-alt pb-3"></i>{`Regreso hacia`}<span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.value}</span><span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.arrivalHour}</span>{a.arrivalAccommodation && (<><span className='pt-3' style={{ float: 'none', display: 'block'}}>Alojamiento</span><span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.arrivalAccommodation}</span></>)}{a.arrivalNationalPrice && (<><span className='pt-3' style={{ float: 'none', display: 'block'}}>Precio Nacional desde</span><span style={{ float: 'none', display: 'block', fontSize: '22px' }}>{a.arrivalNationalPrice}</span></>)}{a.arrivalInternationalPrice && (<><span className='pt-3' style={{ float: 'none', display: 'block'}}>Precio Internacional desde</span><span style={{ float: 'none', display: 'block', fontSize: '22px' }}>{a.arrivalInternationalPrice}</span></>)}</span></li>
-                            </React.Fragment>
-                          ))
-                        )
-                      )}
-                      <li className="tour-details-wa-cta-mobile">
-                        <div className="submit-button">
-                          <a
-                            href={whatsappHref(whatsappMessage)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="main-btn primary-btn"
-                          >
-                            Consulta disponibilidad<WhatsAppIcon className="whatsapp-icon" />
-                          </a>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                ))}
+                <TourDepartures departures={tourDepartures} idPrefix="salida-movil" className="wow fadeInUp mb-40" />
               </div>
 
               <div className="row">
@@ -441,53 +403,7 @@ export default async function TourDetailPage({ params }: PageProps) {
                   <div className="sidebar-widget-area pt-60 pl-lg-30">
                     {/* Booking Info Widget - Visible only on desktop (xl) */}
                     <div className="d-none d-xl-block">
-                      {(destination.departures && destination.departures.length > 0
-                        ? destination.departures
-                        : [{ departure: destination.departure, transport: destination.transport, minimumParticipants: destination.minimumParticipants, arrival: destination.arrival }]
-                      ).map((dep, depIdx, deps) => (
-                        <div key={`departure-desktop-${depIdx}`} className={`sidebar-widget booking-info-widget wow fadeInUp ${depIdx === deps.length - 1 ? 'mb-100' : 'mb-30'}`}>
-                          <div className="pb-2 border-bottom">
-                            <h4 className="">Detalles del Tour</h4>
-                            <h5 className="fw-light">Salida {dep.departure}</h5>
-                          </div>
-                          <ul className="info-list pt-3">
-                            {dep.minimumParticipants && <li><span><i className="fal fa-users"></i>Mínimo de participantes<span style={{ float: 'none' }}>{dep.minimumParticipants}</span></span></li>}
-                            {dep.transport && <li><span><i className="fal fa-bus"></i>Transporte<span style={{ float: 'none' }}>{dep.transport}</span></span></li>}
-                            {dep.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida desde<span style={{ float: 'none', display: 'block' }}>{dep.departure}</span></span></li>}
-                            {dep.arrival && dep.arrival.length > 0 && (
-                              dep.arrival.length === 1 ? (
-                                <React.Fragment>
-                                  <li><span><i className="far fa-map-marker-alt"></i>Regreso hacia<span style={{ float: 'none', display: 'block'}}>{dep.arrival[0].value}</span><span style={{ float: 'none', display: 'block' }}>{dep.arrival[0].arrivalHour}</span></span></li>
-                                  {dep.arrival[0].arrivalNationalPrice && (
-                                    <li><span><i className="fal fa-box-usd"></i>Precio Nacional desde<span style={{ float: 'none' }}>{dep.arrival[0].arrivalNationalPrice}</span></span></li>
-                                  )}
-                                  {dep.arrival[0].arrivalInternationalPrice && (
-                                    <li><span><i className="fal fa-box-usd"></i>Precio Internacional desde<span style={{ float: 'none' }}>{dep.arrival[0].arrivalInternationalPrice}</span></span></li>
-                                  )}
-                                </React.Fragment>
-                              ) : (
-                                dep.arrival.map((a, i) => (
-                                  <React.Fragment key={`arrival-${depIdx}-${i}`}>
-                                    <li><span><i className="far fa-map-marker-alt pb-3"></i>{`Regreso hacia`}<span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.value}</span><span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.arrivalHour}</span>{a.arrivalAccommodation && (<><span className='pt-3' style={{ float: 'none', display: 'block'}}>Alojamiento</span><span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.arrivalAccommodation}</span></>)}{a.arrivalNationalPrice && (<><span className='pt-3' style={{ float: 'none', display: 'block'}}>Precio Nacional desde</span><span style={{ float: 'none', display: 'block', fontSize: '22px' }}>{a.arrivalNationalPrice}</span></>)}{a.arrivalInternationalPrice && (<><span className='pt-3' style={{ float: 'none', display: 'block'}}>Precio Internacional desde</span><span style={{ float: 'none', display: 'block', fontSize: '22px' }}>{a.arrivalInternationalPrice}</span></>)}</span></li>
-                                  </React.Fragment>
-                                ))
-                              )
-                            )}
-                            <li>
-                              <div className="submit-button">
-                                <a
-                                  href={`https://wa.me/529612980999?text=${encodeURIComponent(whatsappMessage)}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="main-btn primary-btn"
-                                >
-                                  Consulta disponibilidad<WhatsAppIcon className="whatsapp-icon" />
-                                </a>
-                              </div>
-                            </li>
-                          </ul>
-                        </div>
-                      ))}
+                      <TourDepartures departures={tourDepartures} idPrefix="salida-escritorio" className="wow fadeInUp mb-100" />
                     </div>
                     {/* Recent Place Widget - hasta 4 tours aleatorios (TourItem) */}
                     <div className="sidebar-widget recent-place-widget mb-160 wow fadeInUp">
