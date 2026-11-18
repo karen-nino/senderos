@@ -3,8 +3,8 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
 import GalleryGrid from '@/components/GalleryGrid'
+import GalleryIntro, { galleryGroupId } from '@/components/GalleryIntro'
 import { fetchGalleryPageData, STRAPI_REVALIDATE_SECONDS } from '@/lib/strapi'
-import { cloudinaryWidth } from '@/lib/cloudinary'
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
 
@@ -14,50 +14,29 @@ export const metadata: Metadata = {
 }
 
 export default async function Gallery() {
-  let imageBannerUrl: string | null = null
   let galleryGroups: { title: string; images: string[] }[] = []
 
   try {
     const data = await fetchGalleryPageData()
-    imageBannerUrl = data.imageBannerUrl
     galleryGroups = data.galleryGroups
   } catch (error) {
     console.error('Error fetching gallery from Strapi:', error)
   }
 
-  const bannerBg = imageBannerUrl || '/assets/images/bg/page-bg.jpg'
-  const hasBannerFromStrapi = imageBannerUrl != null
   const hasGalleryGroups = galleryGroups.length > 0
-  const hasDataFromStrapi = hasBannerFromStrapi || hasGalleryGroups
 
   return (
     <>
       <Header />
       <main>
 
-        {hasDataFromStrapi && (
-          <section className="page-banner overlay pt-220 pb-220 bg_cover" style={{ backgroundImage: `url(${cloudinaryWidth(bannerBg, 1920)})` }}>
-            <div className="container">
-              <div className="row justify-content-center">
-                <div className="col-lg-10 mx-auto text-center">
-                  <div className="page-banner-content text-center text-white">
-                    <h1 className="page-title">Experiencias</h1>
-                    <ul className="breadcrumb-link text-white d-flex justify-content-center flex-wrap list-unstyled mb-0">
-                      <li><Link href="/">Home</Link></li>
-                      <li className="active">Experiencias</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
 
         {hasGalleryGroups ? (
-          <section className="gallery-area pt-180 pb-350">
+          <section className="gallery-area pt-0 pb-350">
+            <GalleryIntro groups={galleryGroups} />
             <div className="container">
               {galleryGroups.map((group, groupIdx) => (
-                <div key={groupIdx} className="gallery-group mb-120">
+                <div key={groupIdx} id={galleryGroupId(group.title, groupIdx)} className="gallery-group mb-120">
                   {group.title && (
                     <div className="section-title text-center mt-50 mb-50 wow fadeInUp">
                       <h2 className="gallery-group-title">{group.title}</h2>

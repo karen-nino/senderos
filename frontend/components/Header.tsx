@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Preloader from './Preloader'
@@ -19,6 +19,28 @@ export default function Header() {
   const closeMenu = useCallback(() => {
     setMenuOpen(false)
   }, [])
+
+  // Al pasar 100px de scroll el tema vuelve fijo el menú (.sticky) y el header deja de ocupar espacio:
+  // la página brincaba hacia arriba. El header guarda la altura del menú para que el contenido no se mueva.
+  const headerRef = useRef<HTMLElement>(null)
+  useEffect(() => {
+    const header = headerRef.current
+    const nav = header?.querySelector<HTMLElement>('.header-navigation')
+    if (!header || !nav || isHome) return
+    const keepHeight = () => {
+      if (nav.classList.contains('sticky')) return
+      header.style.minHeight = `${nav.offsetHeight}px`
+      // Altura del menú fijo, para que los saltos a una sección (#ancla) no queden debajo de él
+      document.documentElement.style.setProperty('--header-h', `${nav.offsetHeight}px`)
+    }
+    keepHeight()
+    const observer = new ResizeObserver(keepHeight)
+    observer.observe(nav)
+    return () => {
+      observer.disconnect()
+      header.style.minHeight = ''
+    }
+  }, [isHome])
   return (
     <>
       {/* Preloader */}
@@ -39,7 +61,7 @@ export default function Header() {
       </div> */}
 
       {/* Header */}
-      <header className={`header-area header-one ${isHome ? 'transparent-header' : 'header-static'}`}>
+      <header ref={headerRef} className={`header-area header-one ${isHome ? 'transparent-header' : 'header-static'}`}>
         <div className="header-navigation navigation-white">
           <div
             className={`nav-overlay ${menuOpen ? 'active' : ''}`}
