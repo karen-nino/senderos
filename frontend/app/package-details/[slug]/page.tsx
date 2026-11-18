@@ -285,7 +285,7 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                   <div className="package-description-route pt-45 wow fadeInUp mb-20">
                     {pkg.description && (
                       <>
-                        <h3 className="title">Descripción</h3>
+                        <h4 className="title">Descripción</h4>
                         <p>{pkg.description}</p>
                       </>
                     )}

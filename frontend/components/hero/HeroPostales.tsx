@@ -4,8 +4,6 @@ import Link from 'next/link'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { PointerEvent } from 'react'
 import { preload } from 'react-dom'
-import { WhatsAppIcon } from '../WhatsAppIcon'
-import { whatsappHref } from '@/lib/contact'
 import { cloudinaryResize } from '@/lib/cloudinary'
 import {
   HERO_AUTOPLAY_MS,
@@ -191,7 +189,7 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
 
   const slide = slides[active] ?? slides[0]
   const { text, ctaText, ctaLink } = getHeroText(slide)
-  const quoteHref = whatsappHref(`Hola, quiero cotizar: ${slide.title}`)
+  // const quoteHref = whatsappHref(`Hola, quiero cotizar: ${slide.title}`)
 
   return (
     <section
@@ -246,10 +244,11 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
                 </span>
               </Link>
             )}
-            <a href={quoteHref} className="hero-postal__wa" target="_blank" rel="noopener noreferrer">
+            {/* Botón "Cotizar por WhatsApp" oculto por el momento */}
+            {/* <a href={quoteHref} className="hero-postal__wa" target="_blank" rel="noopener noreferrer">
               <WhatsAppIcon className="hero-postal__wa-icon" aria-hidden />
               Cotizar por WhatsApp
-            </a>
+            </a> */}
           </div>
         </div>
 
