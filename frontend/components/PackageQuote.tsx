@@ -10,7 +10,10 @@ interface PackageQuoteProps {
   priceInternational?: string
   /** Tabla de Strapi: ocupación ("2 Personas", "4-8 Personas") → precio por persona. */
   pricePerPerson?: Array<{ occupation: string; price: string }>
-  whatsappMessage: string
+  /** Nombre del paquete, para el mensaje de WhatsApp. */
+  title: string
+  /** Paquete de aventura: cambia el emoji del mensaje (🧗‍♂️ aventura · 🧳 los demás). */
+  isAdventure?: boolean
 }
 
 type Tier = { min: number; max: number; price: string }
@@ -39,7 +42,7 @@ function buildTiers(rows: PackageQuoteProps['pricePerPerson']): Tier[] | null {
  * Precio en la caja "Detalles del paquete". Si hay tabla de precio por grupo, la persona elige cuántas van
  * con un contador (−/+) y ve el precio por persona de ese grupo; el mensaje de WhatsApp lleva esa elección.
  */
-export default function PackageQuote({ price, priceInternational, pricePerPerson, whatsappMessage }: PackageQuoteProps) {
+export default function PackageQuote({ price, priceInternational, pricePerPerson, title, isAdventure = false }: PackageQuoteProps) {
   const tiers = useMemo(() => buildTiers(pricePerPerson), [pricePerPerson])
   const minPeople = tiers ? tiers[0].min : 1
   // Tope del contador: el mayor número de la tabla (un rango abierto como "8+" permite hasta 8 + 7)
@@ -54,9 +57,13 @@ export default function PackageQuote({ price, priceInternational, pricePerPerson
     ? tiers.find((t) => people >= t.min && people <= t.max) ?? [...tiers].reverse().find((t) => people >= t.min) ?? tiers[0]
     : null
 
-  const message = tier
-    ? `${whatsappMessage}\n\n👥 *Personas:* ${people}\n💲 *Precio por persona:* ${tier.price}`
-    : whatsappMessage
+  // Mensaje corto: nombre del paquete y, si eligió en el contador, cuántas personas
+  const message = [
+    'Hola 👋, me gustaría cotizar el siguiente paquete:',
+    '',
+    `${isAdventure ? '🧗‍♂️' : '🧳'} *${title}*`,
+    ...(tier ? [`- ${people} ${people === 1 ? 'Persona' : 'Personas'}`] : []),
+  ].join('\n')
 
   return (
     <>

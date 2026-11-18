@@ -107,6 +107,8 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
   ])
   // Mostrar paquete normal, de temporada (Holiday) o de aventura (Adventure) según el slug
   const pkg = packageData ?? holidayData ?? adventureData ?? FALLBACK
+  // Paquete de aventura solo si el slug no existe como paquete ni como temporada (mismo orden que arriba)
+  const isAdventure = !packageData && !holidayData && !!adventureData
   const locationLabel = pkg.route ?? pkg.title ?? 'Chiapas, México'
 
   // Hasta 3 paquetes aleatorios (distintos al actual) para "Más paquetes"
@@ -131,25 +133,6 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
     return list.filter((u) => (seen.has(u) ? false : (seen.add(u), true)))
   })()
 
-  // Mensaje de WhatsApp con todos los detalles del paquete
-  const whatsappLines = [
-    `Hola, me gustaría cotizar el siguiente paquete:`,
-    ``,
-    ``,
-    `*${pkg.title}*`,
-    ``,
-    `*Detalles:*`,
-    `• Precio: ${pkg.price}`,
-    `• Duración: ${pkg.duration || 'Variable'}`,
-    pkg.accommodation ? `• Alojamiento: ${pkg.accommodation}` : null,
-    pkg.departure ? `• Salida: ${pkg.departure}` : null,
-    pkg.transport ? `• Transporte: ${pkg.transport}` : null,
-    displayRouteItems.length > 0 ? `• Ruta: ${displayRouteItems.join(' → ')}` : null,
-    pkg.itinerary && pkg.itinerary.length > 0
-      ? `\n📅 *Itinerario:*\n${pkg.itinerary.map((item) => `• ${item.dayTitle}${item.time ? ` (${item.time})` : ''}: ${item.activity}`).join('\n')}`
-      : null,
-  ].filter(Boolean) as string[]
-  const whatsappMessage = whatsappLines.join('\n')
 
   const packageJsonLd = buildProductJsonLd({
     name: pkg.title,
@@ -232,7 +215,8 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                       price={pkg.price}
                       priceInternational={pkg.priceInternational}
                       pricePerPerson={pkg.pricePerPerson}
-                      whatsappMessage={whatsappMessage}
+                      title={pkg.title}
+                      isAdventure={isAdventure}
                     />
                   </ul>
                 </div>
@@ -474,7 +458,8 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                             price={pkg.price}
                             priceInternational={pkg.priceInternational}
                             pricePerPerson={pkg.pricePerPerson}
-                            whatsappMessage={whatsappMessage}
+                            title={pkg.title}
+                            isAdventure={isAdventure}
                           />
                         </ul>
                       </div>
