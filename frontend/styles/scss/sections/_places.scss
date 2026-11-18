@@ -391,6 +391,9 @@
       margin: 0;
       font: 400 18px $font;
       color: #6b5312;
+      & + p {
+        margin-top: 12px;
+      }
       & strong {
         color: #5a4300;
         font-weight: 700;

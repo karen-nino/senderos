@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { WhatsAppIcon } from '@/components/WhatsAppIcon'
 // import PlaceSlider from '@/components/PlaceSlider'
 import GallerySlider from '@/components/GallerySlider'
+import RichNote from '@/components/RichNote'
 import { JsonLd, buildProductJsonLd } from '@/components/JsonLd'
 import { fetchPackageBySlug, fetchHolidayBySlug, fetchAdventureBySlug, fetchPackages, STRAPI_REVALIDATE_SECONDS } from '@/lib/strapi'
 import { whatsappHref } from '@/lib/contact'
@@ -214,10 +215,7 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                 <div className="package-ideal-for d-block d-xl-none mb-40" role="note">
                   <div className="package-ideal-for__box">
                     <i className="fas fa-exclamation-triangle" aria-hidden></i>
-                    <p>
-                      <strong>Este paquete es ideal para </strong>
-                      {pkg.idealFor}
-                    </p>
+                    <div className="package-ideal-for__text"><RichNote text={pkg.idealFor} /></div>
                   </div>
                 </div>
               )}
@@ -274,10 +272,7 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                     <div className="package-ideal-for d-none d-xl-block pt-45 wow fadeInUp" role="note">
                       <div className="package-ideal-for__box">
                         <i className="fas fa-exclamation-triangle" aria-hidden></i>
-                        <p>
-                          <strong>Este paquete es ideal para </strong>
-                          {pkg.idealFor}
-                        </p>
+                        <div className="package-ideal-for__text"><RichNote text={pkg.idealFor} /></div>
                       </div>
                     </div>
                   )}
