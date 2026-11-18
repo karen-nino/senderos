@@ -116,32 +116,18 @@ export default async function TourDetailPage({ params }: PageProps) {
     ? destination.departures
     : [{ departure: destination.departure, transport: destination.transport, minimumParticipants: destination.minimumParticipants, arrival: destination.arrival }]
 
-  // Mensaje de WhatsApp con todos los detalles del tour y la salida elegida
   const routeList = destination.routeList ?? (destination.route ? [destination.route] : [])
-  const buildWhatsappMessage = (dep: (typeof departureList)[number]) => {
-    const arrival = dep.arrival
-    const lines = [
-      `Hola, me gustaría cotizar el siguiente tour:`,
-      ``,
-      ``,
-      `*${destination.title}*`,
-      ``,
-      `*Detalles:*`,
-      destination.location ? `• Ubicación: ${destination.location}` : null,
-      dep.departure ? `• Punto de salida: ${dep.departure}` : null,
-      arrival && arrival.length > 0
-        ? arrival.length === 1
-          ? `• Punto de regreso: ${arrival[0].value}${arrival[0].arrivalNationalPrice ? `\n• Precio regreso: ${arrival[0].arrivalNationalPrice}` : ''}`
-          : arrival.map((a, i) => `• Punto de regreso (Opc. ${i + 1}): ${a.value}${a.arrivalNationalPrice ? `\n• Precio regreso (Opc. ${i + 1}): ${a.arrivalNationalPrice}` : ''}`).join('\n')
-        : null,
-      dep.transport ? `• Transporte: ${dep.transport}` : null,
-      routeList.length > 0 ? `• Ruta: ${routeList.join(' → ')}` : null,
-      destination.itinerary && destination.itinerary.length > 0
-        ? `\n📅 *Itinerario:*\n${destination.itinerary.map((item) => `• ${item.dayTitle}${item.time ? ` (${item.time})` : ''}: ${item.activity}`).join('\n')}`
-        : null,
-    ].filter(Boolean) as string[]
-    return lines.join('\n')
-  }
+
+  // Mensaje de WhatsApp corto: nombre del tour y punto de salida elegido
+  const buildWhatsappMessage = (dep: (typeof departureList)[number]) =>
+    [
+      'Hola 👋, me gustaría cotizar el siguiente tour:',
+      '',
+      `🚌 *${destination.title}*`,
+      dep.departure ? `- Saliendo desde ${dep.departure}` : null,
+    ]
+      .filter((line) => line !== null)
+      .join('\n')
   const tourDepartures = departureList.map((dep) => ({ ...dep, whatsappMessage: buildWhatsappMessage(dep) }))
 
   const tourJsonLd = buildProductJsonLd({
