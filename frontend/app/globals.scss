@@ -2667,45 +2667,97 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   line-height: 1.55;
   color: #4a4f47;
 }
-.page-intro__trail {
+/* Ilustración de la franja (Paquetes: maleta y recorrido · Tours: pirámide, cascada y selva) */
+.page-intro__art {
   display: none;
   position: absolute;
   right: max(4vw, calc((100vw - 1320px) / 2));
-  bottom: 56px;
-  width: min(44vw, 560px);
-  height: 200px;
+  bottom: 64px; /* por encima de la barra de búsqueda, que se monta sobre el borde de la franja */
+  width: min(42vw, 560px);
+  height: 220px;
   pointer-events: none;
-  @media (min-width: 992px) {
+  @media (min-width: 1200px) {
     display: block;
   }
 }
-.page-intro__trail svg {
+.page-intro__art svg {
   display: block;
   width: 100%;
   height: 100%;
   overflow: visible;
 }
-.page-intro__trail path {
+.page-intro__hill {
+  fill: #e3f0d9;
+}
+.page-intro__hill--back {
+  fill: #eef6e7;
+}
+.page-intro__ink {
+  fill: none;
+  stroke: #2f6b1f;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.page-intro__ink-thin {
+  fill: none;
+  stroke: #2f6b1f;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.page-intro__fill {
+  fill: #fffdf8;
+}
+.page-intro__stripe {
+  stroke: #63ab45;
+  stroke-width: 3;
+}
+.page-intro__tag {
+  fill: #f7921e;
+}
+.page-intro__tag-hole {
+  fill: #fffbf2;
+}
+.page-intro__sun {
+  fill: #fbd9a8;
+}
+.page-intro__river {
+  fill: #d6e8fb;
+}
+.page-intro__hull {
+  fill: #2f6b1f;
+}
+.page-intro__water {
+  fill: none;
+  stroke: #7fb3e6;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+.page-intro__water--foam {
+  stroke: #a9cdef;
+}
+.page-intro__leaf path {
+  fill: #63ab45;
+}
+.page-intro__leaf path:nth-child(2) {
+  fill: #2f6b1f;
+}
+.page-intro__route {
   fill: none;
   stroke: #63ab45;
   stroke-width: 3;
   stroke-linecap: round;
   stroke-dasharray: 0.1 12;
-  vector-effect: non-scaling-stroke;
   animation: hero-postal-walk 2.4s linear infinite;
   @media (prefers-reduced-motion: reduce) {
     animation: none;
   }
 }
-.page-intro__trail-pin {
-  position: absolute;
-  right: 4%;
-  top: 15%;
-  transform: translate(50%, -100%);
-  color: #2f6b1f;
-  font-size: 34px;
-  line-height: 1;
-  filter: drop-shadow(0 6px 8px rgba(28, 35, 31, 0.2));
+.page-intro__stop circle,
+.page-intro__end {
+  fill: #2f6b1f;
+  stroke: #fffbf2;
+  stroke-width: 3;
 }
 /* Tarjeta blanca montada sobre el borde de la franja crema */
 .packages-explorer__toolbar {

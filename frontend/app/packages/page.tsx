@@ -49,6 +49,7 @@ export default async function PackagesPage() {
         {hasDataFromStrapi ? (
           <section className="listing-page pb-160">
             <PageIntro
+              art="paquetes"
               title="Paquetes"
               intro="Recorre Chiapas con un paquete por temporada, de aventura o elige entre todos nuestros recorridos."
             />

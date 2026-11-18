@@ -70,6 +70,7 @@ export default async function ToursPage() {
         {hasDataFromStrapi ? (
           <section className="listing-page pb-160">
             <PageIntro
+              art="tours"
               title="Tours"
               intro="Elige el punto de salida que te quede mejor y descubre cascadas, zonas arqueológicas, pueblos y selva de Chiapas."
             />
