@@ -72,12 +72,12 @@ export default function TourDepartures({ departures, idPrefix, className = '' }:
         aria-labelledby={hasChoice ? `${idPrefix}-tab-${active}` : undefined}
       >
         {dep.minimumParticipants && <li><span><i className="fal fa-users"></i>Mínimo de participantes<span style={{ float: 'none' }}>{dep.minimumParticipants}</span></span></li>}
-        {dep.transport && <li><span><i className="fal fa-bus"></i>Transporte<span style={{ float: 'none' }}>{dep.transport}</span></span></li>}
         {dep.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida desde<span style={{ float: 'none', display: 'block' }}>{dep.departure}</span></span></li>}
         {dep.arrival && dep.arrival.length > 0 && (
           dep.arrival.length === 1 ? (
             <React.Fragment>
               <li><span><i className="far fa-map-marker-alt"></i>Regreso hacia<span style={{ float: 'none', display: 'block'}}>{dep.arrival[0].value}</span><span style={{ float: 'none', display: 'block' }}>{dep.arrival[0].arrivalHour}</span></span></li>
+              {dep.transport && <li><span><i className="fal fa-bus"></i>Transporte<span style={{ float: 'none' }}>{dep.transport}</span></span></li>}
               {dep.arrival[0].arrivalNationalPrice && (
                 <li><span><i className="fal fa-box-usd"></i>Precio Nacional desde<span style={{ float: 'none' }}>{dep.arrival[0].arrivalNationalPrice}</span></span></li>
               )}
@@ -93,6 +93,8 @@ export default function TourDepartures({ departures, idPrefix, className = '' }:
             ))
           )
         )}
+        {/* Con un regreso el transporte va justo después de él; con varios, después de todos (sus precios van dentro de cada uno) */}
+        {(!dep.arrival || dep.arrival.length !== 1) && dep.transport && <li><span><i className="fal fa-bus"></i>Transporte<span style={{ float: 'none' }}>{dep.transport}</span></span></li>}
         <li className="tour-details-wa-cta-mobile">
           <div className="submit-button">
             <a
