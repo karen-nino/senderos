@@ -197,6 +197,9 @@ function QuoteModal({ dialogRef, title, tiers }: {
   const titleId = useId()
   const peopleLabelId = useId()
   const today = useMemo(startOfToday, [])
+  // Mes que se está viendo: los días grises de otros meses se ven pero no se pueden elegir
+  const [month, setMonth] = useState(today)
+  const isOtherMonth = (d: Date) => d.getMonth() !== month.getMonth() || d.getFullYear() !== month.getFullYear()
   const close = () => dialogRef.current?.close()
 
   const handleSubmit = (e: FormEvent) => {
@@ -268,7 +271,9 @@ function QuoteModal({ dialogRef, title, tiers }: {
               formatters={CALENDAR_FORMATTERS}
               selected={departure}
               onSelect={(d) => { setDeparture(d); if (d) setDateError(false) }}
-              disabled={{ before: today }}
+              month={month}
+              onMonthChange={setMonth}
+              disabled={[{ before: today }, isOtherMonth]}
               startMonth={today}
             />
           </div>
