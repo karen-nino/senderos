@@ -235,6 +235,23 @@ function withLocale(path: string, locale: string): string {
 
 type StrapiDoc = Record<string, unknown> & { documentId?: unknown; title?: unknown };
 
+function isEmptyValue(v: unknown): boolean {
+  return v == null || v === "" || (Array.isArray(v) && v.length === 0);
+}
+
+/**
+ * Versión en el idioma pedido, completada campo por campo con la del otro idioma: lo que la traducción deja
+ * vacío (fotos, galería, slides, servicios…) sale igual que en español en vez de quedar vacío o con relleno.
+ */
+function fillFromOther(chosen: StrapiDoc, other: StrapiDoc | undefined): StrapiDoc {
+  if (!other || chosen === other) return chosen;
+  const filled: StrapiDoc = { ...chosen };
+  for (const [key, value] of Object.entries(other)) {
+    if (isEmptyValue(filled[key]) && !isEmptyValue(value)) filled[key] = value;
+  }
+  return filled;
+}
+
 /**
  * Junta la respuesta en el idioma pedido con la del otro idioma, por documentId:
  * cada entrada sale en el idioma pedido si existe y si no en el otro (así nada queda vacío mientras
@@ -254,7 +271,7 @@ function mergeLocales(primary: Record<string, unknown>, secondary: Record<string
       (k, i, all) => all.indexOf(k) === i,
     );
     const data = keys.map((k) => {
-      const chosen = pByKey.get(k) ?? sByKey.get(k)!;
+      const chosen = fillFromOther(pByKey.get(k) ?? sByKey.get(k)!, sByKey.get(k));
       const titles = [pByKey.get(k)?.title, sByKey.get(k)?.title].filter(
         (t): t is string => typeof t === "string" && t.trim() !== "",
       );
@@ -263,7 +280,8 @@ function mergeLocales(primary: Record<string, unknown>, secondary: Record<string
     return { ...(primary?.error ? secondary : primary), data };
   }
   const hasP = pData != null && typeof pData === "object" && Object.keys(pData).length > 0;
-  return hasP ? primary : secondary?.data != null ? secondary : primary;
+  if (!hasP) return secondary?.data != null ? secondary : primary;
+  return { ...primary, data: fillFromOther(pData as StrapiDoc, (sData ?? undefined) as StrapiDoc | undefined) };
 }
 
 export async function fetchStrapi(url: string, options?: FetchStrapiOptions) {
