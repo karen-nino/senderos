@@ -24,6 +24,8 @@ function parsePrice(value: string | undefined): number | null {
 
 /** Construye JSON-LD tipo Product para un tour o paquete (reservable, con oferta). */
 export function buildProductJsonLd(options: {
+  /** Nombre de la propiedad de duración en el idioma de la página. */
+  durationLabel?: string
   name: string
   description: string
   image: string | string[]
@@ -66,7 +68,7 @@ export function buildProductJsonLd(options: {
   }
   if (options.duration) {
     product.additionalProperty = [
-      { '@type': 'PropertyValue', name: 'Duración', value: options.duration },
+      { '@type': 'PropertyValue', name: options.durationLabel ?? 'Duración', value: options.duration },
     ]
   }
   return product
@@ -88,7 +90,7 @@ export function buildOrganizationJsonLd(): Record<string, unknown> {
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'customer service',
-      availableLanguage: 'Spanish',
+      availableLanguage: ['Spanish', 'English'],
     },
   }
 }

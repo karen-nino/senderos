@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState, type ReactNode } from 'react'
+import { useDict } from '@/components/LangProvider'
 
 export interface FilteredCardItem {
   title: string
@@ -29,10 +30,13 @@ function titleWords(title: string): string[] {
 
 export default function FilteredCardsList({
   items,
-  searchPlaceholder = 'Buscar por nombre',
-  emptyMessage = 'No encontramos resultados que coincidan con tu búsqueda.',
+  searchPlaceholder,
+  emptyMessage,
   gridClassName = 'places-section__grid',
 }: FilteredCardsListProps) {
+  const t = useDict().explorer
+  searchPlaceholder ??= t.searchByName
+  emptyMessage ??= t.noResults
   const [query, setQuery] = useState('')
 
   const filtered = useMemo(() => {
@@ -79,7 +83,7 @@ export default function FilteredCardsList({
               type="button"
               onClick={() => setQuery('')}
               className="tours-filters__clear"
-              aria-label="Limpiar búsqueda"
+              aria-label={t.clearSearch}
             >
               ×
             </button>

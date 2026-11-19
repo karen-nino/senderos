@@ -1,17 +1,23 @@
+import type { Metadata } from 'next'
 import Header from '@/components/Header'
+import { localizePath, pageAlternates, type Lang } from '@/lib/i18n'
+import { getDictionary } from '@/lib/dictionaries'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
 import { fetchFaqPageData, STRAPI_REVALIDATE_SECONDS, type FaqItem } from '@/lib/strapi'
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
 
-export const metadata = {
-  title: 'Preguntas Frecuentes - Senderos de Chiapas',
-  description: 'Respuestas a las preguntas más comunes sobre nuestros tours, paquetes y servicios turísticos en Chiapas.',
+export function generateMetadata({ params }: { params: { lang: Lang } }): Metadata {
+  const t = getDictionary(params.lang).faqPage
+  return { title: t.metaTitle, description: t.metaDescription, alternates: pageAlternates(params.lang, '/preguntas-frecuentes') }
 }
 
-export default async function FAQ() {
-  const items: FaqItem[] = await fetchFaqPageData()
+export default async function FAQ({ params }: { params: { lang: Lang } }) {
+  const { lang } = params
+  const to = (path: string) => localizePath(lang, path)
+  const t = getDictionary(lang).faqPage
+  const items: FaqItem[] = await fetchFaqPageData(lang)
   return (
     <>
       <Header />
@@ -22,9 +28,9 @@ export default async function FAQ() {
             <div className="row justify-content-center">
               <div className="col-lg-10">
                 <div className="section-title mb-50 wow fadeInDown">
-                  <span className="sub-title">Información</span>
-                  <h2>Preguntas Frecuentes</h2>
-                  <p className="mt-20">Encuentra respuestas a las dudas más comunes sobre nuestros tours y servicios en Chiapas.</p>
+                  <span className="sub-title">{t.sub}</span>
+                  <h2>{t.title}</h2>
+                  <p className="mt-20">{t.intro}</p>
                 </div>
 
                 <div className="accordion faq-accordion wow fadeInUp" id="faqAccordion">
@@ -56,9 +62,9 @@ export default async function FAQ() {
                 </div>
 
                 <div className="faq-cta mt-50 text-center wow fadeInUp">
-                  <p className="mb-25">¿No encontraste lo que buscabas?</p>
-                  <Link href="/contacto" className="main-btn primary-btn">
-                    Contáctanos<i className="far fa-paper-plane"></i>
+                  <p className="mb-25">{t.notFound}</p>
+                  <Link href={to('/contacto')} className="main-btn primary-btn">
+                    {getDictionary(lang).common.contactUs}<i className="far fa-paper-plane"></i>
                   </Link>
                 </div>
               </div>

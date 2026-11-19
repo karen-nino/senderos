@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import { localizePath, pageAlternates, type Lang } from '@/lib/i18n'
+import { getDictionary } from '@/lib/dictionaries'
 import React from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -10,17 +12,22 @@ import { cloudinaryWidth } from '@/lib/cloudinary'
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
 
-export const metadata: Metadata = {
-  title: 'Viajes internacionales - Senderos de Chiapas',
-  description: 'Paquetes y destinos internacionales con Senderos de Chiapas. Experiencias de viaje fuera de México con la misma calidad y atención.',
+export function generateMetadata({ params }: { params: { lang: Lang } }): Metadata {
+  const t = getDictionary(params.lang).internationalPage
+  return { title: t.metaTitle, description: t.metaDescription, alternates: pageAlternates(params.lang, '/internacional') }
 }
 
-export default async function InternationalPage() {
+export default async function InternationalPage({ params }: { params: { lang: Lang } }) {
+  const { lang } = params
+  const to = (path: string) => localizePath(lang, path)
+  const dict = getDictionary(lang)
+  const t = dict.internationalPage
+  const c = dict.common
   let destinations: AdaptedDestination[] = []
   let imageBannerUrl: string | null = null
 
   try {
-    const data = await fetchInternationalPageData()
+    const data = await fetchInternationalPageData(lang)
     destinations = data.destinations
     imageBannerUrl = data.imageBannerUrl
   } catch (error) {
@@ -44,10 +51,10 @@ export default async function InternationalPage() {
               <div className="row justify-content-center">
                 <div className="col-lg-10 mx-auto text-center">
                   <div className="page-banner-content text-center text-white">
-                    <h1 className="page-title">Destinos Internacionales</h1>
+                    <h1 className="page-title">{t.title}</h1>
                     <ul className="breadcrumb-link text-white d-flex justify-content-center flex-wrap list-unstyled mb-0">
-                      <li><Link href="/">Home</Link></li>
-                      <li className="active">Internacional</li>
+                      <li><Link href={to('/')}>{c.home}</Link></li>
+                      <li className="active">{t.breadcrumb}</li>
                     </ul>
                   </div>
                 </div>
@@ -65,6 +72,7 @@ export default async function InternationalPage() {
                   key: String(destination.slug || destination.title || i),
                   content: (
                     <InternationalItem
+                      lang={lang}
                       title={destination.title}
                       description={destination.subtitle ?? destination.description}
                       image={destination.image}
@@ -77,17 +85,17 @@ export default async function InternationalPage() {
                     />
                   ),
                 }))}
-                searchPlaceholder="Buscar destino por nombre"
-                emptyMessage="No encontramos destinos que coincidan con tu búsqueda."
+                searchPlaceholder={t.search}
+                emptyMessage={t.empty}
               />
             </div>
             <div className="container text-center mt-50">
               <Link
-                href="/"
+                href={to('/')}
                 className="main-btn wow fadeInUp"
                 style={{ padding: '16px 45px', backgroundColor: 'rgba(99, 171, 69, 0.2)', color: '#63ab45' }}
               >
-                Regresar a Home
+                {c.backHome}
               </Link>
             </div>
           </section>
@@ -98,22 +106,22 @@ export default async function InternationalPage() {
                 <div className="col-lg-8 text-center">
                   <div className="section-title mb-70 wow fadeInDown">
                     <i className="fas fa-globe-americas mb-30 d-block" style={{ color: '#63ab45', fontSize: '3.5rem' }} aria-hidden />
-                    <span className="sub-title">Información no disponible</span>
-                    <h2>Por el momento no hay información</h2>
+                    <span className="sub-title">{c.unavailable}</span>
+                    <h2>{c.noInfo}</h2>
                     <p className="mt-40">
-                      Estamos trabajando para actualizar nuestros destinos internacionales. Si gustas conocer más sobre nuestros servicios y opciones disponibles, contáctanos y con gusto te atendemos.
+                      {c.noInternationalText}
                     </p>
                   </div>
                   <div className="d-flex flex-wrap justify-content-center gap-3">
                     <Link
-                      href="/"
+                      href={to('/')}
                       className="main-btn wow fadeInUp"
                       style={{ padding: '16px 45px', backgroundColor: 'rgba(99, 171, 69, 0.2)', color: '#63ab45' }}
                     >
-                      Regresar a Home
+                      {c.backHome}
                     </Link>
-                    <Link href="/contacto" className="main-btn primary-btn wow fadeInUp" style={{ padding: '16px 45px' }}>
-                      Contáctanos
+                    <Link href={to('/contacto')} className="main-btn primary-btn wow fadeInUp" style={{ padding: '16px 45px' }}>
+                      {c.contactUs}
                     </Link>
                   </div>
                 </div>

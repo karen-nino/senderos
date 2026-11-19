@@ -74,10 +74,26 @@ function validate(body: Record<string, unknown>): { errors: FieldErrors } {
   return { errors };
 }
 
+const MESSAGES = {
+  es: {
+    rateLimited: "Has enviado varios mensajes seguidos. Espera unos minutos e intenta de nuevo.",
+    notConfigured: "El envío de correo no está configurado. Contacta al administrador.",
+    sendFailed: "No se pudo enviar el mensaje. Intenta de nuevo más tarde.",
+  },
+  en: {
+    rateLimited: "You’ve sent several messages in a row. Please wait a few minutes and try again.",
+    notConfigured: "Email sending is not configured. Please contact the administrator.",
+    sendFailed: "The message could not be sent. Please try again later.",
+  },
+};
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { name, email, subject, message, website } = body;
+    // Idioma del sitio desde el que se escribió: los errores vuelven en ese idioma y el correo lo indica
+    const isEn = body?.lang === "en";
+    const msg = isEn ? MESSAGES.en : MESSAGES.es;
 
     // Honeypot: si un bot rellena este campo oculto, no enviamos
     if (website) {
@@ -93,7 +109,7 @@ export async function POST(request: Request) {
     // Después de validar: un error de captura no debe gastar intentos
     if (isRateLimited(getClientIp(request))) {
       return NextResponse.json(
-        { error: "Has enviado varios mensajes seguidos. Espera unos minutos e intenta de nuevo." },
+        { error: msg.rateLimited },
         { status: 429 }
       );
     }
@@ -107,7 +123,7 @@ export async function POST(request: Request) {
     if (!apiKey) {
       console.error("RESEND_API_KEY no está configurada.");
       return NextResponse.json(
-        { error: "El envío de correo no está configurado. Contacta al administrador." },
+        { error: msg.notConfigured },
         { status: 500 }
       );
     }
@@ -117,6 +133,7 @@ export async function POST(request: Request) {
       <p><strong>Nombre:</strong> ${escapeHtml(nameStr)}</p>
       <p><strong>Email:</strong> ${escapeHtml(emailStr)}</p>
       <p><strong>Asunto:</strong> ${escapeHtml(subjectStr)}</p>
+      ${isEn ? "<p><strong>Idioma:</strong> escribió desde el sitio en inglés, conviene responder en inglés</p>" : ""}
       <p><strong>Mensaje:</strong></p>
       <p>${escapeHtml(messageStr).replace(/\n/g, "<br>")}</p>
       <hr>
@@ -134,7 +151,7 @@ export async function POST(request: Request) {
     if (error) {
       console.error("Resend error:", error);
       return NextResponse.json(
-        { error: "No se pudo enviar el mensaje. Intenta de nuevo más tarde." },
+        { error: msg.sendFailed },
         { status: 500 }
       );
     }
@@ -143,7 +160,7 @@ export async function POST(request: Request) {
   } catch (e) {
     console.error("Contact API error:", e);
     return NextResponse.json(
-      { error: "Error al procesar tu mensaje. Intenta de nuevo." },
+      { error: "Error al procesar tu mensaje. Intenta de nuevo. / Error processing your message. Please try again." },
       { status: 500 }
     );
   }

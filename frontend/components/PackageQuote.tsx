@@ -3,10 +3,12 @@
 import { useEffect, useId, useMemo, useRef, useState, type FormEvent, type RefObject } from 'react'
 import { createPortal } from 'react-dom'
 import { DayPicker } from '@daypicker/react'
-import { es } from '@daypicker/react/locale'
+import { es, enUS } from '@daypicker/react/locale'
 import '@daypicker/react/style.css'
 import { WhatsAppIcon } from '@/components/WhatsAppIcon'
 import { whatsappHref } from '@/lib/contact'
+import { useDict, useLang } from '@/components/LangProvider'
+import type { Dict } from '@/lib/dictionaries'
 
 interface PackageQuoteProps {
   /** Precio general del paquete (sin tabla por grupo). */
@@ -25,11 +27,10 @@ interface PackageQuoteProps {
 
 export type PackageKind = 'adventure' | 'classic' | 'season'
 
-/** Textos del modal según el tipo de paquete. */
-const MODAL_COPY: Record<'adventure' | 'classic', { eyebrow: string; emoji: string }> = {
-  adventure: { eyebrow: 'Cotiza tu aventura', emoji: '🧗‍♂️' },
-  classic: { eyebrow: 'Cotiza tu paquete', emoji: '🧳' },
-}
+/** Emoji del mensaje de WhatsApp según el tipo de paquete (el texto de arriba del modal viene del diccionario). */
+const MODAL_EMOJI: Record<'adventure' | 'classic', string> = { adventure: '🧗‍♂️', classic: '🧳' }
+
+type QuoteText = Dict['quote']
 
 type Tier = { min: number; max: number; price: string }
 
@@ -75,13 +76,14 @@ export default function PackageQuote({ price, priceInternational, pricePerPerson
   const [people, setPeople] = useState(minPeople)
   const labelId = useId()
   const tier = tiers ? tierFor(tiers, people) : null
+  const t = useDict().quote
 
   // Mensaje corto: nombre del paquete y, si eligió en el contador, cuántas personas
   const message = [
-    'Hola 👋, me gustaría cotizar el siguiente paquete:',
+    t.msgIntro,
     '',
-    `🧳 *${title}*`,
-    ...(tier ? [`- ${people} ${people === 1 ? 'Persona' : 'Personas'}`] : []),
+    `🧳 *${title.trim()}*`,
+    ...(tier ? [`- ${t.msgPeople(people)}`] : []),
   ].join('\n')
 
   const dialogRef = useRef<HTMLDialogElement>(null)
@@ -91,7 +93,7 @@ export default function PackageQuote({ price, priceInternational, pricePerPerson
       <div className="submit-button">
         {/* Abre el modal (personas, fecha, motivo): es un paso previo, por eso flecha y no el ícono de WhatsApp */}
         <button type="button" className="main-btn primary-btn" onClick={() => dialogRef.current?.showModal()}>
-          Armar mi cotización
+          {t.openModal}
           <span className="whatsapp-icon package-quote__next-icon" aria-hidden>
             <i className="fas fa-arrow-right"></i>
           </span>
@@ -102,7 +104,7 @@ export default function PackageQuote({ price, priceInternational, pricePerPerson
         title={title}
         // Clásicos: sin grupos por ahora, de 1 persona en adelante
         tiers={kind === 'classic' ? null : tiers}
-        copy={MODAL_COPY[kind]}
+        copy={{ eyebrow: kind === 'adventure' ? t.eyebrowAdventure : t.eyebrowClassic, emoji: MODAL_EMOJI[kind] }}
       />
     </li>
   )
@@ -116,22 +118,22 @@ export default function PackageQuote({ price, priceInternational, pricePerPerson
         <>
         <li className="package-quote">
           <span className="package-quote__label" id={labelId}>
-            <i className="fal fa-users" aria-hidden></i>¿Cuántas personas viajan?
+            <i className="fal fa-users" aria-hidden></i>{t.howMany}
           </span>
-          <PeopleStepper labelId={labelId} people={people} min={minPeople} max={maxPeople} onChange={setPeople} />
+          <PeopleStepper labelId={labelId} people={people} min={minPeople} max={maxPeople} onChange={setPeople} t={t} />
         </li>
         <li className="package-quote">
           <div className="package-quote__price">
-            <span className="package-quote__price-label">Precio desde</span>
+            <span className="package-quote__price-label">{t.priceFrom}</span>
             <span className="package-quote__price-amount">{tier.price}</span>
-            <span className="package-quote__price-note">por persona</span>
+            <span className="package-quote__price-note">{t.perPerson}</span>
           </div>
         </li>
         </>
       ) : (
         <>
-          <li><span><i className="fal fa-box-usd"></i>{priceInternational ? 'Precio Nacional' : 'Precio desde'}<span>{price}</span></span></li>
-          {priceInternational && <li><span><i className="fal fa-box-usd"></i>Precio Internacional<span>{priceInternational}</span></span></li>}
+          <li><span><i className="fal fa-box-usd"></i>{priceInternational ? t.priceNational : t.priceFrom}<span>{price}</span></span></li>
+          {priceInternational && <li><span><i className="fal fa-box-usd"></i>{t.priceInternational}<span>{priceInternational}</span></span></li>}
         </>
       )}
       {/* Clásico: precio en la caja y botón al modal · Temporada: directo a WhatsApp */}
@@ -139,7 +141,7 @@ export default function PackageQuote({ price, priceInternational, pricePerPerson
         <li>
           <div className="submit-button">
             <a href={whatsappHref(message)} target="_blank" rel="noopener noreferrer" className="main-btn primary-btn">
-              Cotizar por WhatsApp<WhatsAppIcon className="whatsapp-icon" />
+              {t.quoteWhatsapp}<WhatsAppIcon className="whatsapp-icon" />
             </a>
           </div>
         </li>
@@ -148,8 +150,9 @@ export default function PackageQuote({ price, priceInternational, pricePerPerson
   )
 }
 
-function PeopleStepper({ labelId, people, min, max, onChange, numberOnly = false }: {
+function PeopleStepper({ labelId, people, min, max, onChange, numberOnly = false, t }: {
   labelId: string
+  t: QuoteText
   people: number
   min: number
   max: number
@@ -157,7 +160,7 @@ function PeopleStepper({ labelId, people, min, max, onChange, numberOnly = false
   /** Solo el número ("4") en vez de "4 personas"; el lector de pantalla sigue oyendo "4 personas". */
   numberOnly?: boolean
 }) {
-  const peopleText = `${people} ${people === 1 ? 'persona' : 'personas'}`
+  const peopleText = t.people(people)
   return (
     <div className="package-quote__stepper" role="group" aria-labelledby={labelId}>
       <button
@@ -165,7 +168,7 @@ function PeopleStepper({ labelId, people, min, max, onChange, numberOnly = false
         className="package-quote__btn"
         onClick={() => onChange(Math.max(min, people - 1))}
         disabled={people <= min}
-        aria-label="Una persona menos"
+        aria-label={t.lessPerson}
       >
         <i className="far fa-minus" aria-hidden></i>
       </button>
@@ -177,7 +180,7 @@ function PeopleStepper({ labelId, people, min, max, onChange, numberOnly = false
         className="package-quote__btn"
         onClick={() => onChange(Math.min(max, people + 1))}
         disabled={people >= max}
-        aria-label="Una persona más"
+        aria-label={t.morePerson}
       >
         <i className="far fa-plus" aria-hidden></i>
       </button>
@@ -185,18 +188,17 @@ function PeopleStepper({ labelId, people, min, max, onChange, numberOnly = false
   )
 }
 
-const REASONS = ['Cumpleaños', 'Aniversario', 'Luna de miel', 'Vacaciones en familia', 'Viaje con amigos', 'Otro'] as const
-
-/** Date → "15 de marzo de 2027". */
-function formatDate(date: Date): string {
-  return date.toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })
+/** Date → "15 de marzo de 2027" / "March 15, 2027". */
+function formatDate(date: Date, locale: string): string {
+  return date.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
 /** Como el calendario de los detalles de tour/paquete (theme.js): semana desde domingo, días en dos letras y "HOY". */
-const WEEKDAYS = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá']
-const CALENDAR_FORMATTERS = {
-  formatWeekdayName: (d: Date) => WEEKDAYS[d.getDay()],
-  formatDay: (d: Date) => (d.toDateString() === new Date().toDateString() ? 'HOY' : String(d.getDate())),
+function calendarFormatters(t: QuoteText) {
+  return {
+    formatWeekdayName: (d: Date) => t.weekdays[d.getDay()],
+    formatDay: (d: Date) => (d.toDateString() === new Date().toDateString() ? t.today : String(d.getDate())),
+  }
 }
 
 function startOfToday(): Date {
@@ -229,6 +231,9 @@ function QuoteModal({ dialogRef, title, tiers, copy }: {
   const [month, setMonth] = useState(today)
   const isOtherMonth = (d: Date) => d.getMonth() !== month.getMonth() || d.getFullYear() !== month.getFullYear()
   const close = () => dialogRef.current?.close()
+  const lang = useLang()
+  const t = useDict().quote
+  const fmt = (d: Date) => formatDate(d, t.dateLocale)
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
@@ -237,14 +242,14 @@ function QuoteModal({ dialogRef, title, tiers, copy }: {
       return
     }
     // "Otro" sin texto se manda como "Otro": así el mensaje no pierde lo que se marcó en el modal
-    const motive = reason === 'Otro' ? otherReason.trim() || 'Otro' : reason
+    const motive = reason === t.otherReason ? otherReason.trim() || t.otherReason : reason
     const message = [
-      `Hola 👋, soy ${name.trim()} y me gustaría cotizar el siguiente paquete:`,
+      t.msgIntroNamed(name.trim()),
       '',
-      `${copy.emoji} *${title}*`,
-      `- ${people} ${people === 1 ? 'Persona' : 'Personas'}`,
-      `- Fecha deseada: ${formatDate(departure)}`,
-      ...(motive ? [`- Motivo del viaje: ${motive}`] : []),
+      `${copy.emoji} *${title.trim()}*`,
+      `- ${t.msgPeople(people)}`,
+      `- ${t.msgDate}: ${fmt(departure)}`,
+      ...(motive ? [`- ${t.msgReason}: ${motive}`] : []),
     ].join('\n')
     window.open(whatsappHref(message), '_blank', 'noopener,noreferrer')
     close()
@@ -270,23 +275,23 @@ function QuoteModal({ dialogRef, title, tiers, copy }: {
             <span className="quote-modal__eyebrow">{copy.eyebrow}</span>
             <h3 className="quote-modal__title" id={titleId}>{title}</h3>
           </div>
-          <button type="button" className="quote-modal__close" onClick={close} aria-label="Cerrar">
+          <button type="button" className="quote-modal__close" onClick={close} aria-label={t.close}>
             <i className="far fa-times" aria-hidden></i>
           </button>
         </div>
 
         <div className="quote-modal__field">
-          <label className="quote-modal__label" htmlFor={nameId}>¿Cómo te llamas?</label>
+          <label className="quote-modal__label" htmlFor={nameId}>{t.nameLabel}</label>
           <input
             id={nameId}
             type="text"
             className="quote-modal__input"
-            placeholder="Tu nombre"
+            placeholder={t.namePlaceholder}
             autoComplete="name"
             maxLength={60}
             required
             pattern=".*\S.*"
-            title="Escribe tu nombre"
+            title={t.nameHint}
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
@@ -295,10 +300,10 @@ function QuoteModal({ dialogRef, title, tiers, copy }: {
         <hr className="quote-modal__divider" />
 
         <div className="quote-modal__field">
-          <span className="quote-modal__label" id={peopleLabelId}>¿Cuántas personas viajan?</span>
+          <span className="quote-modal__label" id={peopleLabelId}>{t.howMany}</span>
           <div className="quote-modal__people">
             <i className="fal fa-users" aria-hidden></i>
-            <PeopleStepper labelId={peopleLabelId} people={people} min={minPeople} max={maxPeople} onChange={setPeople} numberOnly />
+            <PeopleStepper labelId={peopleLabelId} people={people} min={minPeople} max={maxPeople} onChange={setPeople} numberOnly t={t} />
           </div>
         </div>
 
@@ -306,21 +311,19 @@ function QuoteModal({ dialogRef, title, tiers, copy }: {
 
         <fieldset className="quote-modal__field">
           <legend className="quote-modal__label">
-            ¿Cuándo te gustaría salir?
-            <span className="quote-modal__subtitle">
-              Elige tu fecha ideal en el calendario. Revisamos la disponibilidad y te confirmamos por WhatsApp.
-            </span>
+            {t.whenLabel}
+            <span className="quote-modal__subtitle">{t.whenHint}</span>
           </legend>
           {/* Tarjeta de fondo claro para que el calendario se distinga del resto del modal */}
           <div className="quote-modal__calendar-card">
             <DayPicker
               className="quote-modal__calendar"
               mode="single"
-              locale={es}
+              locale={lang === 'en' ? enUS : es}
               weekStartsOn={0}
               navLayout="around"
               showOutsideDays
-              formatters={CALENDAR_FORMATTERS}
+              formatters={calendarFormatters(t)}
               selected={departure}
               onSelect={(d) => { setDeparture(d); if (d) setDateError(false) }}
               month={month}
@@ -335,12 +338,12 @@ function QuoteModal({ dialogRef, title, tiers, copy }: {
               <>
                 <span>
                   <i className="far fa-calendar-alt" aria-hidden></i>
-                  <span>Fecha deseada: <strong>{formatDate(departure)}</strong></span>
+                  <span>{t.desiredDate} <strong>{fmt(departure)}</strong></span>
                 </span>
-                <button type="button" className="quote-modal__clear" onClick={() => setDeparture(undefined)}>Cambiar</button>
+                <button type="button" className="quote-modal__clear" onClick={() => setDeparture(undefined)}>{t.change}</button>
               </>
             ) : dateError && (
-              <span role="alert">Elige el día en que te gustaría salir.</span>
+              <span role="alert">{t.dateError}</span>
             )}
           </div>
         </fieldset>
@@ -348,9 +351,9 @@ function QuoteModal({ dialogRef, title, tiers, copy }: {
         <hr className="quote-modal__divider" />
 
         <fieldset className="quote-modal__field">
-          <legend className="quote-modal__label">Motivo del viaje <em>(opcional)</em></legend>
+          <legend className="quote-modal__label">{t.reasonLabel} <em>{t.optional}</em></legend>
           <div className="quote-modal__chips">
-            {REASONS.map((r) => (
+            {t.reasons.map((r) => (
               <button
                 key={r}
                 type="button"
@@ -362,12 +365,12 @@ function QuoteModal({ dialogRef, title, tiers, copy }: {
               </button>
             ))}
           </div>
-          {reason === 'Otro' && (
+          {reason === t.otherReason && (
             <textarea
               className="quote-modal__input quote-modal__textarea"
               rows={3}
-              placeholder="Cuéntanos el motivo"
-              aria-label="Otro motivo del viaje"
+              placeholder={t.otherPlaceholder}
+              aria-label={t.otherAria}
               maxLength={200}
               value={otherReason}
               onChange={(e) => setOtherReason(e.target.value)}
@@ -377,7 +380,7 @@ function QuoteModal({ dialogRef, title, tiers, copy }: {
         </fieldset>
 
         <button type="submit" className="main-btn primary-btn quote-modal__submit">
-          <span className="quote-modal__submit-text">Cotizar por WhatsApp</span>
+          <span className="quote-modal__submit-text">{t.quoteWhatsapp}</span>
           <WhatsAppIcon className="whatsapp-icon" />
         </button>
       </form>

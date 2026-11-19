@@ -6,10 +6,18 @@ import Link from 'next/link'
 import Preloader from './Preloader'
 import { WhatsAppIcon } from './WhatsAppIcon'
 import { whatsappHref } from '@/lib/contact'
+import { switchLangPath } from '@/lib/i18n'
+import { useDict, useLang, useLocalizePath } from './LangProvider'
 
 export default function Header() {
   const pathname = usePathname()
-  const isHome = pathname === '/'
+  const lang = useLang()
+  const t = useDict().nav
+  const to = useLocalizePath()
+  const isHome = pathname === '/' || pathname === '/en'
+  // El botón lleva a esta misma página en el otro idioma
+  const otherLang = lang === 'es' ? 'en' : 'es'
+  const switchHref = switchLangPath(pathname, otherLang)
   const [menuOpen, setMenuOpen] = useState(false)
 
   const toggleMenu = useCallback(() => {
@@ -69,13 +77,13 @@ export default function Header() {
             onKeyDown={(e) => e.key === 'Enter' && closeMenu()}
             role="button"
             tabIndex={0}
-            aria-label="Cerrar menú"
+            aria-label={t.closeMenu}
           />
           <div className="container-fluid">
             <div className="primary-menu">
               {/* Site Branding */}
               <div className="site-branding">
-                <Link href="/" className="brand-logo">
+                <Link href={to('/')} className="brand-logo">
                   <img src="/assets/images/logo/logo-senderos.svg" alt="Senderos de Chiapas" width={150} height={52} />
                 </Link>
               </div>
@@ -83,7 +91,7 @@ export default function Header() {
               {/* Nav Menu */}
               <div className={`nav-menu ${menuOpen ? 'menu-on' : ''}`}>
                 <div className="mobile-logo mb-30 d-block d-xl-none">
-                  <Link href="/" className="brand-logo">
+                  <Link href={to('/')} className="brand-logo">
                     <img src="/assets/images/logo/logo-senderos.svg" alt="Senderos de Chiapas" width={150} height={52} />
                   </Link>
                 </div>
@@ -111,10 +119,10 @@ export default function Header() {
                       </ul>
                     </li> */}
                     <li className="menu-item">
-                      <Link href="/tours" onClick={closeMenu}>Tours</Link>
+                      <Link href={to('/tours')} onClick={closeMenu}>{t.tours}</Link>
                     </li>
                     <li className="menu-item">
-                      <Link href="/paquetes" onClick={closeMenu}>Paquetes</Link>
+                      <Link href={to('/paquetes')} onClick={closeMenu}>{t.packages}</Link>
                     </li>
                     {/* <li className="menu-item">
                       <Link href="/internacional" onClick={closeMenu}>Internacional</Link>
@@ -134,13 +142,13 @@ export default function Header() {
                       </ul>
                     </li> */}
                     <li className="menu-item">
-                      <Link href="/experiencias" onClick={closeMenu}>Experiencias</Link>
+                      <Link href={to('/experiencias')} onClick={closeMenu}>{t.gallery}</Link>
                     </li>
                     <li className="menu-item">
-                      <Link href="/nosotros" onClick={closeMenu}>Nosotros</Link>
+                      <Link href={to('/nosotros')} onClick={closeMenu}>{t.about}</Link>
                     </li>
                     <li className="menu-item">
-                      <Link href="/contacto" onClick={closeMenu}>Contáctanos</Link>
+                      <Link href={to('/contacto')} onClick={closeMenu}>{t.contact}</Link>
                     </li>
                     {/* <li className="menu-item has-children">
                       <a href="#">Blog</a>
@@ -168,10 +176,17 @@ export default function Header() {
                   </ul>
                 </nav>
 
+                {/* Idioma (móvil, dentro del menú) */}
+                <div className="lang-switch-mobile mt-30 d-xl-none">
+                  <Link href={switchHref} hrefLang={otherLang} className="lang-switch" aria-label={t.switchAria} onClick={closeMenu}>
+                    <GlobeIcon />{t.switchLabel}
+                  </Link>
+                </div>
+
                 {/* Menu Button */}
                 <div className="menu-button mt-40 d-xl-none">
                   <a
-                    href={whatsappHref('¿Hola, en qué podemos ayudarte?')}
+                    href={whatsappHref(t.whatsappGreeting)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="main-btn secondary-btn"
@@ -184,9 +199,13 @@ export default function Header() {
 
               {/* Nav Right Item */}
               <div className="nav-right-item">
+                {/* Idioma (escritorio) */}
+                <Link href={switchHref} hrefLang={otherLang} className="lang-switch d-none d-xl-inline-flex" aria-label={t.switchAria}>
+                  <GlobeIcon />{t.switchShort}
+                </Link>
                 <div className="menu-button d-xl-block d-none">
                   <a
-                    href={whatsappHref('¿Hola, en qué podemos ayudarte?')}
+                    href={whatsappHref(t.whatsappGreeting)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="main-btn primary-btn"
@@ -198,7 +217,7 @@ export default function Header() {
                   type="button"
                   className={`navbar-toggler ${menuOpen ? 'active' : ''}`}
                   onClick={toggleMenu}
-                  aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
+                  aria-label={menuOpen ? t.closeMenu : t.openMenu}
                   aria-expanded={menuOpen}
                 >
                   <span></span>
@@ -214,3 +233,12 @@ export default function Header() {
   )
 }
 
+/** Globo del botón de idioma (el subconjunto de Font Awesome del sitio no trae fa-globe). */
+function GlobeIcon() {
+  return (
+    <svg className="lang-switch__icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z" />
+    </svg>
+  )
+}

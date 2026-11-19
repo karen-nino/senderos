@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import { localizePath, pageAlternates, type Lang } from '@/lib/i18n'
+import { getDictionary } from '@/lib/dictionaries'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
@@ -7,17 +9,11 @@ import { cloudinaryWidth } from '@/lib/cloudinary'
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
 
-export const metadata: Metadata = {
-  title: 'Nosotros - Senderos de Chiapas',
-  description: 'Conoce al equipo de Senderos de Chiapas. Experiencias de viaje únicas, atención personalizada y años de experiencia en turismo en Chiapas y destinos internacionales.',
+export function generateMetadata({ params }: { params: { lang: Lang } }): Metadata {
+  const t = getDictionary(params.lang).aboutPage
+  return { title: t.metaTitle, description: t.metaDescription, alternates: pageAlternates(params.lang, '/nosotros') }
 }
 
-const DEFAULT_FEATURES = [
-  { icon: 'flaticon-gps', title: 'Experiencias y Tours', description: 'En zonas naturales y culturales.' },
-  { icon: 'flaticon-biking-mountain', title: 'Actividades Turísticas', description: 'Rutas, regiones y actividades' },
-  { icon: 'flaticon-award', title: 'Certificados y Reconocimientos', description: 'Contamos con certificados y reconocimientos de calidad de servicio.' },
-  { icon: 'flaticon-best-price', title: 'Promociones Variadas y Flexibles', description: 'Buscamos adaptarnos a distintos intereses de viaje.' },
-]
 
 const ICON_MAP: Record<string, string> = {
   camping: 'flaticon-camping',
@@ -40,10 +36,13 @@ function resolveIcon(icon?: string): string {
   return ICON_MAP[key] ?? (icon.startsWith('flaticon-') ? icon : `flaticon-${icon}`)
 }
 
-export default async function About() {
+export default async function About({ params }: { params: { lang: Lang } }) {
+  const { lang } = params
+  const to = (path: string) => localizePath(lang, path)
+  const c = getDictionary(lang).common
   let aboutData: Awaited<ReturnType<typeof fetchAboutPageData>> | null = null
   try {
-    aboutData = await fetchAboutPageData()
+    aboutData = await fetchAboutPageData(lang)
   } catch (error) {
     console.error('Error fetching about from Strapi:', error)
   }
@@ -59,22 +58,22 @@ export default async function About() {
                 <div className="col-lg-8 text-center">
                   <div className="section-title mb-70 wow fadeInDown">
                     <i className="fas fa-users mb-30 d-block" style={{ color: '#63ab45', fontSize: '3.5rem' }} aria-hidden />
-                    <span className="sub-title">En mantenimiento</span>
-                    <h2>Esta página está en mantenimiento</h2>
+                    <span className="sub-title">{c.maintenance}</span>
+                    <h2>{c.maintenanceTitle}</h2>
                     <p className="mt-40">
-                      Estamos trabajando para actualizar esta página. Si gustas conocer más sobre nosotros, contáctanos y con gusto te atendemos.
+                      {c.aboutMaintenanceText}
                     </p>
                   </div>
                   <div className="d-flex flex-wrap justify-content-center gap-3">
                     <Link
-                      href="/"
+                      href={to('/')}
                       className="main-btn wow fadeInUp"
                       style={{ padding: '16px 45px', backgroundColor: 'rgba(99, 171, 69, 0.2)', color: '#63ab45' }}
                     >
-                      Regresar a Home
+                      {c.backHome}
                     </Link>
-                    <Link href="/contacto" className="main-btn primary-btn wow fadeInUp" style={{ padding: '16px 45px' }}>
-                      Contáctanos
+                    <Link href={to('/contacto')} className="main-btn primary-btn wow fadeInUp" style={{ padding: '16px 45px' }}>
+                      {c.contactUs}
                     </Link>
                   </div>
                 </div>
@@ -88,28 +87,29 @@ export default async function About() {
   }
 
   const data = aboutData!
-  const featuresSubTitle = data.featuresSubTitle ?? 'Únete a nuestra comunidad'
-  const featuresTitle = data.featuresTitle ?? data.title ?? 'Explora con nosotros y disfruta de las mejores experiencias'
-  const featuresDescription = data.description ?? data.featuresDescription ?? 'Descubre viajes únicos dentro y fuera de Chiapas con nosotros. Experiencias diseñadas a tu medida, atención personalizada y destinos inolvidables que se adaptan a tus intereses y presupuesto.'
+  const t = getDictionary(lang).aboutPage
+  const featuresSubTitle = data.featuresSubTitle ?? t.featuresSub
+  const featuresTitle = data.featuresTitle ?? data.title ?? t.featuresTitle
+  const featuresDescription = data.description ?? data.featuresDescription ?? t.featuresDescription
 
   const features = (data.features && data.features.length > 0)
     ? data.features.map((f) => ({
       icon: resolveIcon(f.icon),
-      title: f.title || 'Feature',
+      title: f.title || '',
       description: f.description || '',
     }))
-    : DEFAULT_FEATURES
+    : t.defaultFeatures
 
-  const whoWeSubTitle = data.whoWeAre?.subtitle ?? 'Quiénes Somos'
-  const whoWeTitle = data.whoWeAre?.title ?? data.whoWeAreTitle ?? 'Somos un equipo de expertos en turismo que te ofrece las mejores experiencias'
-  const whoWeDescription = data.whoWeAre?.description ?? data.whoWeAreDescription ?? 'Con más de 10 años de experiencia en el sector turístico, en Senderos de Chiapas nos especializamos en diseñar viajes únicos y personalizados que se adaptan a tus intereses, estilo de viaje y presupuesto. Gracias a nuestro conocimiento profundo de los destinos y al trato cercano con cada viajero, transformamos cada itinerario en una experiencia inolvidable, ya sea explorando la belleza natural y cultural de Chiapas o descubriendo destinos fuera del estado.'
+  const whoWeSubTitle = data.whoWeAre?.subtitle ?? t.whoSub
+  const whoWeTitle = data.whoWeAre?.title ?? data.whoWeAreTitle ?? t.whoTitle
+  const whoWeDescription = data.whoWeAre?.description ?? data.whoWeAreDescription ?? t.whoDescription
   const whoWeImage = data.whoWeAre?.imageUrl || '/assets/images/gallery/we-1.jpg'
 
-  const whatWeSubTitle = data.whatWeSubTitle ?? 'Beneficios'
-  const whatWeTitle = data.whatWeTitle ?? 'Razones para viajar con nosotros'
+  const whatWeSubTitle = data.whatWeSubTitle ?? t.whatSub
+  const whatWeTitle = data.whatWeTitle ?? t.whatTitle
 
-  const ctaTitle = data.cta?.title ?? data.ctaTitle ?? '¿Listo para una auténtica aventura en cualquier rincón de Chiapas?'
-  const ctaButtonText = data.cta?.buttonText ?? data.ctaButtonText ?? 'Explora Destinos'
+  const ctaTitle = data.cta?.title ?? data.ctaTitle ?? t.ctaTitle
+  const ctaButtonText = data.cta?.buttonText ?? data.ctaButtonText ?? t.ctaButton
   const ctaButtonLink = data.cta?.buttonLink ?? data.ctaButtonLink ?? '/tours'
 
   const ctaBg = data.imageBannerUrl || '/assets/images/bg/cta-bg.jpg'
@@ -167,7 +167,7 @@ export default async function About() {
               <div className="col-lg-6 order-2 order-lg-1">
                 <div className="we-image-box text-center text-lg-left wow fadeInDown">
                   <div className="gallery-img">
-                    <img src={cloudinaryWidth(whoWeImage, 1200)} loading="lazy" decoding="async" className="radius-top-left-right-288 who-we-are-img" alt="Quiénes somos" width={577} height={721} style={{ objectFit: 'cover' }} />
+                    <img src={cloudinaryWidth(whoWeImage, 1200)} loading="lazy" decoding="async" className="radius-top-left-right-288 who-we-are-img" alt={t.whoAlt} width={577} height={721} style={{ objectFit: 'cover' }} />
                   </div>
                 </div>
               </div>
@@ -205,8 +205,8 @@ export default async function About() {
                         </div>
                       </div>
                       <div className="content">
-                        <h4>Planeación Segura</h4>
-                        <p>Paquetes y viajes organizados con itinerarios planificados.</p>
+                        <h4>{t.benefits[0].title}</h4>
+                        <p>{t.benefits[0].text}</p>
                       </div>
                     </div>
                     <div className="single-features-list mb-40">
@@ -219,8 +219,8 @@ export default async function About() {
                         </div>
                       </div>
                       <div className="content">
-                        <h4>Atención Personalizada</h4>
-                        <p>Adaptamos itinerarios y recomendaciones según los intereses y presupuesto de cada cliente.</p>
+                        <h4>{t.benefits[1].title}</h4>
+                        <p>{t.benefits[1].text}</p>
                       </div>
                     </div>
                     <div className="single-features-list mb-40">
@@ -233,8 +233,8 @@ export default async function About() {
                         </div>
                       </div>
                       <div className="content">
-                        <h4>Profesionales locales</h4>
-                        <p>Conocimiento local profundo del estado de Chiapas</p>
+                        <h4>{t.benefits[2].title}</h4>
+                        <p>{t.benefits[2].text}</p>
                       </div>
                     </div>
                     <div className="single-features-list mb-40">
@@ -247,8 +247,8 @@ export default async function About() {
                         </div>
                       </div>
                       <div className="content">
-                        <h4>Buenos Precios</h4>
-                        <p>Ofrecemos diferentes tipos de experiencias, buscando adaptarnos a distintos intereses de viaje.</p>
+                        <h4>{t.benefits[3].title}</h4>
+                        <p>{t.benefits[3].text}</p>
                       </div>
                     </div>
                   </div>
@@ -298,7 +298,7 @@ export default async function About() {
               <div className="col-xl-8">
                 <div className="cta-content-box text-center text-white wow fadeInDown">
                   <h2 className="mb-35">{ctaTitle.replace(/\n/g, ' ')}</h2>
-                  <Link href={ctaButtonLink} className="main-btn primary-btn">{ctaButtonText}<i className="far fa-paper-plane"></i></Link>
+                  <Link href={to(ctaButtonLink)} className="main-btn primary-btn">{ctaButtonText}<i className="far fa-paper-plane"></i></Link>
                 </div>
               </div>
             </div>

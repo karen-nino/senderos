@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import { localizePath, pageAlternates, type Lang } from '@/lib/i18n'
+import { getDictionary } from '@/lib/dictionaries'
 import React from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -58,30 +60,32 @@ const FALLBACK = {
 }
 
 interface PageProps {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; lang: Lang }>;
 }
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = await params
+  const { slug, lang } = await params
   const [packageData, holidayData, adventureData] = await Promise.all([
-    fetchPackageBySlug(slug),
-    fetchHolidayBySlug(slug),
-    fetchAdventureBySlug(slug),
+    fetchPackageBySlug(slug, lang),
+    fetchHolidayBySlug(slug, lang),
+    fetchAdventureBySlug(slug, lang),
   ])
   const pkg = packageData ?? holidayData ?? adventureData
-  const title = pkg?.title ?? 'Paquete'
+  const dt = getDictionary(lang).detail
+  const title = pkg?.title ?? dt.packageFallback
   const description =
     pkg?.description?.replace(/\s+/g, ' ').trim().slice(0, 160) ||
-    `Paquete ${title} en Chiapas. Precio: ${pkg?.price ?? 'Consultar'}. Reserva con Senderos de Chiapas.`
-  const canonical = `${SITE_URL}/paquete-detalles/${slug}`
+    dt.metaPackage(title, pkg?.price ?? dt.toConfirm)
+  const alternates = pageAlternates(lang, `/paquete-detalles/${slug}`)
+  const canonical = alternates.canonical
   const image = pkg?.imagesDetails?.[0] ?? pkg?.image
   const ogImage = image ? (image.startsWith('http') ? image : `${SITE_URL}${image.startsWith('/') ? image : `/${image}`}`) : undefined
   return {
     title: `${title} - Senderos de Chiapas`,
     description,
-    alternates: { canonical },
+    alternates,
     openGraph: {
       title: `${title} - Senderos de Chiapas`,
       description,
@@ -98,12 +102,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function PaqueteDetailPage({ params }: PageProps) {
-  const { slug } = await params
+  const { slug, lang } = await params
+  const to = (path: string) => localizePath(lang, path)
+  const dt = getDictionary(lang).detail
+  const tt = getDictionary(lang).tour
   const [packageData, holidayData, adventureData, allPackages] = await Promise.all([
-    fetchPackageBySlug(slug),
-    fetchHolidayBySlug(slug),
-    fetchAdventureBySlug(slug),
-    fetchPackages(),
+    fetchPackageBySlug(slug, lang),
+    fetchHolidayBySlug(slug, lang),
+    fetchAdventureBySlug(slug, lang),
+    fetchPackages(lang),
   ])
   // Mostrar paquete normal, de temporada (Holiday) o de aventura (Adventure) según el slug
   const pkg = packageData ?? holidayData ?? adventureData ?? FALLBACK
@@ -136,11 +143,12 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
 
   const packageJsonLd = buildProductJsonLd({
     name: pkg.title,
-    description: (pkg.description ?? '').toString().replace(/\s+/g, ' ').trim() || `Paquete ${pkg.title} en Chiapas. ${pkg.price}.`,
+    description: (pkg.description ?? '').toString().replace(/\s+/g, ' ').trim() || dt.ldPackage(pkg.title, pkg.price),
     image: pkg.imagesDetails?.length ? pkg.imagesDetails : [pkg.image],
-    url: `${SITE_URL}/paquete-detalles/${slug}`,
+    url: `${SITE_URL}${to(`/paquete-detalles/${slug}`)}`,
     price: pkg.price,
     duration: pkg.duration,
+    durationLabel: tt.duration,
     providerName: 'Senderos de Chiapas',
   })
 
@@ -176,7 +184,7 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                 <div className="row">
                   <div className="col-12">
                     <div className="tour-title mb-20">
-                      <span className="tour-label">PAQUETE</span>
+                      <span className="tour-label">{dt.packageLabel}</span>
                       <h1 className="title">{pkg.title}</h1>
                     </div>
                   </div>
@@ -205,12 +213,12 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
               {/* Booking Info + Calendar - Visible only on mobile/tablet */}
               <div className="sidebar-widget-area d-block d-xl-none pb-30">
                 <div className="sidebar-widget booking-info-widget wow fadeInUp mb-40">
-                  <h4 className="widget-title">Detalles del paquete</h4>
+                  <h4 className="widget-title">{dt.packageDetails}</h4>
                   <ul className="info-list info-list--stack">
-                    <li><span><i className="fal fa-clock"></i>Duración<span>{pkg.duration || 'Variable'}</span></span></li>
-                    {pkg.accommodation && <li><span><i className="far fa-bed"></i>Alojamiento<span>{pkg.accommodation}</span></span></li>}
-                    {pkg.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida<span>{pkg.departure}</span></span></li>}
-                    {pkg.transport && <li><span><i className="fal fa-bus"></i>Transporte<span>{pkg.transport}</span></span></li>}
+                    <li><span><i className="fal fa-clock"></i>{tt.duration}<span>{pkg.duration || tt.variable}</span></span></li>
+                    {pkg.accommodation && <li><span><i className="far fa-bed"></i>{tt.accommodation}<span>{pkg.accommodation}</span></span></li>}
+                    {pkg.departure && <li><span><i className="far fa-map-marker-alt"></i>{dt.departure}<span>{pkg.departure}</span></span></li>}
+                    {pkg.transport && <li><span><i className="fal fa-bus"></i>{tt.transport}<span>{pkg.transport}</span></span></li>}
                     <PackageQuote
                       price={pkg.price}
                       priceInternational={pkg.priceInternational}
@@ -256,18 +264,18 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                   <div className="package-description-route pt-45 wow fadeInUp mb-20">
                     {pkg.description && (
                       <>
-                        <h4 className="title">Descripción</h4>
+                        <h4 className="title">{dt.description}</h4>
                         <p>{pkg.description}</p>
                       </>
                     )}
                     {pkg.pricePerPerson && pkg.pricePerPerson.length > 0 && (
                       <div className="price-per-person">
-                        <h4 className="title">Precio por grupo de personas</h4>
+                        <h4 className="title">{dt.pricePerGroup}</h4>
                         <table className="price-per-person__table">
                           <thead>
                             <tr>
-                              <th scope="col">Ocupación</th>
-                              <th scope="col">Costo por persona</th>
+                              <th scope="col">{dt.occupancy}</th>
+                              <th scope="col">{dt.costPerPerson}</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -281,8 +289,8 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                         </table>
                       </div>
                     )}
-                    <h4 className="title">Ruta</h4>
-                    <p>Lugares que recorre este paquete:</p>
+                    <h4 className="title">{dt.route}</h4>
+                    <p>{dt.routeIntroPackage}</p>
                     <div className="row align-items-lg-center">
                       <div className="col-lg-12">
                         <ul className="check-list">
@@ -296,8 +304,8 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
 
                   {/* Bloque: servicios incluidos en el paquete */}
                   <div className="package-includes pt-45 wow fadeInUp mb-40">
-                    <h4>Incluye</h4>
-                    <p>Este paquete incluye los siguientes servicios:</p>
+                    <h4>{dt.includes}</h4>
+                    <p>{dt.includesIntroPackage}</p>
                     <div className="row align-items-lg-center">
                       <div className="col-lg-12">
                         <ul className="check-list">
@@ -307,7 +315,7 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                             ))
                             : (
                               <>
-                                <li><i className="fas fa-badge-check"></i>Incluye</li>
+                                <li><i className="fas fa-badge-check"></i>{dt.includes}</li>
                               </>
                             )}
                         </ul>
@@ -318,8 +326,8 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                   {/* Bloque: servicios NO incluidos — solo si el paquete tiene datos en noIncludes */}
                   {pkg.noIncludes && pkg.noIncludes.length > 0 && (
                     <div className="package-includes package-includes--excluded pt-45 wow fadeInUp mb-40">
-                      <h4>No incluye</h4>
-                      <p>Este paquete no incluye los siguientes servicios:</p>
+                      <h4>{dt.notIncludes}</h4>
+                      <p>{dt.notIncludesIntro}</p>
                       <div className="row align-items-lg-center">
                         <div className="col-lg-12">
                           <ul className="check-list">
@@ -335,8 +343,8 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                   {/* Bloque: recomendaciones — solo si el paquete tiene datos en recommendation */}
                   {pkg.recommendation && pkg.recommendation.length > 0 && (
                     <div className="package-recommendations pt-45 wow fadeInUp mb-100">
-                      <h4 className="title">Recomendaciones</h4>
-                      <p>Te sugerimos tomar en cuenta lo siguiente:</p>
+                      <h4 className="title">{dt.recommendations}</h4>
+                      <p>{dt.recommendationsIntro}</p>
                       <div className="row align-items-lg-center">
                         <div className="col-lg-12">
                           <ul className="check-list">
@@ -352,8 +360,8 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                   {/* Days Area - Itinerario (solo se muestra si hay datos) */}
                   {pkg.itinerary && pkg.itinerary.length > 0 && (
                     <div className="days-area mb-100 wow fadeInUp">
-                      <h4 className="title">Itinerario</h4>
-                      <p className="pb-4">Cronograma de actividades del paquete:</p>
+                      <h4 className="title">{dt.itinerary}</h4>
+                      <p className="pb-4">{dt.itineraryIntroPackage}</p>
                       {(() => {
                         const daysMap = new Map<string, typeof pkg.itinerary>();
                         for (const item of pkg.itinerary!) {
@@ -424,7 +432,7 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                     ? pkg.mapItem
                       .map((item) => ({
                         src: getMapUrl(item.map, locationLabel),
-                        title: item.title?.trim() || 'Ubicación',
+                        title: item.title?.trim() || dt.location,
                       }))
                       .filter((e) => e.src)
                       .map((entry, i) => (
@@ -435,7 +443,7 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                           <h4 className="title pb-4">{entry.title}</h4>
                           <iframe
                             src={entry.src}
-                            title={`Mapa - ${entry.title}`}
+                            title={dt.map(entry.title)}
                           />
                         </div>
                       ))
@@ -448,12 +456,12 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                     {/* Booking Info Widget - Visible only on desktop (xl) */}
                     <div className="d-none d-xl-block">
                       <div className="sidebar-widget booking-info-widget wow fadeInUp mb-100">
-                        <h4 className="widget-title">Detalles del paquete</h4>
+                        <h4 className="widget-title">{dt.packageDetails}</h4>
                         <ul className="info-list info-list--stack">
-                          <li><span><i className="fal fa-clock"></i>Duración<span>{pkg.duration || 'Variable'}</span></span></li>
-                          {pkg.accommodation && <li><span><i className="far fa-bed"></i>Alojamiento<span>{pkg.accommodation}</span></span></li>}
-                          {pkg.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida<span>{pkg.departure}</span></span></li>}
-                          {pkg.transport && <li><span><i className="fal fa-bus"></i>Transporte<span>{pkg.transport}</span></span></li>}
+                          <li><span><i className="fal fa-clock"></i>{tt.duration}<span>{pkg.duration || tt.variable}</span></span></li>
+                          {pkg.accommodation && <li><span><i className="far fa-bed"></i>{tt.accommodation}<span>{pkg.accommodation}</span></span></li>}
+                          {pkg.departure && <li><span><i className="far fa-map-marker-alt"></i>{dt.departure}<span>{pkg.departure}</span></span></li>}
+                          {pkg.transport && <li><span><i className="fal fa-bus"></i>{tt.transport}<span>{pkg.transport}</span></span></li>}
                           <PackageQuote
                             price={pkg.price}
                             priceInternational={pkg.priceInternational}
@@ -475,7 +483,7 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                     </div>
                     {/* Recent Place Widget - hasta 3 paquetes aleatorios */}
                     <div className="sidebar-widget recent-place-widget mb-160 wow fadeInUp">
-                      <h4 className="widget-title">Más paquetes</h4>
+                      <h4 className="widget-title">{dt.morePackages}</h4>
                       <ul className="recent-place-list">
                         {otherPackagesList.length > 0 &&
                           otherPackagesList.map((p, i) => (
@@ -483,7 +491,7 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                               <img src={p.image && !p.image.includes('las-tres-tzimoleras') ? cloudinaryWidth(p.image, 800) : FALLBACK.image} alt={p.title} loading="lazy" decoding="async" />
                               <div className="place-content">
                                 <h5>
-                                  <Link href={p.slug ? `/paquete-detalles/${p.slug}` : (p.link || '/paquetes')} className="recent-place-title-link">{p.title}</Link>
+                                  <Link href={to(p.slug ? `/paquete-detalles/${p.slug}` : (p.link || '/paquetes'))} className="recent-place-title-link">{p.title}</Link>
                                 </h5>
                                 {(p.duration || p.price) && (
                                   <ul className="place-meta recent-place-meta list-unstyled mt-1 mb-0 small">
@@ -497,7 +505,7 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                         }
                       </ul>
                       <div className="place-content">
-                        <h5><Link href="/paquetes" className="recent-place-title-link">Ver todos los paquetes</Link></h5>
+                        <h5><Link href={to('/paquetes')} className="recent-place-title-link">{dt.allPackages}</Link></h5>
                       </div>
                     </div>
                   </div>

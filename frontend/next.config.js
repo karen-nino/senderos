@@ -24,19 +24,8 @@ const nextConfig = {
   },
   async rewrites() {
     return [
-      { source: '/destinos', destination: '/tours' },
-      { source: '/tour-detalles/:path*', destination: '/tour-details/:path*' },
-      { source: '/destino-detalles/:path*', destination: '/tour-details/:path*' },
-      { source: '/nosotros', destination: '/about' },
-      { source: '/experiencias', destination: '/gallery' },
-      { source: '/internacional', destination: '/international' },
-      { source: '/contacto', destination: '/contact' },
-      { source: '/preguntas-frecuentes', destination: '/faq' },
-      { source: '/politica-de-privacidad', destination: '/privacy-policy' },
-      { source: '/paquetes', destination: '/packages' },
-      { source: '/paquetes/:path*', destination: '/packages/:path*' },
-      { source: '/paquete-detalles/:path*', destination: '/package-details/:path*' },
-      { source: '/internacional-detalles/:path*', destination: '/package-details/:path*' },
+      // Las URLs públicas en español (/paquetes, /tour-detalles/...) y en inglés (/en/...) las traduce middleware.ts
+      // a las páginas de app/[lang]/
       // Proxy de imágenes de Strapi (mismo origen). Pasa por la ruta de API, que valida el path
       { source: '/strapi-uploads/:path*', destination: '/api/strapi-uploads/:path*' },
     ]

@@ -1,6 +1,10 @@
+import { getDictionary } from '@/lib/dictionaries'
+import type { Lang } from '@/lib/i18n'
+
 import { cloudinaryWidth } from '@/lib/cloudinary'
 
 interface InternationalItemProps {
+    lang?: Lang
     title: string
     description: string
     image: string
@@ -21,6 +25,7 @@ interface InternationalItemProps {
 }
 
 export default function InternationalItem({
+    lang = 'es',
     title,
     description,
     image,
@@ -35,6 +40,7 @@ export default function InternationalItem({
     departure,
     includes
 }: InternationalItemProps) {
+    const t = getDictionary(lang).internationalPage
     return (
         <div className="single-service-item international-item mb-40">
             <div className="content">
@@ -44,7 +50,7 @@ export default function InternationalItem({
                     <div className="international-info mb-15">
                         {departureDate && (
                             <div className="departure-date">
-                                <span className="label">Fecha de salida:</span>
+                                <span className="label">{t.departureDate}</span>
                                 <div className="value-wrapper">
                                     <i className="far fa-calendar-alt"></i>
                                     <span className="value">{departureDate}</span>
@@ -53,31 +59,31 @@ export default function InternationalItem({
                         )}
                         {route && (
                             <div className="route">
-                                <span className="label">Ruta:</span>
+                                <span className="label">{t.route}</span>
                                 <span className="value">{route}</span>
                             </div>
                         )}
                         {transport && (
                             <div className="transport">
-                                <span className="label">Transporte:</span>
+                                <span className="label">{t.transport}</span>
                                 <span className="value">{transport}</span>
                             </div>
                         )}
                         {departure && (
                             <div className="departure">
-                                <span className="label">Salida:</span>
+                                <span className="label">{t.departure}</span>
                                 <span className="value">{departure}</span>
                             </div>
                         )}
                         {duration && (
                             <div className="duration">
-                                <span className="label">Duración:</span>
+                                <span className="label">{t.duration}</span>
                                 <span className="value">{duration}</span>
                             </div>
                         )}
                         {accommodation && (
                             <div className="accommodation">
-                                <span className="label">Hospedaje:</span>
+                                <span className="label">{t.lodging}</span>
                                 <span className="value">{accommodation}</span>
                             </div>
                         )}
@@ -87,7 +93,7 @@ export default function InternationalItem({
                             )
                             return (
                                 <div className="includes">
-                                    <span className="label">Incluye:</span>
+                                    <span className="label">{t.includes}</span>
                                     <ul className="includes-list">
                                         {rows.map((row, i) => (
                                             <li key={i} className="includes-list__item">{row}</li>
@@ -98,7 +104,7 @@ export default function InternationalItem({
                         })()}
                         {price && (
                             <div className="price price--highlight">
-                                <span className="label">Precio desde</span>
+                                <span className="label">{t.priceFrom}</span>
                                 <span className="price-amount">{price}</span>
                             </div>
                         )}
@@ -116,9 +122,9 @@ export default function InternationalItem({
                 {badge && (
                     <span
                         className={`destination-badge destination-badge--${badge}`}
-                        aria-label={badge === 'nuevo' ? 'Nuevo destino' : badge === 'pocos_lugares' ? 'Pocos lugares disponibles' : 'Agotado'}
+                        aria-label={t.badgeAria[badge]}
                     >
-                        {badge === 'nuevo' ? '¡NUEVO!' : badge === 'pocos_lugares' ? 'POCOS LUGARES' : 'AGOTADO'}
+                        {t.badge[badge]}
                     </span>
                 )}
                 <img src={cloudinaryWidth(image, 800)} alt={title} loading="lazy" decoding="async" />

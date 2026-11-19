@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import { localizePath, pageAlternates, type Lang } from '@/lib/i18n'
+import { getDictionary } from '@/lib/dictionaries'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
@@ -8,16 +10,19 @@ import { fetchGalleryPageData, STRAPI_REVALIDATE_SECONDS } from '@/lib/strapi'
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
 
-export const metadata: Metadata = {
-  title: 'Experiencias - Galería | Senderos de Chiapas',
-  description: 'Galería de experiencias y momentos de nuestros tours y paquetes en Chiapas. Descubre destinos, cascadas, cultura y naturaleza.',
+export function generateMetadata({ params }: { params: { lang: Lang } }): Metadata {
+  const t = getDictionary(params.lang).galleryPage
+  return { title: t.metaTitle, description: t.metaDescription, alternates: pageAlternates(params.lang, '/experiencias') }
 }
 
-export default async function Gallery() {
+export default async function Gallery({ params }: { params: { lang: Lang } }) {
+  const { lang } = params
+  const to = (path: string) => localizePath(lang, path)
+  const c = getDictionary(lang).common
   let galleryGroups: { title: string; images: string[] }[] = []
 
   try {
-    const data = await fetchGalleryPageData()
+    const data = await fetchGalleryPageData(lang)
     galleryGroups = data.galleryGroups
   } catch (error) {
     console.error('Error fetching gallery from Strapi:', error)
@@ -33,7 +38,7 @@ export default async function Gallery() {
 
         {hasGalleryGroups ? (
           <section className="gallery-area pt-0 pb-350">
-            <GalleryIntro groups={galleryGroups} />
+            <GalleryIntro groups={galleryGroups} lang={lang} />
             <div className="container">
               {galleryGroups.map((group, groupIdx) => (
                 <div key={groupIdx} id={galleryGroupId(group.title, groupIdx)} className="gallery-group mb-120">
@@ -54,22 +59,22 @@ export default async function Gallery() {
                 <div className="col-lg-8 text-center">
                   <div className="section-title mb-70 wow fadeInDown">
                     <i className="fas fa-images mb-30 d-block" style={{ color: '#63ab45', fontSize: '3.5rem' }} aria-hidden />
-                    <span className="sub-title">En mantenimiento</span>
-                    <h2>Esta página está en mantenimiento</h2>
+                    <span className="sub-title">{c.maintenance}</span>
+                    <h2>{c.maintenanceTitle}</h2>
                     <p className="mt-40">
-                      Estamos trabajando para actualizar la galería. Si gustas conocer más sobre nuestras experiencias, contáctanos y con gusto te atendemos.
+                      {c.galleryMaintenanceText}
                     </p>
                   </div>
                   <div className="d-flex flex-wrap justify-content-center gap-3">
                     <Link
-                      href="/"
+                      href={to('/')}
                       className="main-btn wow fadeInUp"
                       style={{ padding: '16px 45px', backgroundColor: 'rgba(99, 171, 69, 0.2)', color: '#63ab45' }}
                     >
-                      Regresar a Home
+                      {c.backHome}
                     </Link>
-                    <Link href="/contacto" className="main-btn primary-btn wow fadeInUp" style={{ padding: '16px 45px' }}>
-                      Contáctanos
+                    <Link href={to('/contacto')} className="main-btn primary-btn wow fadeInUp" style={{ padding: '16px 45px' }}>
+                      {c.contactUs}
                     </Link>
                   </div>
                 </div>

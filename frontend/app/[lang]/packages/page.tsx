@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import { localizePath, pageAlternates, type Lang } from '@/lib/i18n'
+import { getDictionary } from '@/lib/dictionaries'
 import React from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -9,23 +11,29 @@ import { fetchPackagesPageData, fetchSeasonsForPackagesPage, fetchAdventuresForP
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
 
-export const metadata: Metadata = {
-  title: 'Paquetes turísticos - Senderos de Chiapas',
-  description: 'Paquetes y rutas turísticas en Chiapas por temporada. Incluyen itinerario, precios y opciones de pago.',
+export function generateMetadata({ params }: { params: { lang: Lang } }): Metadata {
+  const t = getDictionary(params.lang).packagesPage
+  return { title: t.metaTitle, description: t.metaDescription, alternates: pageAlternates(params.lang, '/paquetes') }
 }
 
 const DEFAULT_IMAGE = '/assets/images/place/single-place-1.jpg'
 
-export default async function PackagesPage() {
+export default async function PackagesPage({ params }: { params: { lang: Lang } }) {
+  const { lang } = params
+  const to = (path: string) => localizePath(lang, path)
+  const dict = getDictionary(lang)
+  const t = dict.packagesPage
+  const c = dict.common
+  const cards = dict.cards
   let packagesList: AdaptedDestination[] = []
   let seasons: AdaptedSeason[] = []
   let adventures: AdaptedSeason[] = []
 
   try {
     const [data, seasonsData, adventuresData] = await Promise.all([
-      fetchPackagesPageData(),
-      fetchSeasonsForPackagesPage(),
-      fetchAdventuresForPackagesPage(),
+      fetchPackagesPageData(lang),
+      fetchSeasonsForPackagesPage(lang),
+      fetchAdventuresForPackagesPage(lang),
     ])
     packagesList = data.packages
     seasons = seasonsData
@@ -50,8 +58,8 @@ export default async function PackagesPage() {
           <section className="listing-page pb-160">
             <PageIntro
               art="paquetes"
-              title="Paquetes"
-              intro="Recorre Chiapas con un paquete por temporada, de aventura o elige entre todos nuestros recorridos."
+              title={t.title}
+              intro={t.intro}
             />
             <div className="container">
               <CardsExplorer
@@ -59,14 +67,14 @@ export default async function PackagesPage() {
                   {
                     id: 'temporada',
                     icon: 'far fa-calendar-alt',
-                    label: 'Por temporada',
-                    title: 'Paquetes por temporada',
-                    subtitle: 'Aprovecha rutas y promociones por fechas especiales',
-                    emptyText: 'Por ahora no hay paquetes de temporada.\nPronto tendremos nuevas fechas.',
+                    label: t.seasonLabel,
+                    title: t.seasonTitle,
+                    subtitle: t.seasonSubtitle,
+                    emptyText: t.seasonEmpty,
                     items: seasons.map((season, index) => ({
                       key: season.link || String(index),
-                      href: getPackageDetailHref(season.link),
-                      tag: 'Temporada',
+                      href: to(getPackageDetailHref(season.link)),
+                      tag: cards.tagSeason,
                       title: season.title,
                       image: season.image,
                       badge: season.badge,
@@ -79,13 +87,13 @@ export default async function PackagesPage() {
                   {
                     id: 'aventura',
                     icon: 'fas fa-mountain',
-                    label: 'De aventura',
-                    title: 'Paquetes de Aventura',
-                    subtitle: 'Rutas llenas de adrenalina para los más aventureros',
+                    label: t.adventureLabel,
+                    title: t.adventureTitle,
+                    subtitle: t.adventureSubtitle,
                     items: adventures.map((adventure, index) => ({
                       key: adventure.link || String(index),
-                      href: getPackageDetailHref(adventure.link),
-                      tag: 'Aventura',
+                      href: to(getPackageDetailHref(adventure.link)),
+                      tag: cards.tagAdventure,
                       title: adventure.title,
                       image: adventure.image,
                       badge: adventure.badge,
@@ -99,13 +107,13 @@ export default async function PackagesPage() {
                   {
                     id: 'paquetes',
                     icon: 'fas fa-suitcase-rolling',
-                    label: 'Clásicos',
-                    title: 'Paquetes Clásicos',
-                    subtitle: 'Las rutas imprescindibles para conocer Chiapas',
+                    label: t.classicLabel,
+                    title: t.classicTitle,
+                    subtitle: t.classicSubtitle,
                     items: displayPackages.map((pkg, i) => ({
                       key: String(pkg.slug || pkg.title || i),
-                      href: pkg.slug ? `/paquete-detalles/${pkg.slug}` : (pkg.link || '/paquetes'),
-                      tag: 'Clásico',
+                      href: to(pkg.slug ? `/paquete-detalles/${pkg.slug}` : (pkg.link || '/paquetes')),
+                      tag: cards.tagClassic,
                       title: pkg.title,
                       image: pkg.image && !pkg.image.includes('las-tres-tzimoleras') ? pkg.image : DEFAULT_IMAGE,
                       badge: pkg.badge,
@@ -127,22 +135,22 @@ export default async function PackagesPage() {
                 <div className="col-lg-8 text-center">
                   <div className="section-title mb-70 wow fadeInDown">
                     <i className="fas fa-suitcase mb-30 d-block" style={{ color: '#63ab45', fontSize: '3.5rem' }} aria-hidden />
-                    <span className="sub-title">Información no disponible</span>
-                    <h2>Por el momento no hay paquetes disponibles</h2>
+                    <span className="sub-title">{c.unavailable}</span>
+                    <h2>{c.noPackages}</h2>
                     <p className="mt-40">
-                      Estamos trabajando para actualizar nuestros paquetes. Si gustas conocer más sobre nuestros servicios y opciones disponibles, contáctanos y con gusto te atendemos.
+                      {c.noPackagesText}
                     </p>
                   </div>
                   <div className="d-flex flex-wrap justify-content-center gap-3">
                     <Link
-                      href="/"
+                      href={to('/')}
                       className="main-btn wow fadeInUp"
                       style={{ padding: '16px 45px', backgroundColor: 'rgba(99, 171, 69, 0.2)', color: '#63ab45' }}
                     >
-                      Regresar a Home
+                      {c.backHome}
                     </Link>
-                    <Link href="/contacto" className="main-btn primary-btn wow fadeInUp" style={{ padding: '16px 45px' }}>
-                      Contáctanos
+                    <Link href={to('/contacto')} className="main-btn primary-btn wow fadeInUp" style={{ padding: '16px 45px' }}>
+                      {c.contactUs}
                     </Link>
                   </div>
                 </div>

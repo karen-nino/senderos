@@ -1,4 +1,7 @@
+import type { Metadata } from 'next'
 import Header from '@/components/Header'
+import { localizePath, pageAlternates, type Lang } from '@/lib/i18n'
+import { getDictionary } from '@/lib/dictionaries'
 import Footer from '@/components/Footer'
 import PackageCard from '@/components/PackageCard'
 import HeroSlider from '@/components/HeroSlider'
@@ -10,7 +13,18 @@ import { cloudinaryWidth } from '@/lib/cloudinary'
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
 
-export default async function Home() {
+/** Título y descripción vienen del layout; aquí solo la canónica y su versión en el otro idioma. */
+export function generateMetadata({ params }: { params: { lang: Lang } }): Metadata {
+  return { alternates: pageAlternates(params.lang, '/') }
+}
+
+export default async function Home({ params }: { params: { lang: Lang } }) {
+  const { lang } = params
+  const to = (path: string) => localizePath(lang, path)
+  const dict = getDictionary(lang)
+  const h = dict.home
+  const c = dict.common
+  const cards = dict.cards
   let heroSlides: Awaited<ReturnType<typeof fetchHomeHeroSlides>> = []
   let destinations: AdaptedDestination[] = []
   let packages: AdaptedDestination[] = []
@@ -23,7 +37,7 @@ export default async function Home() {
 
   try {
     // Obtener heroSlides (Página Principal - Carrusel), services y testimonial desde home
-    const response = await fetchHome()
+    const response = await fetchHome(lang)
     const home = response?.data || {}
 
     heroSlides = await fetchHomeHeroSlides(home as Record<string, unknown>)
@@ -33,14 +47,14 @@ export default async function Home() {
     testimonial = parseHomeTestimonial(home)
     galleryImages = parseHomeGallery(home)
 
-    destinations = (await fetchDestinationsForHome()).filter(
+    destinations = (await fetchDestinationsForHome(lang)).filter(
       (d) => (d.badge || '') !== 'oculto'
     )
-    packages = (await fetchPackages()).filter(
+    packages = (await fetchPackages(lang)).filter(
       (pkg) => (pkg.badge || '') !== 'oculto'
     )
-    seasons = await fetchSeasonsForHome()
-    adventures = await fetchAdventuresForHome()
+    seasons = await fetchSeasonsForHome(lang)
+    adventures = await fetchAdventuresForHome(lang)
   } catch (error) {
     console.error('Error fetching data from Strapi:', error)
   }
@@ -67,15 +81,15 @@ export default async function Home() {
                 <div className="col-lg-8 text-center">
                   <div className="section-title mb-70 wow fadeInDown">
                     <i className="fas fa-tools mb-30 d-block" style={{ color: '#63ab45', fontSize: '3.5rem' }} aria-hidden />
-                    <span className="sub-title">En mantenimiento</span>
-                    <h2>Esta página está en mantenimiento</h2>
+                    <span className="sub-title">{c.maintenance}</span>
+                    <h2>{c.maintenanceTitle}</h2>
                     <p className="mt-40">
-                      Estaremos de vuelta pronto. Contáctanos si necesitas más información.
+                      {c.maintenanceBack}
                     </p>
                   </div>
                   <div className="d-flex flex-wrap justify-content-center gap-3">
-                    <Link href="/contacto" className="main-btn primary-btn wow fadeInUp" style={{ padding: '16px 45px' }}>
-                      Contáctanos
+                    <Link href={to('/contacto')} className="main-btn primary-btn wow fadeInUp" style={{ padding: '16px 45px' }}>
+                      {c.contactUs}
                     </Link>
                   </div>
                 </div>
@@ -103,8 +117,8 @@ export default async function Home() {
               <div className="row justify-content-center">
                 <div className="col-xl-8">
                   <div className="section-title text-center mb-45 wow fadeInDown">
-                    <span className="sub-title">Paquetes Clásicos</span>
-                    <h2>Recorre, disfruta y respira Chiapas</h2>
+                    <span className="sub-title">{h.classicSub}</span>
+                    <h2>{h.classicTitle}</h2>
                   </div>
                 </div>
               </div>
@@ -112,9 +126,10 @@ export default async function Home() {
                 {packages.map((pkg: AdaptedDestination, index: number) => (
                   <div key={index} className="col-12 col-md-6 col-xl-3 mb-30 mb-md-40">
                     <PackageCard
+                      lang={lang}
                       className={`wow ${index % 2 === 0 ? 'fadeInUp' : 'fadeInDown'}`}
-                      href={pkg.link || '#'}
-                      tag="Clásico"
+                      href={pkg.link ? to(pkg.link) : '#'}
+                      tag={cards.tagClassic}
                       title={pkg.title}
                       image={pkg.image && !pkg.image.includes('las-tres-tzimoleras') ? pkg.image : '/assets/images/place/single-place-1.jpg'}
                       badge={pkg.badge}
@@ -137,8 +152,8 @@ export default async function Home() {
               <div className="row justify-content-center">
                 <div className="col-xl-8 col-lg-10">
                   <div className="section-title text-center mb-45 wow fadeInDown">
-                    <span className="sub-title">Paquetes de Aventura</span>
-                    <h2>Rutas llenas de adrenalina para los más aventureros</h2>
+                    <span className="sub-title">{h.adventureSub}</span>
+                    <h2>{h.adventureTitle}</h2>
                   </div>
                 </div>
               </div>
@@ -146,9 +161,10 @@ export default async function Home() {
                 {adventures.map((adventure: AdaptedSeason, index: number) => (
                   <div key={adventure.link || index} className="col-12 col-md-6 col-xl-3 mb-30 mb-md-40">
                     <PackageCard
+                      lang={lang}
                       className={`wow ${index % 2 === 0 ? 'fadeInUp' : 'fadeInDown'}`}
-                      href={getPackageDetailHref(adventure.link)}
-                      tag="Aventura"
+                      href={to(getPackageDetailHref(adventure.link))}
+                      tag={cards.tagAdventure}
                       title={adventure.title}
                       image={adventure.image}
                       badge={adventure.badge}
@@ -172,8 +188,8 @@ export default async function Home() {
               <div className="row justify-content-center">
                 <div className="col-xl-8 col-lg-10">
                   <div className="section-title text-center mb-60 wow fadeInDown">
-                    <span className="sub-title">Tours</span>
-                    <h2>Descubre los mejores tours de Chiapas</h2>
+                    <span className="sub-title">{h.toursSub}</span>
+                    <h2>{h.toursTitle}</h2>
                   </div>
                 </div>
               </div>
@@ -182,9 +198,10 @@ export default async function Home() {
                   {destinations.map((destination: AdaptedDestination, index: number) => (
                     <div key={index} className="places-section__item">
                       <PackageCard
-                        href={getTourDetailHref(destination)}
-                        tag="Tour"
-                        noPriceText="Más información"
+                        lang={lang}
+                        href={to(getTourDetailHref(destination))}
+                        tag={cards.tagTour}
+                        noPriceText={cards.moreInfo}
                         title={destination.title}
                         image={destination.image}
                         badge={destination.badge}
@@ -208,8 +225,8 @@ export default async function Home() {
               <div className="row justify-content-center">
                 <div className="col-xl-7">
                   <div className="section-title text-center mb-50 wow fadeInDown">
-                    <span className="sub-title">Nuestros Servicios</span>
-                    <h2>Tu próxima aventura, empezando aquí y ahora</h2>
+                    <span className="sub-title">{h.servicesSub}</span>
+                    <h2>{h.servicesTitle}</h2>
                   </div>
                 </div>
               </div>
@@ -252,7 +269,7 @@ export default async function Home() {
                           <div className="row pt-50">
                             <div className="col-md-6">
                               <div className="activity-content-box pl-lg-40">
-                                <h3 className="title">{svc.title || svc.subtitle || 'Servicio'}</h3>
+                                <h3 className="title">{svc.title || svc.subtitle || h.serviceFallback}</h3>
                                 {svc.description && (
                                   <p>{svc.description}</p>
                                 )}
@@ -275,7 +292,7 @@ export default async function Home() {
                                   className="radius-12"
                                   loading="lazy"
                                   decoding="async"
-                                  alt={svc.title || 'Imagen del servicio'}
+                                  alt={svc.title || h.serviceImageAlt}
                                 />
                               </div>
                             </div>
@@ -287,17 +304,17 @@ export default async function Home() {
                         <div className="row align-items-center">
                           <div className="col-md-6">
                             <div className="activity-content-box pl-lg-40">
-                              <h3 className="title">Tu próxima aventura, empezando aquí y ahora</h3>
+                              <h3 className="title">{h.servicesTitle}</h3>
                               <ul className="check-list">
-                                <li><i className="fas fa-badge-check"></i>Tours Diarios</li>
-                                <li><i className="fas fa-badge-check"></i>Paquetes</li>
-                                <li><i className="fas fa-badge-check"></i>Experiencias únicas</li>
+                                {h.servicesList.map((item) => (
+                                  <li key={item}><i className="fas fa-badge-check"></i>{item}</li>
+                                ))}
                               </ul>
                             </div>
                           </div>
                           <div className="col-md-6">
                             <div className="activity-image-box">
-                              <img src="/assets/images/gallery/activity.webp" className="radius-12" alt="Nuestros Servicios" loading="lazy" decoding="async" />
+                              <img src="/assets/images/gallery/activity.webp" className="radius-12" alt={h.servicesImageAlt} loading="lazy" decoding="async" />
                             </div>
                           </div>
                         </div>
@@ -317,8 +334,8 @@ export default async function Home() {
               <div className="row justify-content-center">
                 <div className="col-xl-8">
                   <div className="section-title text-center mb-50 wow fadeInDown">
-                    <span className="sub-title">Testimoniales</span>
-                    <h2>Testimonios de nuestros viajeros</h2>
+                    <span className="sub-title">{h.testimonialsSub}</span>
+                    <h2>{h.testimonialsTitle}</h2>
                   </div>
                 </div>
               </div>
@@ -329,7 +346,7 @@ export default async function Home() {
                       src={testimonial.photoUrl ? cloudinaryWidth(testimonial.photoUrl, 1200) : '/assets/images/testimonial/testimonial-1.jpg'}
                       loading="lazy"
                       decoding="async"
-                      alt={testimonial.name ? `Testimonial de ${testimonial.name}` : 'Testimonial Image'}
+                      alt={testimonial.name ? h.testimonialAlt(testimonial.name) : 'Testimonial'}
                       width={875}
                       height={565}
                       style={{ width: '875px', height: '565px', objectFit: 'cover' }}
@@ -345,7 +362,7 @@ export default async function Home() {
                             <img src="/assets/images/testimonial/quote.png" alt="" width={88} height={68} loading="lazy" />
                           </div>
                           <div className="ratings-box">
-                            <h3 className="h4">Calidad de Servicio</h3>
+                            <h3 className="h4">{h.serviceQuality}</h3>
                             <ul className="ratings">
                               <li><i className="fas fa-star"></i></li>
                               <li><i className="fas fa-star"></i></li>
@@ -391,8 +408,8 @@ export default async function Home() {
               <div className="row justify-content-center">
                 <div className="col-xl-6">
                   <div className="section-title text-center mb-45 wow fadeInDown">
-                    <span className="sub-title">Paquetes por temporada</span>
-                    <h2>Aprovecha nuestras mejores rutas y promociones por temporada</h2>
+                    <span className="sub-title">{h.seasonSub}</span>
+                    <h2>{h.seasonTitle}</h2>
                   </div>
                 </div>
               </div>
@@ -400,9 +417,10 @@ export default async function Home() {
                 {seasons.map((season: AdaptedSeason, index: number) => (
                   <div key={season.link || index} className="col-12 col-md-6 col-xl-3 mb-30 mb-md-40">
                     <PackageCard
+                      lang={lang}
                       className={`wow ${index % 2 === 0 ? 'fadeInUp' : 'fadeInDown'}`}
-                      href={getPackageDetailHref(season.link)}
-                      tag="Temporada"
+                      href={to(getPackageDetailHref(season.link))}
+                      tag={cards.tagSeason}
                       title={season.title}
                       image={season.image}
                       badge={season.badge}

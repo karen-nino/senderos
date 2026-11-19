@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import { localizePath, pageAlternates, type Lang } from '@/lib/i18n'
+import { getDictionary } from '@/lib/dictionaries'
 import React from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -9,16 +11,22 @@ import { fetchTourPageData, STRAPI_REVALIDATE_SECONDS, getTourDetailHref, tourCa
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
 
-export const metadata: Metadata = {
-  title: 'Tours en Chiapas - Rutas y experiencias',
-  description: 'Explora nuestros tours y rutas en Chiapas: cascadas, zonas arqueológicas, ecoturismo y más. Precios, duración e itinerarios para planear tu viaje.',
+export function generateMetadata({ params }: { params: { lang: Lang } }): Metadata {
+  const t = getDictionary(params.lang).toursPage
+  return { title: t.metaTitle, description: t.metaDescription, alternates: pageAlternates(params.lang, '/tours') }
 }
 
-export default async function ToursPage() {
+export default async function ToursPage({ params }: { params: { lang: Lang } }) {
+  const { lang } = params
+  const to = (path: string) => localizePath(lang, path)
+  const dict = getDictionary(lang)
+  const t = dict.toursPage
+  const c = dict.common
+  const cards = dict.cards
   let destinations: AdaptedDestination[] = []
 
   try {
-    const data = await fetchTourPageData()
+    const data = await fetchTourPageData(lang)
     destinations = data.destinations
   } catch (error) {
     console.error('Error fetching tours from Strapi:', error)
@@ -40,17 +48,17 @@ export default async function ToursPage() {
         id,
         tone: 'salida',
         icon: 'far fa-map-marker-alt',
-        label: departure || 'Otros',
-        title: departure ? `Saliendo de ${departure}` : 'Otros tours',
+        label: departure || t.others,
+        title: departure ? t.leavingFrom(departure) : t.otherTours,
         items: [],
       }
       departureGroups.push(group)
     }
     group.items.push({
       key: String(d.link || d.title || i),
-      href: getTourDetailHref(d),
-      tag: 'Tour',
-      noPriceText: 'Más información',
+      href: to(getTourDetailHref(d)),
+      tag: cards.tagTour,
+      noPriceText: cards.moreInfo,
       title: d.title,
       image: d.image,
       badge: d.badge,
@@ -71,14 +79,14 @@ export default async function ToursPage() {
           <section className="listing-page pb-160">
             <PageIntro
               art="tours"
-              title="Tours"
-              intro="Elige el punto de salida que te quede mejor y descubre cascadas, zonas arqueológicas, pueblos y selva de Chiapas."
+              title={t.title}
+              intro={t.intro}
             />
             <div className="container">
               <CardsExplorer
-                noun="tours"
-                searchPlaceholder="Buscar por nombre o lugar"
-                filterLabel="Filtrar por punto de salida"
+                noun={dict.explorer.nounTours}
+                searchPlaceholder={t.search}
+                filterLabel={t.filter}
                 groups={departureGroups}
               />
             </div>
@@ -90,22 +98,22 @@ export default async function ToursPage() {
                 <div className="col-lg-8 text-center">
                   <div className="section-title mb-70 wow fadeInDown">
                     <i className="fas fa-map-marked-alt mb-30 d-block" style={{ color: '#63ab45', fontSize: '3.5rem' }} aria-hidden />
-                    <span className="sub-title">Información no disponible</span>
-                    <h2>Por el momento no hay rutas disponibles</h2>
+                    <span className="sub-title">{c.unavailable}</span>
+                    <h2>{c.noTours}</h2>
                     <p className="mt-40">
-                      Estamos trabajando para actualizar nuestros tours. Si gustas conocer más sobre nuestros servicios y opciones disponibles, contáctanos y con gusto te atendemos.
+                      {c.noToursText}
                     </p>
                   </div>
                   <div className="d-flex flex-wrap justify-content-center gap-3">
                     <Link
-                      href="/"
+                      href={to('/')}
                       className="main-btn wow fadeInUp"
                       style={{ padding: '16px 45px', backgroundColor: 'rgba(99, 171, 69, 0.2)', color: '#63ab45' }}
                     >
-                      Regresar a Home
+                      {c.backHome}
                     </Link>
-                    <Link href="/contacto" className="main-btn primary-btn wow fadeInUp" style={{ padding: '16px 45px' }}>
-                      Contáctanos
+                    <Link href={to('/contacto')} className="main-btn primary-btn wow fadeInUp" style={{ padding: '16px 45px' }}>
+                      {c.contactUs}
                     </Link>
                   </div>
                 </div>

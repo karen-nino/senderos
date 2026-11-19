@@ -1113,6 +1113,36 @@ ul.info-list > li.info-list__item--wrap > span > span:last-of-type {
   color: #1c231f; /* title-color - oscuro en hover */
 }
 
+/* Botón de idioma (ES / EN): píldora con borde verde; fondo blanco para leerse también sobre el hero del inicio */
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1.5px solid #63ab45;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  font: 600 15px "Prompt", sans-serif;
+  letter-spacing: 0.04em;
+  color: #63ab45;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.header-navigation .nav-right-item .lang-switch {
+  margin-right: 16px;
+}
+.lang-switch:hover {
+  /* Verde claro: el tema fuerza texto verde en todo .nav-right-item, así que el texto se queda verde */
+  background: #e4f1de;
+}
+.lang-switch:focus-visible {
+  outline: 3px solid #f7921e;
+  outline-offset: 2px;
+}
+.lang-switch__icon {
+  flex: none;
+}
+
 /* Asegurar que el botón primary-btn mantenga sus colores originales - usar especificidad alta */
 .header-navigation .primary-menu .nav-right-item .main-btn.primary-btn,
 .header-navigation .nav-right-item .main-btn.primary-btn {

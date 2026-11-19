@@ -1,15 +1,19 @@
 import type { Metadata } from 'next'
+import { pageAlternates, type Lang } from '@/lib/i18n'
+import { getDictionary } from '@/lib/dictionaries'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import ContactForm from '@/components/ContactForm'
 import { PHONE_DISPLAY_INTL, PHONE_TEL_HREF } from '@/lib/contact'
 
-export const metadata: Metadata = {
-  title: 'Contacto - Senderos de Chiapas',
-  description: 'Reserva tu tour o paquete en Chiapas. Escríbenos por WhatsApp, teléfono o correo. Te respondemos a la brevedad.',
+export function generateMetadata({ params }: { params: { lang: Lang } }): Metadata {
+  const t = getDictionary(params.lang).contactPage
+  return { title: t.metaTitle, description: t.metaDescription, alternates: pageAlternates(params.lang, '/contacto') }
 }
 
-export default function Contact() {
+export default function Contact({ params }: { params: { lang: Lang } }) {
+  const { lang } = params
+  const t = getDictionary(lang).contactPage
   return (
     <>
       <Header />
@@ -22,8 +26,8 @@ export default function Contact() {
               <div className="col-lg-6">
                 <div className="contact-form-wrapper mb-180">
                   <div className="section-title mb-40">
-                    <span className="sub-title">Contáctanos</span>
-                    <h2>Mándanos un mensaje</h2>
+                    <span className="sub-title">{t.formSub}</span>
+                    <h2>{t.formTitle}</h2>
                   </div>
                   <ContactForm />
                 </div>
@@ -31,15 +35,15 @@ export default function Contact() {
               <div className="col-lg-6">
                 <div className="contact-info-wrapper mb-50">
                   <div className="section-title mb-40">
-                    <span className="sub-title">Información</span>
-                    <h2>Datos de contacto</h2>
+                    <span className="sub-title">{t.infoSub}</span>
+                    <h2>{t.infoTitle}</h2>
                   </div>
                   <div className="contact-info-item mb-30">
                     <div className="icon">
                       <i className="far fa-map-marker-alt"></i>
                     </div>
                     <div className="info">
-                      <span className="title">Dirección</span>
+                      <span className="title">{t.address}</span>
                       <p>Calle 2a. Ote. Sur 182, San Marcos. <br />Tuxtla Gutiérrez, Chiapas.</p>
                     </div>
                   </div>
@@ -48,7 +52,7 @@ export default function Contact() {
                       <i className="far fa-envelope-open"></i>
                     </div>
                     <div className="info">
-                      <span className="title">Email</span>
+                      <span className="title">{t.email}</span>
                       <p><a href="mailto:reservas@senderosdechiapas.com.mx">reservas@senderosdechiapas.com.mx</a></p>
                     </div>
                   </div>
@@ -57,7 +61,7 @@ export default function Contact() {
                       <i className="far fa-phone-plus"></i>
                     </div>
                     <div className="info">
-                      <span className="title">Teléfono</span>
+                      <span className="title">{t.phone}</span>
                       <p><a href={PHONE_TEL_HREF}>{PHONE_DISPLAY_INTL}</a></p>
                     </div>
                   </div>

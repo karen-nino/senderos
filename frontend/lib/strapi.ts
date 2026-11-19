@@ -1,3 +1,5 @@
+import { STRAPI_LOCALE, type Lang } from "@/lib/i18n";
+
 const { STRAPI_URL, STRAPI_TOKEN } = process.env;
 
 /** Revalidación ISR: regenerar datos de Strapi como máximo cada 60 segundos */
@@ -98,6 +100,7 @@ function getSingleTourFromResponse(
  */
 async function fetchTourWithItineraryPopulated(
   item: StrapiDestinationItem,
+  lang: Lang = "es",
 ): Promise<StrapiDestinationItem> {
   const docId =
     item.documentId != null ? String(item.documentId).trim() : "";
@@ -118,7 +121,7 @@ async function fetchTourWithItineraryPopulated(
   }
   for (const url of queries) {
     try {
-      const res = await fetchStrapi(url, STRAPI_TOURS_FETCH_OPTIONS);
+      const res = await fetchStrapi(url, { ...STRAPI_TOURS_FETCH_OPTIONS, lang });
       if ((res as Record<string, unknown>)?.error) continue;
       const one = getSingleTourFromResponse(res as Record<string, unknown>);
       if (!one) continue;
@@ -172,9 +175,9 @@ const HOME_URLS = [
 export const STRAPI_HOME_URL = HOME_URLS[0];
 
 /** Obtiene Página Principal sin token para usar rol Public (find). Evita 401 si el API Token no tiene permiso en Home. */
-export async function fetchHome(): Promise<{ data: Record<string, unknown> | null; error?: unknown }> {
+export async function fetchHome(lang: Lang = "es"): Promise<{ data: Record<string, unknown> | null; error?: unknown }> {
   for (const url of HOME_URLS) {
-    const res = await fetchStrapi(url, { useToken: false });
+    const res = await fetchStrapi(url, { useToken: false, lang });
     if (res?.data != null && typeof res.data === "object") return { data: res.data as Record<string, unknown> };
     if (res?.error) console.warn("[Strapi] home:", url, res.error);
   }
@@ -213,9 +216,76 @@ function getStrapiBaseUrl(): string {
   return url.replace(/\/$/, "");
 }
 
-export type FetchStrapiOptions = { useToken?: boolean };
+export type FetchStrapiOptions = {
+  useToken?: boolean;
+  /** Idioma de la página. Sin él, Strapi responde en su idioma principal (español). */
+  lang?: Lang;
+  /**
+   * Para buscar por slug: trae los dos idiomas aunque la página sea en español, y anota en `_titles`
+   * los títulos de todas las versiones, para que el slug de cualquier idioma encuentre la entrada.
+   */
+  allTitles?: boolean;
+};
+
+/** Pone (o reemplaza) el parámetro locale de una URL de Strapi. */
+function withLocale(path: string, locale: string): string {
+  const clean = path.replace(/([?&])locale=[^&]*(&|$)/, (_, sep, end) => (end ? sep : "")).replace(/[?&]$/, "");
+  return `${clean}${clean.includes("?") ? "&" : "?"}locale=${locale}`;
+}
+
+type StrapiDoc = Record<string, unknown> & { documentId?: unknown; title?: unknown };
+
+/**
+ * Junta la respuesta en el idioma pedido con la del otro idioma, por documentId:
+ * cada entrada sale en el idioma pedido si existe y si no en el otro (así nada queda vacío mientras
+ * falte la traducción en Strapi). El orden es el del español, que es el idioma principal del sitio.
+ */
+function mergeLocales(primary: Record<string, unknown>, secondary: Record<string, unknown>, primaryIsEs: boolean) {
+  const pData = primary?.data;
+  const sData = secondary?.data;
+  if (Array.isArray(pData) || Array.isArray(sData)) {
+    const pList = (Array.isArray(pData) ? pData : []) as StrapiDoc[];
+    const sList = (Array.isArray(sData) ? sData : []) as StrapiDoc[];
+    const key = (d: StrapiDoc) => String(d.documentId ?? d.id ?? "");
+    const pByKey = new Map(pList.map((d) => [key(d), d]));
+    const sByKey = new Map(sList.map((d) => [key(d), d]));
+    const esOrder = primaryIsEs ? pList : sList;
+    const keys = [...esOrder.map(key), ...(primaryIsEs ? sList : pList).map(key)].filter(
+      (k, i, all) => all.indexOf(k) === i,
+    );
+    const data = keys.map((k) => {
+      const chosen = pByKey.get(k) ?? sByKey.get(k)!;
+      const titles = [pByKey.get(k)?.title, sByKey.get(k)?.title].filter(
+        (t): t is string => typeof t === "string" && t.trim() !== "",
+      );
+      return { ...chosen, _titles: titles };
+    });
+    return { ...(primary?.error ? secondary : primary), data };
+  }
+  const hasP = pData != null && typeof pData === "object" && Object.keys(pData).length > 0;
+  return hasP ? primary : secondary?.data != null ? secondary : primary;
+}
 
 export async function fetchStrapi(url: string, options?: FetchStrapiOptions) {
+  const lang = options?.lang;
+  const isContent = url.startsWith("/api/") && !url.startsWith("/api/upload");
+  if (!lang || !isContent) return fetchStrapiRaw(url, options);
+  if (lang === "es" && !options?.allTitles) return fetchStrapiRaw(withLocale(url, STRAPI_LOCALE.es), options);
+  const other: Lang = lang === "es" ? "en" : "es";
+  const [primary, secondary] = await Promise.all([
+    fetchStrapiRaw(withLocale(url, STRAPI_LOCALE[lang]), options),
+    fetchStrapiRaw(withLocale(url, STRAPI_LOCALE[other]), options),
+  ]);
+  return mergeLocales(primary, secondary, lang === "es");
+}
+
+/** Títulos de todas las versiones de una entrada (ver `allTitles`), o solo el suyo. */
+export function entryTitles(item: { title?: unknown; _titles?: unknown }): string[] {
+  const titles = Array.isArray(item._titles) ? (item._titles as string[]) : [];
+  return titles.length ? titles : typeof item.title === "string" ? [item.title] : [];
+}
+
+async function fetchStrapiRaw(url: string, options?: FetchStrapiOptions) {
   const baseUrl = getStrapiBaseUrl();
   const path = url.startsWith("/") ? url : `/${url}`;
   const fullUrl = `${baseUrl}${path}`;
@@ -817,24 +887,24 @@ export function adaptStrapiDestination(
 }
 
 /** Obtiene los destinos (tours) desde Strapi Collection Type /api/tours */
-export async function fetchDestinations(): Promise<AdaptedDestination[]> {
-  const result = await fetchTourPageData();
+export async function fetchDestinations(lang: Lang = "es"): Promise<AdaptedDestination[]> {
+  const result = await fetchTourPageData(lang);
   return result.destinations;
 }
 
 /** Obtiene tours desde Collection Type /api/tours y banner (imageBanner) desde single type /api/tours-page. */
-export async function fetchTourPageData(): Promise<{
+export async function fetchTourPageData(lang: Lang = "es"): Promise<{
   destinations: AdaptedDestination[];
   imageBannerUrl: string | null;
 }> {
   try {
-    const response = await fetchStrapi(STRAPI_TOURS_URL, STRAPI_TOURS_FETCH_OPTIONS);
+    const response = await fetchStrapi(STRAPI_TOURS_URL, { ...STRAPI_TOURS_FETCH_OPTIONS, lang });
     const items = getToursArrayFromResponse(response as Record<string, unknown>);
     const destinations = items.map(adaptStrapiDestination);
 
     let paginaDoc: Record<string, unknown> = {};
     for (const url of STRAPI_TOURS_PAGE_URLS) {
-      const paginaRes = await fetchStrapi(url, STRAPI_TOURS_FETCH_OPTIONS);
+      const paginaRes = await fetchStrapi(url, { ...STRAPI_TOURS_FETCH_OPTIONS, lang });
       if (!paginaRes?.error && paginaRes?.data != null) {
         paginaDoc = (paginaRes.data ?? {}) as Record<string, unknown>;
         if (Object.keys(paginaDoc).length > 0) break;
@@ -856,18 +926,18 @@ export async function fetchTourPageData(): Promise<{
 export const fetchDestinationPageData = fetchTourPageData;
 
 /** Obtiene destinos internacionales desde Collection Type /api/internationals y banner desde single type /api/international-page (imageBanner). */
-export async function fetchInternationalPageData(): Promise<{
+export async function fetchInternationalPageData(lang: Lang = "es"): Promise<{
   destinations: AdaptedDestination[];
   imageBannerUrl: string | null;
 }> {
   try {
-    const response = await fetchStrapi(STRAPI_INTERNATIONALS_URL, STRAPI_TOURS_FETCH_OPTIONS);
+    const response = await fetchStrapi(STRAPI_INTERNATIONALS_URL, { ...STRAPI_TOURS_FETCH_OPTIONS, lang });
     const items = getToursArrayFromResponse(response as Record<string, unknown>);
     const destinations = items.map(adaptStrapiDestination);
 
     let paginaDoc: Record<string, unknown> = {};
     for (const url of STRAPI_INTERNATIONAL_PAGE_URLS) {
-      const paginaRes = await fetchStrapi(url, STRAPI_TOURS_FETCH_OPTIONS);
+      const paginaRes = await fetchStrapi(url, { ...STRAPI_TOURS_FETCH_OPTIONS, lang });
       if (!paginaRes?.error && paginaRes?.data != null) {
         paginaDoc = (paginaRes.data ?? {}) as Record<string, unknown>;
         if (Object.keys(paginaDoc).length > 0) break;
@@ -1096,17 +1166,17 @@ const STRAPI_HOLIDAYS_POPULATE =
 const STRAPI_HOLIDAYS_URL = `/api/holidays?${STRAPI_HOLIDAYS_POPULATE}`;
 
 /** Obtiene las temporadas desde Strapi Collection Type /api/holidays (Holiday). */
-async function fetchRawSeasonsFromStrapi(): Promise<StrapiSeasonItem[]> {
-  const response = await fetchStrapi(STRAPI_HOLIDAYS_URL, STRAPI_TOURS_FETCH_OPTIONS);
+async function fetchRawSeasonsFromStrapi(lang: Lang = "es"): Promise<StrapiSeasonItem[]> {
+  const response = await fetchStrapi(STRAPI_HOLIDAYS_URL, { ...STRAPI_TOURS_FETCH_OPTIONS, lang });
   if (response?.error) return [];
   const items = getToursArrayFromResponse(response as Record<string, unknown>);
   return items as StrapiSeasonItem[];
 }
 
 /** Obtiene los paquetes de temporada para el home (Holiday con home: true). */
-export async function fetchSeasonsForHome(): Promise<AdaptedSeason[]> {
+export async function fetchSeasonsForHome(lang: Lang = "es"): Promise<AdaptedSeason[]> {
   try {
-    const rawSeasons = await fetchRawSeasonsFromStrapi();
+    const rawSeasons = await fetchRawSeasonsFromStrapi(lang);
     const all = rawSeasons
       .filter((s) => s.home === true)
       .map((s, i) => adaptStrapiSeasonItem(s, i));
@@ -1120,9 +1190,9 @@ export async function fetchSeasonsForHome(): Promise<AdaptedSeason[]> {
 }
 
 /** Obtiene todas las temporadas (Holiday) para la página de Paquetes (no filtra por home). */
-export async function fetchSeasonsForPackagesPage(): Promise<AdaptedSeason[]> {
+export async function fetchSeasonsForPackagesPage(lang: Lang = "es"): Promise<AdaptedSeason[]> {
   try {
-    const rawSeasons = await fetchRawSeasonsFromStrapi();
+    const rawSeasons = await fetchRawSeasonsFromStrapi(lang);
     const all = rawSeasons.map((s, i) => adaptStrapiSeasonItem(s, i));
     return all.filter(
       (s) => (s.title || s.category) && s.badge !== "oculto",
@@ -1139,17 +1209,17 @@ const STRAPI_ADVENTURES_POPULATE =
 const STRAPI_ADVENTURES_URL = `/api/adventures?${STRAPI_ADVENTURES_POPULATE}`;
 
 /** Obtiene los paquetes de aventura desde Strapi Collection Type /api/adventures (Adventure). Mismo shape que Holiday. */
-async function fetchRawAdventuresFromStrapi(): Promise<StrapiSeasonItem[]> {
-  const response = await fetchStrapi(STRAPI_ADVENTURES_URL, STRAPI_TOURS_FETCH_OPTIONS);
+async function fetchRawAdventuresFromStrapi(lang: Lang = "es"): Promise<StrapiSeasonItem[]> {
+  const response = await fetchStrapi(STRAPI_ADVENTURES_URL, { ...STRAPI_TOURS_FETCH_OPTIONS, lang });
   if (response?.error) return [];
   const items = getToursArrayFromResponse(response as Record<string, unknown>);
   return items as StrapiSeasonItem[];
 }
 
 /** Obtiene los paquetes de aventura para la página de Paquetes. */
-export async function fetchAdventuresForPackagesPage(): Promise<AdaptedSeason[]> {
+export async function fetchAdventuresForPackagesPage(lang: Lang = "es"): Promise<AdaptedSeason[]> {
   try {
-    const rawAdventures = await fetchRawAdventuresFromStrapi();
+    const rawAdventures = await fetchRawAdventuresFromStrapi(lang);
     const all = rawAdventures.map((s, i) => adaptStrapiSeasonItem(s, i));
     return all.filter(
       (s) => (s.title || s.category) && s.badge !== "oculto",
@@ -1161,9 +1231,9 @@ export async function fetchAdventuresForPackagesPage(): Promise<AdaptedSeason[]>
 }
 
 /** Obtiene los paquetes de aventura para el home (Adventure con home: true). */
-export async function fetchAdventuresForHome(): Promise<AdaptedSeason[]> {
+export async function fetchAdventuresForHome(lang: Lang = "es"): Promise<AdaptedSeason[]> {
   try {
-    const rawAdventures = await fetchRawAdventuresFromStrapi();
+    const rawAdventures = await fetchRawAdventuresFromStrapi(lang);
     const all = rawAdventures
       .filter((s) => s.home === true)
       .map((s, i) => adaptStrapiSeasonItem(s, i));
@@ -1177,18 +1247,18 @@ export async function fetchAdventuresForHome(): Promise<AdaptedSeason[]> {
 }
 
 /** Obtiene los paquetes desde Strapi Collection Type /api/packages */
-export async function fetchPackages(): Promise<AdaptedDestination[]> {
-  const result = await fetchPackagesPageData();
+export async function fetchPackages(lang: Lang = "es"): Promise<AdaptedDestination[]> {
+  const result = await fetchPackagesPageData(lang);
   return result.packages;
 }
 
 /** Obtiene paquetes desde Collection Type /api/packages y banner desde single type /api/packages-page (imageBanner). */
-export async function fetchPackagesPageData(): Promise<{
+export async function fetchPackagesPageData(lang: Lang = "es"): Promise<{
   packages: AdaptedDestination[];
   imageBannerUrl: string | null;
 }> {
   try {
-    const response = await fetchStrapi(STRAPI_PACKAGES_URL, STRAPI_TOURS_FETCH_OPTIONS);
+    const response = await fetchStrapi(STRAPI_PACKAGES_URL, { ...STRAPI_TOURS_FETCH_OPTIONS, lang });
     const items = getToursArrayFromResponse(response as Record<string, unknown>) as StrapiPackageItem[];
     const packages = items.map((p: StrapiPackageItem) =>
       adaptStrapiPackageItem(p),
@@ -1196,7 +1266,7 @@ export async function fetchPackagesPageData(): Promise<{
 
     let paginaDoc: Record<string, unknown> = {};
     for (const url of STRAPI_PACKAGES_PAGE_URLS) {
-      const paginaRes = await fetchStrapi(url, STRAPI_TOURS_FETCH_OPTIONS);
+      const paginaRes = await fetchStrapi(url, { ...STRAPI_TOURS_FETCH_OPTIONS, lang });
       if (!paginaRes?.error && paginaRes?.data != null) {
         paginaDoc = (paginaRes.data ?? {}) as Record<string, unknown>;
         if (Object.keys(paginaDoc).length > 0) break;
@@ -1360,16 +1430,15 @@ function adaptPackageOrHolidayToDetail(item: StrapiPackageItem): AdaptedPackageD
 /** Obtiene un paquete por slug desde Strapi Collection Type /api/packages. */
 export async function fetchPackageBySlug(
   slug: string,
+  lang: Lang = "es",
 ): Promise<AdaptedPackageDetail | null> {
   try {
-    const response = await fetchStrapi(STRAPI_PACKAGES_URL, STRAPI_TOURS_FETCH_OPTIONS);
+    const response = await fetchStrapi(STRAPI_PACKAGES_URL, { ...STRAPI_TOURS_FETCH_OPTIONS, lang, allTitles: true });
     if (response?.error) return null;
     const items = getToursArrayFromResponse(response as Record<string, unknown>) as StrapiPackageItem[];
     const normalizedSlug = slug.toLowerCase().replace(/\s+/g, "-");
-    const item = items.find((p) => {
-      const itemSlug = p.title ? slugify(p.title) : "";
-      return itemSlug === normalizedSlug;
-    });
+    // El slug puede venir del título en cualquier idioma (el botón de idioma conserva el slug)
+    const item = items.find((p) => entryTitles(p).some((t) => slugify(t) === normalizedSlug));
     if (item) return adaptPackageOrHolidayToDetail(item);
     return null;
   } catch (error) {
@@ -1381,16 +1450,15 @@ export async function fetchPackageBySlug(
 /** Obtiene un paquete de temporada (Holiday) por slug desde Strapi Collection Type /api/holidays. */
 export async function fetchHolidayBySlug(
   slug: string,
+  lang: Lang = "es",
 ): Promise<AdaptedPackageDetail | null> {
   try {
-    const response = await fetchStrapi(STRAPI_HOLIDAYS_URL, STRAPI_TOURS_FETCH_OPTIONS);
+    const response = await fetchStrapi(STRAPI_HOLIDAYS_URL, { ...STRAPI_TOURS_FETCH_OPTIONS, lang, allTitles: true });
     if (response?.error) return null;
     const items = getToursArrayFromResponse(response as Record<string, unknown>) as StrapiPackageItem[];
     const normalizedSlug = slug.toLowerCase().replace(/\s+/g, "-");
-    const item = items.find((p) => {
-      const itemSlug = p.title ? slugify(p.title) : "";
-      return itemSlug === normalizedSlug;
-    });
+    // El slug puede venir del título en cualquier idioma (el botón de idioma conserva el slug)
+    const item = items.find((p) => entryTitles(p).some((t) => slugify(t) === normalizedSlug));
     if (item) return adaptPackageOrHolidayToDetail(item);
     return null;
   } catch (error) {
@@ -1402,16 +1470,15 @@ export async function fetchHolidayBySlug(
 /** Obtiene un paquete de aventura (Adventure) por slug desde Strapi Collection Type /api/adventures. */
 export async function fetchAdventureBySlug(
   slug: string,
+  lang: Lang = "es",
 ): Promise<AdaptedPackageDetail | null> {
   try {
-    const response = await fetchStrapi(STRAPI_ADVENTURES_URL, STRAPI_TOURS_FETCH_OPTIONS);
+    const response = await fetchStrapi(STRAPI_ADVENTURES_URL, { ...STRAPI_TOURS_FETCH_OPTIONS, lang, allTitles: true });
     if (response?.error) return null;
     const items = getToursArrayFromResponse(response as Record<string, unknown>) as StrapiPackageItem[];
     const normalizedSlug = slug.toLowerCase().replace(/\s+/g, "-");
-    const item = items.find((p) => {
-      const itemSlug = p.title ? slugify(p.title) : "";
-      return itemSlug === normalizedSlug;
-    });
+    // El slug puede venir del título en cualquier idioma (el botón de idioma conserva el slug)
+    const item = items.find((p) => entryTitles(p).some((t) => slugify(t) === normalizedSlug));
     if (item) return adaptPackageOrHolidayToDetail(item);
     return null;
   } catch (error) {
@@ -1421,13 +1488,13 @@ export async function fetchAdventureBySlug(
 }
 
 /** Obtiene todos los tours publicados para la home (Collection Type /api/tours). Sin filtro home para que se vean todos; la home excluye solo badge "oculto". */
-export async function fetchDestinationsForHome(): Promise<
+export async function fetchDestinationsForHome(lang: Lang = "es"): Promise<
   AdaptedDestination[]
 > {
   try {
     const response = await fetchStrapi(
       `/api/tours?${STRAPI_TOURS_POPULATE}`,
-      STRAPI_TOURS_FETCH_OPTIONS,
+      { ...STRAPI_TOURS_FETCH_OPTIONS, lang },
     );
     const items = getToursArrayFromResponse(response as Record<string, unknown>);
     return items.map(adaptStrapiDestination);
@@ -1892,7 +1959,7 @@ const STRAPI_GALLERY_PAGE_URLS = [
 ] as const;
 
 /** Obtiene datos de la página Galería desde Strapi single type /api/gallery (imageBanner, galleryGroup). */
-export async function fetchGalleryPageData(): Promise<{
+export async function fetchGalleryPageData(lang: Lang = "es"): Promise<{
   imageBannerUrl: string | null;
   galleryGroups: GalleryGroup[];
   galleryImages: string[];
@@ -1900,7 +1967,7 @@ export async function fetchGalleryPageData(): Promise<{
   try {
     let doc: Record<string, unknown> = {};
     for (const url of STRAPI_GALLERY_PAGE_URLS) {
-      const response = await fetchStrapi(url, STRAPI_TOURS_FETCH_OPTIONS);
+      const response = await fetchStrapi(url, { ...STRAPI_TOURS_FETCH_OPTIONS, lang });
       if (!response?.error && response?.data != null) {
         doc = (response.data ?? {}) as Record<string, unknown>;
         if (Object.keys(doc).length > 0) break;
@@ -1990,11 +2057,11 @@ function getMediaUrl(media: unknown): string {
 }
 
 /** Obtiene datos de la página About (Strapi v5: data es el documento). Devuelve null si no hay datos o hay error. */
-export async function fetchAboutPageData(): Promise<AboutPageData | null> {
+export async function fetchAboutPageData(lang: Lang = "es"): Promise<AboutPageData | null> {
   try {
     let doc: Record<string, unknown> = {};
     for (const url of STRAPI_ABOUT_PAGE_URLS) {
-      const response = await fetchStrapi(url, STRAPI_TOURS_FETCH_OPTIONS);
+      const response = await fetchStrapi(url, { ...STRAPI_TOURS_FETCH_OPTIONS, lang });
       if (!response?.error && response?.data != null) {
         doc = (response.data ?? {}) as Record<string, unknown>;
         if (Object.keys(doc).length > 0) break;
@@ -2125,11 +2192,11 @@ function getFaqArrayFromDoc(doc: Record<string, unknown>): Array<Record<string, 
 }
 
 /** Obtiene los ítems de FAQ desde Strapi (single type api::faq.faq, componente faq). */
-export async function fetchFaqPageData(): Promise<FaqItem[]> {
+export async function fetchFaqPageData(lang: Lang = "es"): Promise<FaqItem[]> {
   try {
     let doc: Record<string, unknown> = {};
     for (const url of STRAPI_FAQ_PAGE_URLS) {
-      const response = await fetchStrapi(url, STRAPI_TOURS_FETCH_OPTIONS);
+      const response = await fetchStrapi(url, { ...STRAPI_TOURS_FETCH_OPTIONS, lang });
       if (response?.error) continue;
       const data = response?.data;
       if (data == null) continue;
@@ -2152,21 +2219,23 @@ export async function fetchFaqPageData(): Promise<FaqItem[]> {
 /** Obtiene un tour por slug desde Collection Type /api/tours. El content-type tour no tiene campo slug; se busca por slug generado del título (slugify) o por documentId. */
 export async function fetchTourBySlug(
   slug: string,
+  lang: Lang = "es",
 ): Promise<AdaptedDestinationDetail | null> {
   try {
     const normalizedSlug = slugify(slug);
     const response = await fetchStrapi(
       STRAPI_TOURS_URL,
-      STRAPI_TOURS_FETCH_OPTIONS,
+      { ...STRAPI_TOURS_FETCH_OPTIONS, lang, allTitles: true },
     );
     const items = getToursArrayFromResponse(response as Record<string, unknown>);
     const item = items.find((d) => {
       const byDocId = d.documentId && String(d.documentId) === slug;
-      const byTitle = d.title ? slugify(d.title) === normalizedSlug : false;
+      // El slug puede venir del título en cualquier idioma (el botón de idioma conserva el slug)
+      const byTitle = entryTitles(d).some((t) => slugify(t) === normalizedSlug);
       return byDocId || byTitle;
     }) ?? null;
     if (!item) return null;
-    const withItinerary = await fetchTourWithItineraryPopulated(item);
+    const withItinerary = await fetchTourWithItineraryPopulated(item, lang);
     return adaptToDestinationDetail(withItinerary);
   } catch (error) {
     console.error("Error fetching tour by slug from Strapi:", error);
@@ -2180,18 +2249,18 @@ export const fetchDestinationBySlug = fetchTourBySlug;
 /** Obtiene un destino internacional por slug desde Collection Type /api/internationals. */
 export async function fetchInternationalBySlug(
   slug: string,
+  lang: Lang = "es",
 ): Promise<AdaptedInternationalDetail | null> {
   try {
-    const response = await fetchStrapi(STRAPI_INTERNATIONALS_URL, STRAPI_TOURS_FETCH_OPTIONS);
+    const response = await fetchStrapi(STRAPI_INTERNATIONALS_URL, { ...STRAPI_TOURS_FETCH_OPTIONS, lang, allTitles: true });
     if (response?.error) return null;
     const items = getToursArrayFromResponse(response as Record<string, unknown>);
     const normalizedSlug = slug.toLowerCase().replace(/\s+/g, "-");
     const item = items.find((d) => {
       const fromLink = getSlugFromLink(d.link);
-      const fromTitle = d.title ? slugify(d.title) : "";
       return (
         fromLink.toLowerCase() === normalizedSlug ||
-        fromTitle === normalizedSlug ||
+        entryTitles(d).some((t) => slugify(t) === normalizedSlug) ||
         fromLink.toLowerCase().replace(/\s+/g, "-") === normalizedSlug
       );
     });

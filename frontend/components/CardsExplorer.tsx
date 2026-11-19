@@ -2,6 +2,7 @@
 
 import { useId, useMemo, useState, type ComponentProps } from 'react'
 import PackageCard from '@/components/PackageCard'
+import { useDict, useLang } from '@/components/LangProvider'
 
 type PackageCardProps = ComponentProps<typeof PackageCard>
 
@@ -42,10 +43,15 @@ function searchableText(item: PackageCardProps): string {
 /** Listado con buscador y filtros por categoría arriba, y secciones por categoría con sus tarjetas (páginas Paquetes y Tours). */
 export default function CardsExplorer({
   groups,
-  noun = 'paquetes',
-  searchPlaceholder = 'Buscar por nombre o destino',
-  filterLabel = 'Filtrar por categoría',
+  noun,
+  searchPlaceholder,
+  filterLabel,
 }: CardsExplorerProps) {
+  const lang = useLang()
+  const t = useDict().explorer
+  noun ??= t.nounPackages
+  searchPlaceholder ??= t.searchDefault
+  filterLabel ??= t.filterDefault
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState<string>('todos')
   const searchId = useId()
@@ -76,8 +82,8 @@ export default function CardsExplorer({
   const activeGroup = filtered.find((g) => g.id === category)
   const [emptyTitle, ...emptyRest] = (
     query
-      ? `No encontramos ${noun} que coincidan con «${query}».\nPrueba con otro nombre o lugar.`
-      : activeGroup?.emptyText ?? `Por el momento no hay ${noun} en esta categoría.`
+      ? t.noMatches(noun, query)
+      : activeGroup?.emptyText ?? t.emptyCategory(noun)
   ).split('\n')
   const emptyDetail = emptyRest.join(' ').trim()
   const emptyIcon = query ? 'far fa-search' : activeGroup?.icon || 'far fa-search'
@@ -107,7 +113,7 @@ export default function CardsExplorer({
               type="button"
               onClick={() => setQuery('')}
               className="tours-filters__clear"
-              aria-label="Limpiar búsqueda"
+              aria-label={t.clearSearch}
             >
               ×
             </button>
@@ -116,7 +122,7 @@ export default function CardsExplorer({
 
         {showFilters && (
           <div className="packages-explorer__chips" role="group" aria-label={filterLabel}>
-            {[{ id: 'todos', label: 'Todos', icon: '', count: total }, ...filtered.map((g) => ({ id: g.id, tone: g.tone ?? g.id, label: g.label, icon: g.icon, count: g.items.length }))].map((chip) => (
+            {[{ id: 'todos', label: t.all, icon: '', count: total }, ...filtered.map((g) => ({ id: g.id, tone: g.tone ?? g.id, label: g.label, icon: g.icon, count: g.items.length }))].map((chip) => (
               <button
                 key={chip.id}
                 type="button"
@@ -155,7 +161,7 @@ export default function CardsExplorer({
             </header>
             {group.items.map(({ key, ...card }) => (
               <div key={key} className="packages-explorer__item">
-                <PackageCard {...card} />
+                <PackageCard {...card} lang={lang} />
               </div>
             ))}
           </section>

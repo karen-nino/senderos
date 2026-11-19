@@ -4,11 +4,12 @@ import {
   fetchPackages,
   getTourDetailHref,
 } from "@/lib/strapi";
+import { LANGS, localizePath, type Lang } from "@/lib/i18n";
 
 const SITE_URL = "https://senderosdechiapas.com.mx";
 
-/** Rutas estáticas con URLs públicas (español) según rewrites del proyecto */
-const STATIC_ROUTES: MetadataRoute.Sitemap = [
+/** Rutas estáticas con su URL pública en español; la versión en inglés sale de localizePath */
+const STATIC_ROUTES_ES: MetadataRoute.Sitemap = [
   {
     url: SITE_URL,
     lastModified: new Date(),
@@ -65,14 +66,28 @@ const STATIC_ROUTES: MetadataRoute.Sitemap = [
   },
 ];
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+/** Cada página estática en los dos idiomas, enlazadas entre sí con hreflang. */
+const STATIC_ROUTES: MetadataRoute.Sitemap = STATIC_ROUTES_ES.flatMap((route) => {
+  const esPath = route.url.slice(SITE_URL.length) || "/";
+  const languages = Object.fromEntries(
+    LANGS.map((lang) => [lang, `${SITE_URL}${localizePath(lang, esPath)}`.replace(/\/$/, "")]),
+  );
+  return LANGS.map((lang) => ({
+    ...route,
+    url: languages[lang],
+    alternates: { languages },
+  }));
+});
+
+/** Tours y paquetes de un idioma (en inglés, con los títulos traducidos si ya existen en Strapi). */
+async function detailUrls(lang: Lang): Promise<MetadataRoute.Sitemap> {
   let tourUrls: MetadataRoute.Sitemap = [];
   let packageUrls: MetadataRoute.Sitemap = [];
 
   try {
     const [destinations, packages] = await Promise.all([
-      fetchDestinations(),
-      fetchPackages(),
+      fetchDestinations(lang),
+      fetchPackages(lang),
     ]);
 
     const tourSlugs = destinations
@@ -80,7 +95,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .map((d) => getTourDetailHref(d))
       .filter((href) => href !== "/tours");
     tourUrls = tourSlugs.map((path) => ({
-      url: `${SITE_URL}${path}`,
+      url: `${SITE_URL}${localizePath(lang, path)}`,
       lastModified: new Date(),
       changeFrequency: "weekly" as const,
       priority: 0.8,
@@ -91,7 +106,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .map((p) => p.link ?? (p.slug ? `/paquete-detalles/${p.slug}` : null))
       .filter((path): path is string => path != null && path !== "")
       .map((path) => ({
-        url: `${SITE_URL}${path}`,
+        url: `${SITE_URL}${localizePath(lang, path)}`,
         lastModified: new Date(),
         changeFrequency: "weekly" as const,
         priority: 0.8,
@@ -100,5 +115,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.error("Error building sitemap (tours/packages):", error);
   }
 
-  return [...STATIC_ROUTES, ...tourUrls, ...packageUrls];
+  return [...tourUrls, ...packageUrls];
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const details = await Promise.all(LANGS.map(detailUrls));
+  return [...STATIC_ROUTES, ...details.flat()];
 }

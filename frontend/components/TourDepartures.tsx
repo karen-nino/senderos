@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { WhatsAppIcon } from '@/components/WhatsAppIcon'
 import { whatsappHref } from '@/lib/contact'
+import { useDict } from '@/components/LangProvider'
 
 export interface TourDeparture {
   departure?: string
@@ -36,6 +37,7 @@ interface TourDeparturesProps {
 export default function TourDepartures({ departures, duration, idPrefix, className = '' }: TourDeparturesProps) {
   const [active, setActive] = useState(0)
   const [activeArrival, setActiveArrival] = useState(0)
+  const t = useDict().tour
   const dep = departures[active] ?? departures[0]
   const hasChoice = departures.length > 1
   if (!dep) return null
@@ -43,19 +45,19 @@ export default function TourDepartures({ departures, duration, idPrefix, classNa
   const hasArrivalChoice = arrivals.length > 1
   const arrival = arrivals[activeArrival] ?? arrivals[0]
   const whatsappMessage = hasArrivalChoice && arrival
-    ? `${dep.whatsappMessage}\n- Regresando a ${arrival.value.trim()}`
+    ? `${dep.whatsappMessage}\n- ${t.msgTo(arrival.value.trim())}`
     : dep.whatsappMessage
 
   return (
     <div className={`sidebar-widget booking-info-widget tour-departures ${className}`.trim()}>
       <div className="pb-2 border-bottom">
-        <h4 className="">Detalles del Tour</h4>
+        <h4 className="">{t.detailsTitle}</h4>
         {hasChoice ? (
           <>
             <p className="tour-departures__question" id={`${idPrefix}-question`}>
-              Este tour tiene {departures.length} puntos de salida.
+              {t.departuresCount(departures.length)}
               <br />
-              ¿Desde dónde sales?
+              {t.whereFrom}
             </p>
             <div className="tour-departures__tabs" role="tablist" aria-labelledby={`${idPrefix}-question`}>
               {departures.map((d, i) => (
@@ -70,7 +72,7 @@ export default function TourDepartures({ departures, duration, idPrefix, classNa
                   onClick={() => { setActive(i); setActiveArrival(0) }}
                 >
                   <i className="far fa-map-marker-alt" aria-hidden></i>
-                  {d.departure || `Opción ${i + 1}`}
+                  {d.departure || t.option(i + 1)}
                 </button>
               ))}
             </div>
@@ -79,8 +81,8 @@ export default function TourDepartures({ departures, duration, idPrefix, classNa
         {hasArrivalChoice && (
           <>
             <p className="tour-departures__question" id={`${idPrefix}-arrival-question`}>
-              {!hasChoice && <>Este tour tiene {arrivals.length} opciones de regreso.<br /></>}
-              ¿Hacia dónde regresas?
+              {!hasChoice && <>{t.returnsCount(arrivals.length)}<br /></>}
+              {t.whereTo}
             </p>
             <div className="tour-departures__tabs" role="tablist" aria-labelledby={`${idPrefix}-arrival-question`}>
               {arrivals.map((a, i) => (
@@ -95,7 +97,7 @@ export default function TourDepartures({ departures, duration, idPrefix, classNa
                   onClick={() => setActiveArrival(i)}
                 >
                   <i className="far fa-map-marker-alt" aria-hidden></i>
-                  {a.value || `Opción ${i + 1}`}
+                  {a.value || t.option(i + 1)}
                 </button>
               ))}
             </div>
@@ -108,22 +110,22 @@ export default function TourDepartures({ departures, duration, idPrefix, classNa
         role={hasChoice ? 'tabpanel' : undefined}
         aria-labelledby={hasChoice ? `${idPrefix}-tab-${active}` : undefined}
       >
-        <li><span><i className="fal fa-clock"></i>Duración<span style={{ float: 'none' }}>{duration || 'Variable'}</span></span></li>
-        {dep.minimumParticipants && <li><span><i className="fal fa-users"></i>Mínimo de participantes<span style={{ float: 'none' }}>{dep.minimumParticipants}</span></span></li>}
-        {dep.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida desde<span style={{ float: 'none', display: 'block' }}>{dep.departure}</span></span></li>}
+        <li><span><i className="fal fa-clock"></i>{t.duration}<span style={{ float: 'none' }}>{duration || t.variable}</span></span></li>
+        {dep.minimumParticipants && <li><span><i className="fal fa-users"></i>{t.minParticipants}<span style={{ float: 'none' }}>{dep.minimumParticipants}</span></span></li>}
+        {dep.departure && <li><span><i className="far fa-map-marker-alt"></i>{t.departureFrom}<span style={{ float: 'none', display: 'block' }}>{dep.departure}</span></span></li>}
         {/* Un solo regreso a la vista: el único que hay o el elegido en el selector */}
         {arrival && (
           <React.Fragment key={`arrival-${active}-${activeArrival}`}>
-            <li><span><i className="far fa-map-marker-alt"></i>Regreso hacia<span style={{ float: 'none', display: 'block'}}>{arrival.value}</span>{arrival.arrivalHour && <span style={{ float: 'none', display: 'block' }}>{arrival.arrivalHour}</span>}</span></li>
-            {arrival.arrivalAccommodation && <li><span><i className="far fa-bed"></i>Alojamiento<span style={{ float: 'none', display: 'block' }}>{arrival.arrivalAccommodation}</span></span></li>}
+            <li><span><i className="far fa-map-marker-alt"></i>{t.returnTo}<span style={{ float: 'none', display: 'block'}}>{arrival.value}</span>{arrival.arrivalHour && <span style={{ float: 'none', display: 'block' }}>{arrival.arrivalHour}</span>}</span></li>
+            {arrival.arrivalAccommodation && <li><span><i className="far fa-bed"></i>{t.accommodation}<span style={{ float: 'none', display: 'block' }}>{arrival.arrivalAccommodation}</span></span></li>}
           </React.Fragment>
         )}
-        {dep.transport && <li><span><i className="fal fa-bus"></i>Transporte<span style={{ float: 'none' }}>{dep.transport}</span></span></li>}
+        {dep.transport && <li><span><i className="fal fa-bus"></i>{t.transport}<span style={{ float: 'none' }}>{dep.transport}</span></span></li>}
         {arrival?.arrivalNationalPrice && (
-          <li><span><i className="fal fa-box-usd"></i>{arrival.arrivalInternationalPrice ? 'Precio Nacional desde' : 'Precio desde'}<span style={{ float: 'none' }}>{arrival.arrivalNationalPrice}</span></span></li>
+          <li><span><i className="fal fa-box-usd"></i>{arrival.arrivalInternationalPrice ? t.priceNationalFrom : t.priceFrom}<span style={{ float: 'none' }}>{arrival.arrivalNationalPrice}</span></span></li>
         )}
         {arrival?.arrivalInternationalPrice && (
-          <li><span><i className="fal fa-box-usd"></i>Precio Internacional desde<span style={{ float: 'none' }}>{arrival.arrivalInternationalPrice}</span></span></li>
+          <li><span><i className="fal fa-box-usd"></i>{t.priceInternationalFrom}<span style={{ float: 'none' }}>{arrival.arrivalInternationalPrice}</span></span></li>
         )}
         <li className="tour-details-wa-cta-mobile">
           <div className="submit-button">
@@ -133,7 +135,7 @@ export default function TourDepartures({ departures, duration, idPrefix, classNa
               rel="noopener noreferrer"
               className="main-btn primary-btn"
             >
-              Consulta disponibilidad<WhatsAppIcon className="whatsapp-icon" />
+              {t.checkAvailability}<WhatsAppIcon className="whatsapp-icon" />
             </a>
           </div>
         </li>

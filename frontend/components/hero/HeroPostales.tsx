@@ -5,6 +5,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { PointerEvent } from 'react'
 import { preload } from 'react-dom'
 import { cloudinaryResize } from '@/lib/cloudinary'
+import { useDict, useLocalizePath } from '@/components/LangProvider'
 import {
   HERO_AUTOPLAY_MS,
   getHeroImageAlt,
@@ -189,6 +190,9 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
 
   const slide = slides[active] ?? slides[0]
   const { text, ctaText, ctaLink } = getHeroText(slide)
+  // El enlace viene de Strapi en español ("/paquetes"); en el sitio en inglés va a /en/packages
+  const to = useLocalizePath()
+  const h = useDict().home
   // const quoteHref = whatsappHref(`Hola, quiero cotizar: ${slide.title}`)
 
   return (
@@ -196,7 +200,7 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
       ref={sectionRef}
       className="hero-postal"
       aria-roledescription="carrusel"
-      aria-label="Destacados"
+      aria-label={h.heroAria}
       {...pauseHandlers}
     >
       <div className="hero-postal__field">
@@ -229,7 +233,7 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
 
         {/* Solo se anuncia cuando el usuario cambia de postal, no con cada paso del autoplay */}
         <p className="visually-hidden" aria-live="polite" aria-atomic="true">
-          {announce ? `Postal ${active + 1} de ${total}: ${slide.title}` : ''}
+          {announce ? h.heroAnnounce(active + 1, total, slide.title) : ''}
         </p>
 
         <div className="hero-postal__copy" key={`copy-${active}`}>
@@ -237,7 +241,7 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
           {text && <p className="hero-postal__place">{text}</p>}
           <div className="hero-postal__ctas">
             {ctaText && ctaLink && (
-              <Link href={ctaLink} className="hero-postal__cta">
+              <Link href={to(ctaLink)} className="hero-postal__cta">
                 {ctaText}
                 <span className="hero-postal__cta-icon" aria-hidden>
                   <i className="fas fa-arrow-right"></i>
@@ -254,7 +258,7 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
 
         {total > 1 && (
           <div className="hero-postal__nav">
-            <button type="button" onClick={() => navigate('prev')} aria-label="Postal anterior">
+            <button type="button" onClick={() => navigate('prev')} aria-label={h.heroPrev}>
               <i className="fal fa-arrow-left" aria-hidden />
             </button>
             <div className="hero-postal__count">
@@ -267,7 +271,7 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
                 />
               </span>
             </div>
-            <button type="button" onClick={() => navigate('next')} aria-label="Postal siguiente">
+            <button type="button" onClick={() => navigate('next')} aria-label={h.heroNext}>
               <i className="fal fa-arrow-right" aria-hidden />
             </button>
           </div>
@@ -311,7 +315,7 @@ export default function HeroPostales({ slides }: HeroVariantProps) {
                 tabIndex={isTop && total > 1 ? 0 : -1}
               >
                 {/* Sin aria-label: el nombre accesible debe incluir el texto visible de la postal */}
-                {isTop && total > 1 && <span className="visually-hidden">Ver siguiente postal. </span>}
+                {isTop && total > 1 && <span className="visually-hidden">{h.heroSeeNext}</span>}
                 <picture className="hero-postal__photo">
                   {s.mobileImage && (
                     <source media="(max-width: 767px)" srcSet={cloudinaryResize(getHeroImageUrl(s.mobileImage), CARD_IMAGE_MOBILE)} />

@@ -1,5 +1,6 @@
 'use client'
 
+import { useDict } from '@/components/LangProvider'
 import { useCallback, useEffect } from 'react'
 import { cloudinaryWidth } from '@/lib/cloudinary'
 
@@ -13,6 +14,7 @@ interface GalleryLightboxProps {
 
 /** Visor de fotos a pantalla completa (galería del inicio y Experiencias): flechas, Esc y clic fuera para cerrar. */
 export default function GalleryLightbox({ images, index, onChange, onClose }: GalleryLightboxProps) {
+  const t = useDict().galleryPage
   const list = images
 
   const goPrev = useCallback(() => {
@@ -43,7 +45,7 @@ export default function GalleryLightbox({ images, index, onChange, onClose }: Ga
       className="gallery-lightbox"
       role="dialog"
       aria-modal="true"
-      aria-label="Vista ampliada de imagen"
+      aria-label={t.lightboxAria}
       onClick={onClose}
       style={{
         position: 'fixed',
@@ -59,7 +61,7 @@ export default function GalleryLightbox({ images, index, onChange, onClose }: Ga
       <button
         type="button"
         onClick={onClose}
-        aria-label="Cerrar"
+        aria-label={t.close}
         style={{
           position: 'absolute',
           top: '1rem',
@@ -82,7 +84,7 @@ export default function GalleryLightbox({ images, index, onChange, onClose }: Ga
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); goPrev() }}
-            aria-label="Anterior"
+            aria-label={t.prev}
             style={{
               position: 'absolute',
               left: '1rem',
@@ -104,7 +106,7 @@ export default function GalleryLightbox({ images, index, onChange, onClose }: Ga
           <button
             type="button"
             onClick={(e) => { e.stopPropagation(); goNext() }}
-            aria-label="Siguiente"
+            aria-label={t.next}
             style={{
               position: 'absolute',
               right: '1rem',
@@ -127,7 +129,7 @@ export default function GalleryLightbox({ images, index, onChange, onClose }: Ga
       )}
       <img
         src={cloudinaryWidth(list[index], 1600)}
-        alt={`Galería ${index + 1}`}
+        alt={t.image(index + 1)}
         onClick={(e) => e.stopPropagation()}
         style={{ maxWidth: '100%', maxHeight: '90vh', objectFit: 'contain' }}
       />

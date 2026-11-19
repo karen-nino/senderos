@@ -1,5 +1,6 @@
 'use client'
 
+import { useDict } from '@/components/LangProvider'
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { cloudinaryResize, cloudinaryWidth } from '@/lib/cloudinary'
 import GalleryLightbox from '@/components/GalleryLightbox'
@@ -10,6 +11,7 @@ interface GallerySliderProps {
 }
 
 export default function GallerySlider({ images, embed = false }: GallerySliderProps) {
+  const t = useDict().galleryPage
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
   const sliderRef = useRef<HTMLDivElement>(null)
   const list = images || []
@@ -36,8 +38,8 @@ export default function GallerySlider({ images, embed = false }: GallerySliderPr
           autoplay: false,
           slidesToShow: 1,
           slidesToScroll: 1,
-          prevArrow: '<button type="button" class="prev slick-arrow gallery-embed-arrow" aria-label="Anterior"><i class="far fa-angle-left"></i></button>',
-          nextArrow: '<button type="button" class="next slick-arrow gallery-embed-arrow" aria-label="Siguiente"><i class="far fa-angle-right"></i></button>',
+          prevArrow: `<button type="button" class="prev slick-arrow gallery-embed-arrow" aria-label="${t.prev}"><i class="far fa-angle-left"></i></button>`,
+          nextArrow: `<button type="button" class="next slick-arrow gallery-embed-arrow" aria-label="${t.next}"><i class="far fa-angle-right"></i></button>`,
         }
       : {
           dots: false,
@@ -101,13 +103,13 @@ export default function GallerySlider({ images, embed = false }: GallerySliderPr
       {list.map((src, i) => (
         <div key={i} className="single-gallery-item">
           <div className="gallery-img" onClick={() => setLightboxIndex(i)}>
-            <img src={embed ? cloudinaryResize(src, 'f_auto,q_auto,c_limit,w_1600') : cloudinaryWidth(src, 600)} alt={`Gallery Image ${i + 1}`} loading="lazy" decoding="async" />
+            <img src={embed ? cloudinaryResize(src, 'f_auto,q_auto,c_limit,w_1600') : cloudinaryWidth(src, 600)} alt={t.image(i + 1)} loading="lazy" decoding="async" />
             <div className="hover-overlay">
               <a
                 href={cloudinaryWidth(src, 1600)}
                 className="icon-btn"
                 onClick={(e) => openLightbox(e, i)}
-                aria-label="Ver imagen ampliada"
+                aria-label={t.enlarge}
               >
                 <i className="far fa-eye"></i>
               </a>

@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import { localizePath, pageAlternates, type Lang } from '@/lib/i18n'
+import { getDictionary } from '@/lib/dictionaries'
 import React from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -54,25 +56,27 @@ const FALLBACK_DESTINATION = {
 }
 
 interface PageProps {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; lang: Lang }>;
 }
 
 export const revalidate = STRAPI_REVALIDATE_SECONDS
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = await params
-  const destination = await fetchTourBySlug(slug)
-  const title = destination?.title ?? 'Tour en Chiapas'
+  const { slug, lang } = await params
+  const destination = await fetchTourBySlug(slug, lang)
+  const dt = getDictionary(lang).detail
+  const title = destination?.title ?? dt.tourFallback
   const description =
     destination?.description?.replace(/\s+/g, ' ').trim().slice(0, 160) ||
-    `Tour ${title} en Chiapas. Reserva con Senderos de Chiapas.`
-  const canonical = `${SITE_URL}/tour-detalles/${slug}`
+    dt.metaTour(title)
+  const alternates = pageAlternates(lang, `/tour-detalles/${slug}`)
+  const canonical = alternates.canonical
   const image = destination?.imagesDetails?.[0] ?? destination?.image
   const ogImage = image ? (image.startsWith('http') ? image : `${SITE_URL}${image.startsWith('/') ? image : `/${image}`}`) : undefined
   return {
     title: `${title} - Senderos de Chiapas`,
     description,
-    alternates: { canonical },
+    alternates,
     openGraph: {
       title: `${title} - Senderos de Chiapas`,
       description,
@@ -89,10 +93,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function TourDetailPage({ params }: PageProps) {
-  const { slug } = await params
+  const { slug, lang } = await params
+  const to = (path: string) => localizePath(lang, path)
   const [strapiDestination, tourPageData] = await Promise.all([
-    fetchTourBySlug(slug),
-    fetchTourPageData(),
+    fetchTourBySlug(slug, lang),
+    fetchTourPageData(lang),
   ])
   const destination = strapiDestination ?? FALLBACK_DESTINATION
 
@@ -120,13 +125,15 @@ export default async function TourDetailPage({ params }: PageProps) {
   const routeList = destination.routeList ?? (destination.route ? [destination.route] : [])
 
   // Mensaje de WhatsApp corto: nombre del tour y punto de salida elegido
+  const tt = getDictionary(lang).tour
+  const dt = getDictionary(lang).detail
   const buildWhatsappMessage = (dep: (typeof departureList)[number]) =>
     [
-      'Hola 👋, me gustaría cotizar el siguiente tour:',
+      tt.msgIntro,
       '',
       // trim: un espacio antes del * de cierre (p. ej. "Pueblos Indígenas " en Strapi) le quita las negritas en WhatsApp
       `🚌 *${destination.title.trim()}*`,
-      dep.departure?.trim() ? `- Saliendo desde ${dep.departure.trim()}` : null,
+      dep.departure?.trim() ? `- ${tt.msgFrom(dep.departure.trim())}` : null,
     ]
       .filter((line) => line !== null)
       .join('\n')
@@ -134,9 +141,9 @@ export default async function TourDetailPage({ params }: PageProps) {
 
   const tourJsonLd = buildProductJsonLd({
     name: destination.title,
-    description: destination.description?.replace(/\s+/g, ' ').trim() || `Tour ${destination.title} en Chiapas.`,
+    description: destination.description?.replace(/\s+/g, ' ').trim() || dt.ldTour(destination.title),
     image: destination.imagesDetails?.length ? destination.imagesDetails : [destination.image],
-    url: `${SITE_URL}/tour-detalles/${slug}`,
+    url: `${SITE_URL}${to(`/tour-detalles/${slug}`)}`,
     providerName: 'Senderos de Chiapas',
   })
 
@@ -206,7 +213,7 @@ export default async function TourDetailPage({ params }: PageProps) {
                   {/* Descripción + Ruta: mismo patrón que package-details */}
                   {destination.description?.trim() && (
                     <div className="package-description pt-45 wow fadeInUp mb-40">
-                      <h3 className="title">Descripción</h3>
+                      <h3 className="title">{dt.description}</h3>
                       <div className="tour-description-text" style={{ lineHeight: 1.85 }}>
                         {destination.description.split(/\n\n+/).map((para, idx) => (
                           <p key={idx} className={idx > 0 ? 'mt-3' : ''} style={{ lineHeight: 'inherit' }}>
@@ -218,8 +225,8 @@ export default async function TourDetailPage({ params }: PageProps) {
                   )}
                   {routeList.length > 0 && (
                     <div className="package-route pt-45 wow fadeInUp mb-40">
-                      <h4 className="title">Ruta</h4>
-                      <p>Lugares que recorre este tour:</p>
+                      <h4 className="title">{dt.route}</h4>
+                      <p>{dt.routeIntroTour}</p>
                       <div className="row align-items-lg-center">
                         <div className="col-lg-12">
                           <ul className="check-list">
@@ -234,8 +241,8 @@ export default async function TourDetailPage({ params }: PageProps) {
                   <div
                     className={`${(destination.description?.trim() || routeList.length > 0) ? 'package-includes' : 'place-content-wrap'} pt-45 wow fadeInUp mb-80`}
                   >
-                    <h4 className="title">Incluye</h4>
-                    <p>Este tour incluye los siguientes servicios:</p>
+                    <h4 className="title">{dt.includes}</h4>
+                    <p>{dt.includesIntroTour}</p>
                     <div className="row align-items-lg-center">
                       <div className="col-lg-12">
                         <ul className="check-list">
@@ -245,7 +252,7 @@ export default async function TourDetailPage({ params }: PageProps) {
                             ))
                             : (
                               <>
-                                <li><i className="fas fa-badge-check"></i>Incluye</li>
+                                <li><i className="fas fa-badge-check"></i>{dt.includes}</li>
                               </>
                             )}
                         </ul>
@@ -256,8 +263,8 @@ export default async function TourDetailPage({ params }: PageProps) {
                   {/* Days Area - Itinerario desde Strapi (solo se muestra si hay datos) */}
                   {destination.itinerary && destination.itinerary.length > 0 && (
                     <div className="days-area mb-140 wow fadeInUp">
-                      <h4 className="title">Itinerario</h4>
-                      <p className="pb-4">Cronograma de actividades del tour:</p>
+                      <h4 className="title">{dt.itinerary}</h4>
+                      <p className="pb-4">{dt.itineraryIntroTour}</p>
                       {(() => {
                         const items = destination.itinerary!;
                         const daysMap = new Map<string, typeof items>();
@@ -364,7 +371,7 @@ export default async function TourDetailPage({ params }: PageProps) {
                         {destination.mapItem
                           .map((item) => ({
                             src: getMapUrl(item.map, destination.location),
-                            title: item.title?.trim() || "Ubicación",
+                            title: item.title?.trim() || dt.location,
                           }))
                           .filter((e) => e.src)
                           .map((entry, i) => (
@@ -375,7 +382,7 @@ export default async function TourDetailPage({ params }: PageProps) {
                               <h4 className="title pb-4">{entry.title}</h4>
                               <iframe
                                 src={entry.src}
-                                title={`Mapa - ${entry.title}`}
+                                title={dt.map(entry.title)}
                               />
                             </div>
                           ))}
@@ -395,14 +402,14 @@ export default async function TourDetailPage({ params }: PageProps) {
                     </div>
                     {/* Recent Place Widget - hasta 4 tours aleatorios (TourItem) */}
                     <div className="sidebar-widget recent-place-widget mb-160 wow fadeInUp">
-                      <h4 className="widget-title">Más Experiencias</h4>
+                      <h4 className="widget-title">{dt.moreExperiences}</h4>
                       <ul className="recent-place-list">
                         {randomTours.length > 0 ? (
                           randomTours.map((tour, i) => (
                             <li key={tour.slug ?? `${tour.title}-${i}`} className="place-thumbnail-content">
                               <img src={cloudinaryWidth(tour.image, 200)} alt={tour.title} width={100} height={74} loading="lazy" />
                               <div className="place-content">
-                                <h5><Link href={tour.slug ? `/tour-detalles/${tour.slug}` : (tour.link || '/tour-detalles/chiapas')} className="recent-place-title-link">{tour.title}</Link></h5>
+                                <h5><Link href={to(tour.slug ? `/tour-detalles/${tour.slug}` : (tour.link || '/tour-detalles/chiapas'))} className="recent-place-title-link">{tour.title}</Link></h5>
                               </div>
                             </li>
                           ))
@@ -410,7 +417,7 @@ export default async function TourDetailPage({ params }: PageProps) {
                           <li className="place-thumbnail-content">
                             <img src="/assets/images/place/thumb-1.jpg" alt="post thumb" width={100} height={74} />
                             <div className="place-content">
-                              <h5><Link href="/tour-detalles/chiapas" className="recent-place-title-link">Tour en Chiapas</Link></h5>
+                              <h5><Link href={to('/tour-detalles/chiapas')} className="recent-place-title-link">{dt.tourFallback}</Link></h5>
                             </div>
                           </li>
                         )}

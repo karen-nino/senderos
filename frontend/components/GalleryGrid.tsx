@@ -1,5 +1,6 @@
 'use client'
 
+import { useDict } from '@/components/LangProvider'
 import { useCallback, useState } from 'react'
 import { cloudinaryWidth } from '@/lib/cloudinary'
 import GalleryLightbox from '@/components/GalleryLightbox'
@@ -11,6 +12,7 @@ interface GalleryGridProps {
 
 /** Cuadrícula de fotos de un grupo de Experiencias; al hacer clic se abre el mismo visor que la galería del inicio. */
 export default function GalleryGrid({ title, images }: GalleryGridProps) {
+  const t = useDict().galleryPage
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
   const closeLightbox = useCallback(() => setLightboxIndex(null), [])
 
@@ -36,7 +38,7 @@ export default function GalleryGrid({ title, images }: GalleryGridProps) {
                       e.stopPropagation()
                       setLightboxIndex(idx)
                     }}
-                    aria-label="Ver imagen ampliada"
+                    aria-label={t.enlarge}
                   >
                     <i className="far fa-eye"></i>
                   </a>
