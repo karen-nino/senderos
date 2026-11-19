@@ -6,7 +6,7 @@ import Link from 'next/link'
 // import PlaceSlider from '@/components/PlaceSlider'
 import GallerySlider from '@/components/GallerySlider'
 import RichNote from '@/components/RichNote'
-import PackageQuote from '@/components/PackageQuote'
+import PackageQuote, { type PackageKind } from '@/components/PackageQuote'
 import { JsonLd, buildProductJsonLd } from '@/components/JsonLd'
 import { fetchPackageBySlug, fetchHolidayBySlug, fetchAdventureBySlug, fetchPackages, STRAPI_REVALIDATE_SECONDS } from '@/lib/strapi'
 import { cloudinaryWidth } from '@/lib/cloudinary'
@@ -107,8 +107,8 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
   ])
   // Mostrar paquete normal, de temporada (Holiday) o de aventura (Adventure) según el slug
   const pkg = packageData ?? holidayData ?? adventureData ?? FALLBACK
-  // Paquete de aventura solo si el slug no existe como paquete ni como temporada (mismo orden que arriba)
-  const isAdventure = !packageData && !holidayData && !!adventureData
+  // Tipo según de dónde salió el paquete (mismo orden que arriba): clásico, temporada o aventura
+  const kind: PackageKind = packageData ? 'classic' : holidayData ? 'season' : adventureData ? 'adventure' : 'classic'
   const locationLabel = pkg.route ?? pkg.title ?? 'Chiapas, México'
 
   // Hasta 3 paquetes aleatorios (distintos al actual) para "Más paquetes"
@@ -216,7 +216,7 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                       priceInternational={pkg.priceInternational}
                       pricePerPerson={pkg.pricePerPerson}
                       title={pkg.title}
-                      isAdventure={isAdventure}
+                      kind={kind}
                     />
                   </ul>
                 </div>
@@ -459,7 +459,7 @@ export default async function PaqueteDetailPage({ params }: PageProps) {
                             priceInternational={pkg.priceInternational}
                             pricePerPerson={pkg.pricePerPerson}
                             title={pkg.title}
-                            isAdventure={isAdventure}
+                            kind={kind}
                           />
                         </ul>
                       </div>

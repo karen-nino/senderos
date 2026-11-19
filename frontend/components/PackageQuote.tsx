@@ -16,8 +16,19 @@ interface PackageQuoteProps {
   pricePerPerson?: Array<{ occupation: string; price: string }>
   /** Nombre del paquete, para el mensaje de WhatsApp. */
   title: string
-  /** Paquete de aventura: cambia el emoji del mensaje (🧗‍♂️ aventura · 🧳 los demás). */
-  isAdventure?: boolean
+  /**
+   * Tipo de paquete. Aventura y clásico cotizan con el modal (personas, fecha, motivo); temporada va directo a WhatsApp.
+   * Clásico: por ahora sin tabla por grupo, el contador del modal va de 1 persona en adelante.
+   */
+  kind?: PackageKind
+}
+
+export type PackageKind = 'adventure' | 'classic' | 'season'
+
+/** Textos del modal según el tipo de paquete. */
+const MODAL_COPY: Record<'adventure' | 'classic', { eyebrow: string; emoji: string }> = {
+  adventure: { eyebrow: 'Cotiza tu aventura', emoji: '🧗‍♂️' },
+  classic: { eyebrow: 'Cotiza tu paquete', emoji: '🧳' },
 }
 
 type Tier = { min: number; max: number; price: string }
@@ -56,9 +67,9 @@ function tierFor(tiers: Tier[], people: number): Tier {
 /**
  * Precio en la caja "Detalles del paquete". Si hay tabla de precio por grupo, la persona elige cuántas van
  * con un contador (−/+) y ve el precio por persona de ese grupo; el mensaje de WhatsApp lleva esa elección.
- * En paquetes de aventura la caja solo muestra el botón: contador, fechas y motivo van en el modal.
+ * Aventura y clásicos cotizan con un modal (personas, fecha, motivo); en aventura la caja solo muestra el botón.
  */
-export default function PackageQuote({ price, priceInternational, pricePerPerson, title, isAdventure = false }: PackageQuoteProps) {
+export default function PackageQuote({ price, priceInternational, pricePerPerson, title, kind = 'season' }: PackageQuoteProps) {
   const tiers = useMemo(() => buildTiers(pricePerPerson), [pricePerPerson])
   const { min: minPeople, max: maxPeople } = peopleRange(tiers, 1)
   const [people, setPeople] = useState(minPeople)
@@ -75,26 +86,33 @@ export default function PackageQuote({ price, priceInternational, pricePerPerson
 
   const dialogRef = useRef<HTMLDialogElement>(null)
 
-  if (isAdventure) {
-    return (
-      <li>
-        <div className="submit-button">
-          {/* Abre el modal (personas, fecha, motivo): es un paso previo, por eso flecha y no el ícono de WhatsApp */}
-          <button type="button" className="main-btn primary-btn" onClick={() => dialogRef.current?.showModal()}>
-            Armar mi cotización
-            <span className="whatsapp-icon package-quote__next-icon" aria-hidden>
-              <i className="fas fa-arrow-right"></i>
-            </span>
-          </button>
-        </div>
-        <QuoteModal dialogRef={dialogRef} title={title} tiers={tiers} />
-      </li>
-    )
-  }
+  const openModalButton = kind !== 'season' && (
+    <li>
+      <div className="submit-button">
+        {/* Abre el modal (personas, fecha, motivo): es un paso previo, por eso flecha y no el ícono de WhatsApp */}
+        <button type="button" className="main-btn primary-btn" onClick={() => dialogRef.current?.showModal()}>
+          Armar mi cotización
+          <span className="whatsapp-icon package-quote__next-icon" aria-hidden>
+            <i className="fas fa-arrow-right"></i>
+          </span>
+        </button>
+      </div>
+      <QuoteModal
+        dialogRef={dialogRef}
+        title={title}
+        // Clásicos: sin grupos por ahora, de 1 persona en adelante
+        tiers={kind === 'classic' ? null : tiers}
+        copy={MODAL_COPY[kind]}
+      />
+    </li>
+  )
+
+  // Aventura: la caja solo muestra el botón; contador, fecha y motivo van en el modal
+  if (kind === 'adventure') return openModalButton
 
   return (
     <>
-      {tier ? (
+      {tier && kind === 'season' ? (
         <>
         <li className="package-quote">
           <span className="package-quote__label" id={labelId}>
@@ -116,13 +134,16 @@ export default function PackageQuote({ price, priceInternational, pricePerPerson
           {priceInternational && <li><span><i className="fal fa-box-usd"></i>Precio Internacional<span>{priceInternational}</span></span></li>}
         </>
       )}
-      <li>
-        <div className="submit-button">
-          <a href={whatsappHref(message)} target="_blank" rel="noopener noreferrer" className="main-btn primary-btn">
-            Cotizar por WhatsApp<WhatsAppIcon className="whatsapp-icon" />
-          </a>
-        </div>
-      </li>
+      {/* Clásico: precio en la caja y botón al modal · Temporada: directo a WhatsApp */}
+      {openModalButton || (
+        <li>
+          <div className="submit-button">
+            <a href={whatsappHref(message)} target="_blank" rel="noopener noreferrer" className="main-btn primary-btn">
+              Cotizar por WhatsApp<WhatsAppIcon className="whatsapp-icon" />
+            </a>
+          </div>
+        </li>
+      )}
     </>
   )
 }
@@ -184,13 +205,14 @@ function startOfToday(): Date {
 }
 
 /**
- * Modal de cotización de paquetes de aventura: contador de personas, fecha de salida y motivo opcional;
+ * Modal de cotización de paquetes de aventura y clásicos: contador de personas, fecha de salida y motivo opcional;
  * abre WhatsApp con todo en el mensaje.
  */
-function QuoteModal({ dialogRef, title, tiers }: {
+function QuoteModal({ dialogRef, title, tiers, copy }: {
   dialogRef: RefObject<HTMLDialogElement>
   title: string
   tiers: Tier[] | null
+  copy: { eyebrow: string; emoji: string }
 }) {
   const { min: minPeople, max: maxPeople } = peopleRange(tiers, 30)
   const [name, setName] = useState('')
@@ -219,7 +241,7 @@ function QuoteModal({ dialogRef, title, tiers }: {
     const message = [
       `Hola 👋, soy ${name.trim()} y me gustaría cotizar el siguiente paquete:`,
       '',
-      `🧗‍♂️ *${title}*`,
+      `${copy.emoji} *${title}*`,
       `- ${people} ${people === 1 ? 'Persona' : 'Personas'}`,
       `- Fecha deseada: ${formatDate(departure)}`,
       ...(motive ? [`- Motivo del viaje: ${motive}`] : []),
@@ -245,7 +267,7 @@ function QuoteModal({ dialogRef, title, tiers }: {
       <form className="quote-modal__card" onSubmit={handleSubmit}>
         <div className="quote-modal__head">
           <div>
-            <span className="quote-modal__eyebrow">Cotiza tu aventura</span>
+            <span className="quote-modal__eyebrow">{copy.eyebrow}</span>
             <h3 className="quote-modal__title" id={titleId}>{title}</h3>
           </div>
           <button type="button" className="quote-modal__close" onClick={close} aria-label="Cerrar">
