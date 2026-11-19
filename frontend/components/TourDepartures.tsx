@@ -15,7 +15,7 @@ export interface TourDeparture {
     arrivalHour?: string
     arrivalAccommodation?: string
   }>
-  /** Mensaje de WhatsApp ya armado para esta salida. */
+  /** Mensaje de WhatsApp ya armado para esta salida (si hay varios regresos, el componente agrega el elegido). */
   whatsappMessage: string
 }
 
@@ -29,14 +29,22 @@ interface TourDeparturesProps {
 }
 
 /**
- * Caja "Detalles del Tour". Con varias salidas muestra un selector "¿Desde dónde sales?" y solo los datos
- * de la salida elegida, para que quede claro que son alternativas; el botón de WhatsApp manda esa salida.
+ * Caja "Detalles del Tour". Con varias salidas muestra un selector "¿Desde dónde sales?", y si la salida tiene
+ * varios regresos, otro "¿Hacia dónde regresas?"; solo se ven los datos (hora, alojamiento, precios) de lo elegido,
+ * para que quede claro que son alternativas. El botón de WhatsApp manda la salida y el regreso elegidos.
  */
 export default function TourDepartures({ departures, duration, idPrefix, className = '' }: TourDeparturesProps) {
   const [active, setActive] = useState(0)
+  const [activeArrival, setActiveArrival] = useState(0)
   const dep = departures[active] ?? departures[0]
   const hasChoice = departures.length > 1
   if (!dep) return null
+  const arrivals = dep.arrival ?? []
+  const hasArrivalChoice = arrivals.length > 1
+  const arrival = arrivals[activeArrival] ?? arrivals[0]
+  const whatsappMessage = hasArrivalChoice && arrival
+    ? `${dep.whatsappMessage}\n- Regresando a ${arrival.value.trim()}`
+    : dep.whatsappMessage
 
   return (
     <div className={`sidebar-widget booking-info-widget tour-departures ${className}`.trim()}>
@@ -57,7 +65,7 @@ export default function TourDepartures({ departures, duration, idPrefix, classNa
                   aria-selected={i === active}
                   aria-controls={`${idPrefix}-panel`}
                   className={`tour-departures__tab${i === active ? ' is-active' : ''}`}
-                  onClick={() => setActive(i)}
+                  onClick={() => { setActive(i); setActiveArrival(0) }}
                 >
                   <i className="far fa-map-marker-alt" aria-hidden></i>
                   {d.departure || `Opción ${i + 1}`}
@@ -66,6 +74,30 @@ export default function TourDepartures({ departures, duration, idPrefix, classNa
             </div>
           </>
         ) : null}
+        {hasArrivalChoice && (
+          <>
+            <p className="tour-departures__question" id={`${idPrefix}-arrival-question`}>
+              {hasChoice ? '¿Hacia dónde regresas?' : `Este tour tiene ${arrivals.length} opciones de regreso. ¿Hacia dónde regresas?`}
+            </p>
+            <div className="tour-departures__tabs" role="tablist" aria-labelledby={`${idPrefix}-arrival-question`}>
+              {arrivals.map((a, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  role="tab"
+                  id={`${idPrefix}-arrival-tab-${i}`}
+                  aria-selected={i === activeArrival}
+                  aria-controls={`${idPrefix}-panel`}
+                  className={`tour-departures__tab${i === activeArrival ? ' is-active' : ''}`}
+                  onClick={() => setActiveArrival(i)}
+                >
+                  <i className="far fa-map-marker-alt" aria-hidden></i>
+                  {a.value || `Opción ${i + 1}`}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
       </div>
       <ul
         className="info-list pt-3"
@@ -76,32 +108,24 @@ export default function TourDepartures({ departures, duration, idPrefix, classNa
         <li><span><i className="fal fa-clock"></i>Duración<span style={{ float: 'none' }}>{duration || 'Variable'}</span></span></li>
         {dep.minimumParticipants && <li><span><i className="fal fa-users"></i>Mínimo de participantes<span style={{ float: 'none' }}>{dep.minimumParticipants}</span></span></li>}
         {dep.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida desde<span style={{ float: 'none', display: 'block' }}>{dep.departure}</span></span></li>}
-        {dep.arrival && dep.arrival.length > 0 && (
-          dep.arrival.length === 1 ? (
-            <React.Fragment>
-              <li><span><i className="far fa-map-marker-alt"></i>Regreso hacia<span style={{ float: 'none', display: 'block'}}>{dep.arrival[0].value}</span><span style={{ float: 'none', display: 'block' }}>{dep.arrival[0].arrivalHour}</span></span></li>
-              {dep.transport && <li><span><i className="fal fa-bus"></i>Transporte<span style={{ float: 'none' }}>{dep.transport}</span></span></li>}
-              {dep.arrival[0].arrivalNationalPrice && (
-                <li><span><i className="fal fa-box-usd"></i>{dep.arrival[0].arrivalInternationalPrice ? 'Precio Nacional desde' : 'Precio desde'}<span style={{ float: 'none' }}>{dep.arrival[0].arrivalNationalPrice}</span></span></li>
-              )}
-              {dep.arrival[0].arrivalInternationalPrice && (
-                <li><span><i className="fal fa-box-usd"></i>Precio Internacional desde<span style={{ float: 'none' }}>{dep.arrival[0].arrivalInternationalPrice}</span></span></li>
-              )}
-            </React.Fragment>
-          ) : (
-            dep.arrival.map((a, i) => (
-              <React.Fragment key={`arrival-${active}-${i}`}>
-                <li><span><i className="far fa-map-marker-alt pb-3"></i>{`Regreso hacia`}<span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.value}</span><span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.arrivalHour}</span>{a.arrivalAccommodation && (<><span className='pt-3' style={{ float: 'none', display: 'block'}}>Alojamiento</span><span className='pb-1' style={{ float: 'none', display: 'block'}}>{a.arrivalAccommodation}</span></>)}{a.arrivalNationalPrice && (<><span className='pt-3' style={{ float: 'none', display: 'block'}}>{a.arrivalInternationalPrice ? 'Precio Nacional desde' : 'Precio desde'}</span><span style={{ float: 'none', display: 'block', fontSize: '22px' }}>{a.arrivalNationalPrice}</span></>)}{a.arrivalInternationalPrice && (<><span className='pt-3' style={{ float: 'none', display: 'block'}}>Precio Internacional desde</span><span style={{ float: 'none', display: 'block', fontSize: '22px' }}>{a.arrivalInternationalPrice}</span></>)}</span></li>
-              </React.Fragment>
-            ))
-          )
+        {/* Un solo regreso a la vista: el único que hay o el elegido en el selector */}
+        {arrival && (
+          <React.Fragment key={`arrival-${active}-${activeArrival}`}>
+            <li><span><i className="far fa-map-marker-alt"></i>Regreso hacia<span style={{ float: 'none', display: 'block'}}>{arrival.value}</span>{arrival.arrivalHour && <span style={{ float: 'none', display: 'block' }}>{arrival.arrivalHour}</span>}</span></li>
+            {arrival.arrivalAccommodation && <li><span><i className="far fa-bed"></i>Alojamiento<span style={{ float: 'none', display: 'block' }}>{arrival.arrivalAccommodation}</span></span></li>}
+          </React.Fragment>
         )}
-        {/* Con un regreso el transporte va justo después de él; con varios, después de todos (sus precios van dentro de cada uno) */}
-        {(!dep.arrival || dep.arrival.length !== 1) && dep.transport && <li><span><i className="fal fa-bus"></i>Transporte<span style={{ float: 'none' }}>{dep.transport}</span></span></li>}
+        {dep.transport && <li><span><i className="fal fa-bus"></i>Transporte<span style={{ float: 'none' }}>{dep.transport}</span></span></li>}
+        {arrival?.arrivalNationalPrice && (
+          <li><span><i className="fal fa-box-usd"></i>{arrival.arrivalInternationalPrice ? 'Precio Nacional desde' : 'Precio desde'}<span style={{ float: 'none' }}>{arrival.arrivalNationalPrice}</span></span></li>
+        )}
+        {arrival?.arrivalInternationalPrice && (
+          <li><span><i className="fal fa-box-usd"></i>Precio Internacional desde<span style={{ float: 'none' }}>{arrival.arrivalInternationalPrice}</span></span></li>
+        )}
         <li className="tour-details-wa-cta-mobile">
           <div className="submit-button">
             <a
-              href={whatsappHref(dep.whatsappMessage)}
+              href={whatsappHref(whatsappMessage)}
               target="_blank"
               rel="noopener noreferrer"
               className="main-btn primary-btn"

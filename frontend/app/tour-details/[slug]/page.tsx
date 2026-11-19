@@ -124,8 +124,9 @@ export default async function TourDetailPage({ params }: PageProps) {
     [
       'Hola 👋, me gustaría cotizar el siguiente tour:',
       '',
-      `🚌 *${destination.title}*`,
-      dep.departure ? `- Saliendo desde ${dep.departure}` : null,
+      // trim: un espacio antes del * de cierre (p. ej. "Pueblos Indígenas " en Strapi) le quita las negritas en WhatsApp
+      `🚌 *${destination.title.trim()}*`,
+      dep.departure?.trim() ? `- Saliendo desde ${dep.departure.trim()}` : null,
     ]
       .filter((line) => line !== null)
       .join('\n')
