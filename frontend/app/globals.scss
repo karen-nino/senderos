@@ -2945,25 +2945,22 @@ legend.quote-modal__label {
   border-radius: 16px;
   background: #f7f9f4;
 }
-.quote-modal__calendar-wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
 .quote-modal__selection {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 0 4px;
+  padding: 12px 16px;
+  border: 1px solid #cfe5c4;
+  border-radius: 12px;
+  background: #eef6e9;
   line-height: 1.4;
-  font-size: 15px;
-  color: #444;
+  color: #1f2a1a;
 }
 .quote-modal__selection > span {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
+  gap: 10px;
 }
 .quote-modal__selection span {
   font-size: 15px;
@@ -2972,18 +2969,18 @@ legend.quote-modal__label {
 .quote-modal__selection > span > i {
   flex: none;
   margin-top: 3px;
-}
-.quote-modal__selection i {
   color: #63ab45;
 }
 .quote-modal__selection strong {
-  font-weight: 500;
+  font-weight: 600;
   color: #1c231f;
 }
 .quote-modal__selection:empty {
   display: none;
 }
 .quote-modal__selection--error {
+  border-color: #f1c4bd;
+  background: #fdf1ef;
   color: #c0392b;
 }
 .quote-modal__clear {

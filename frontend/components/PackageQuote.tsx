@@ -258,34 +258,33 @@ function QuoteModal({ dialogRef, title, tiers }: {
           </legend>
           {/* Tarjeta de fondo claro para que el calendario se distinga del resto del modal */}
           <div className="quote-modal__calendar-card">
-            <div className="quote-modal__calendar-wrap">
-              <DayPicker
-                className="quote-modal__calendar"
-                mode="single"
-                locale={es}
-                weekStartsOn={0}
-                navLayout="around"
-                showOutsideDays
-                formatters={CALENDAR_FORMATTERS}
-                selected={departure}
-                onSelect={(d) => { setDeparture(d); if (d) setDateError(false) }}
-                disabled={{ before: today }}
-                startMonth={today}
-              />
-              <div className={`quote-modal__selection${dateError ? ' quote-modal__selection--error' : ''}`} aria-live="polite">
-                {departure ? (
-                  <>
-                    <span>
-                      <i className="far fa-calendar-alt" aria-hidden></i>
-                      <span>Salida: <strong>{formatDate(departure)}</strong></span>
-                    </span>
-                    <button type="button" className="quote-modal__clear" onClick={() => setDeparture(undefined)}>Cambiar</button>
-                  </>
-                ) : dateError && (
-                  <span role="alert">Elige el día en que quieres salir.</span>
-                )}
-              </div>
-            </div>
+            <DayPicker
+              className="quote-modal__calendar"
+              mode="single"
+              locale={es}
+              weekStartsOn={0}
+              navLayout="around"
+              showOutsideDays
+              formatters={CALENDAR_FORMATTERS}
+              selected={departure}
+              onSelect={(d) => { setDeparture(d); if (d) setDateError(false) }}
+              disabled={{ before: today }}
+              startMonth={today}
+            />
+          </div>
+          {/* Fecha elegida (o aviso si falta) en su propia caja, fuera del calendario */}
+          <div className={`quote-modal__selection${dateError ? ' quote-modal__selection--error' : ''}`} aria-live="polite">
+            {departure ? (
+              <>
+                <span>
+                  <i className="far fa-calendar-alt" aria-hidden></i>
+                  <span>Salida: <strong>{formatDate(departure)}</strong></span>
+                </span>
+                <button type="button" className="quote-modal__clear" onClick={() => setDeparture(undefined)}>Cambiar</button>
+              </>
+            ) : dateError && (
+              <span role="alert">Elige el día en que quieres salir.</span>
+            )}
           </div>
         </fieldset>
 
