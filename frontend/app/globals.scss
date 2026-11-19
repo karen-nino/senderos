@@ -2608,7 +2608,8 @@ ul.info-list > li.package-quote {
 .sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__label i {
   color: #63ab45;
 }
-.sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__stepper {
+.sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__stepper,
+.quote-modal .package-quote__stepper {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2621,7 +2622,8 @@ ul.info-list > li.package-quote {
   border-radius: 999px;
   background: #fff;
 }
-.sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__btn {
+.sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__btn,
+.quote-modal .package-quote__btn {
   flex: none;
   display: grid;
   place-items: center;
@@ -2635,19 +2637,23 @@ ul.info-list > li.package-quote {
   cursor: pointer;
   transition: background-color 0.2s ease, opacity 0.2s ease;
 }
-.sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__btn:hover:not(:disabled) {
+.sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__btn:hover:not(:disabled),
+.quote-modal .package-quote__btn:hover:not(:disabled) {
   background: #d9730d;
 }
-.sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__btn:disabled {
+.sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__btn:disabled,
+.quote-modal .package-quote__btn:disabled {
   background: #e3e8df;
   color: #8b9085;
   cursor: not-allowed;
 }
-.sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__btn:focus-visible {
+.sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__btn:focus-visible,
+.quote-modal .package-quote__btn:focus-visible {
   outline: 3px solid #f7921e;
   outline-offset: 2px;
 }
-.sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__count {
+.sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__count,
+.quote-modal .package-quote__count {
   font-size: 18px;
   font-weight: 600;
   color: #1f2a1a;
@@ -2676,6 +2682,319 @@ ul.info-list > li.package-quote {
 .sidebar-widget-area .booking-info-widget ul.info-list li.package-quote .package-quote__price-note {
   font-size: 15px;
   color: #6b6b6b;
+}
+
+/* Detalle de paquete de aventura: modal "Cotizar por WhatsApp" con fechas y motivo */
+html:has(.quote-modal[open]) {
+  overflow: hidden;
+}
+.quote-modal {
+  /* El reset global `* { margin: 0 }` del tema le quita al <dialog> el margin: auto que lo centra */
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: calc(100% - 32px);
+  height: fit-content;
+  max-width: 480px;
+  max-height: calc(100dvh - 32px);
+  padding: 0;
+  border: none;
+  border-radius: 20px;
+  background: #fff;
+  color: #1f2a1a;
+  box-shadow: 0 24px 60px rgba(28, 35, 31, 0.25);
+  overflow-y: auto;
+}
+.quote-modal::backdrop {
+  background: rgba(28, 35, 31, 0.55);
+}
+.quote-modal[open] {
+  animation: quote-modal-in 0.22s ease-out;
+}
+@keyframes quote-modal-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .quote-modal[open] { animation: none; }
+}
+.quote-modal__card {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 28px 24px 24px;
+}
+.quote-modal__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.quote-modal__eyebrow {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #63ab45;
+}
+.quote-modal__title {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.3;
+  color: #1c231f;
+}
+.quote-modal__close {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: #f1f4ee;
+  color: #1c231f;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.quote-modal__close:hover {
+  background: #e3e8df;
+}
+.quote-modal__field {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  min-width: 0;
+}
+/* <legend> no es ítem flex del fieldset: el gap no le aplica, así que le damos su propio aire */
+legend.quote-modal__label {
+  margin-bottom: 20px;
+}
+.quote-modal__label {
+  float: none;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: #1f2a1a;
+}
+.quote-modal__subtitle {
+  display: block;
+  margin-top: 8px;
+  font-size: 15px;
+  font-weight: 400;
+  color: #6b6b6b;
+}
+.quote-modal__label em {
+  font-style: normal;
+  font-weight: 300;
+  color: #6b6b6b;
+}
+.quote-modal__people {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.quote-modal__people > i {
+  font-size: 24px;
+  color: #63ab45;
+}
+.quote-modal .package-quote__stepper {
+  width: 160px; /* con solo el número basta un contador más corto */
+}
+
+/* Calendario de salida (@daypicker/react): números oscuros y legibles, día elegido en círculo verde relleno */
+.quote-modal__calendar.rdp-root {
+  --rdp-accent-color: #63ab45;
+  --rdp-accent-background-color: #e4f1de;
+  --rdp-today-color: #f7921e;
+  --rdp-day-width: clamp(36px, calc((100vw - 96px) / 7), 48px);
+  --rdp-day-height: clamp(36px, calc((100vw - 96px) / 7), 46px);
+  --rdp-day_button-width: calc(var(--rdp-day-width) - 4px);
+  --rdp-day_button-height: calc(var(--rdp-day-height) - 4px);
+  --rdp-day_button-border: none;
+  --rdp-selected-border: none;
+  --rdp-disabled-opacity: 1; /* el color gris de abajo ya los distingue; la opacidad los volvía ilegibles */
+  --rdp-weekday-opacity: 1;
+  margin: 0 auto;
+  color: #1c231f;
+}
+.quote-modal__calendar .rdp-month_caption {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1c231f;
+  text-transform: capitalize;
+}
+.quote-modal__calendar .rdp-weekday {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #6b6b6b;
+}
+.quote-modal__calendar .rdp-chevron {
+  fill: #63ab45;
+}
+.quote-modal__calendar .rdp-day_button {
+  font-size: 16px;
+  font-weight: 500;
+  color: #1c231f;
+  font-variant-numeric: tabular-nums;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.quote-modal__calendar .rdp-day:not(.rdp-disabled):not(.rdp-selected) .rdp-day_button:hover {
+  background: #e4f1de;
+}
+/* Hoy: número en naranja con un punto debajo */
+.quote-modal__calendar .rdp-today:not(.rdp-selected) .rdp-day_button {
+  position: relative;
+  color: #d9730d;
+  font-weight: 700;
+}
+.quote-modal__calendar .rdp-today:not(.rdp-selected) .rdp-day_button::after {
+  content: "";
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
+  border-radius: 50%;
+  background: #f7921e;
+}
+.quote-modal__calendar .rdp-selected .rdp-day_button {
+  background: #63ab45;
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(99, 171, 69, 0.35);
+}
+.quote-modal__calendar .rdp-disabled .rdp-day_button {
+  color: #b9beb4;
+  font-weight: 400;
+  text-decoration: line-through;
+  text-decoration-color: rgba(185, 190, 180, 0.6);
+}
+.quote-modal__calendar .rdp-outside .rdp-day_button {
+  color: #b9beb4;
+}
+.quote-modal__calendar .rdp-day_button:focus-visible {
+  outline: 3px solid #f7921e;
+  outline-offset: 1px;
+}
+.quote-modal__calendar-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+}
+.quote-modal__selection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  /* width 0 + min-width 100%: no ensancha la envoltura, toma el ancho del calendario y el texto se parte en líneas */
+  width: 0;
+  min-width: 100%;
+  padding: 0 4px;
+  line-height: 1.4;
+  font-size: 15px;
+  color: #444;
+}
+.quote-modal__selection span {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.quote-modal__selection i {
+  color: #63ab45;
+}
+.quote-modal__selection strong {
+  font-weight: 500;
+  color: #1c231f;
+}
+.quote-modal__selection:empty {
+  display: none;
+}
+.quote-modal__selection--error {
+  color: #c0392b;
+}
+.quote-modal__clear {
+  flex: none;
+  padding: 8px 4px;
+  border: none;
+  background: none;
+  font-size: 15px;
+  font-weight: 500;
+  color: #63ab45;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.quote-modal__input {
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  border: 1.5px solid #d6dfd0;
+  border-radius: 12px;
+  background: #fff;
+  font-size: 16px; /* 16px evita el zoom automático de iOS */
+  color: #1f2a1a;
+}
+.quote-modal__textarea {
+  height: auto;
+  min-height: 104px;
+  padding: 12px 14px;
+  line-height: 1.5;
+  resize: vertical;
+}
+.quote-modal__input:focus-visible {
+  outline: none;
+  border-color: #63ab45;
+  box-shadow: 0 0 0 3px rgba(99, 171, 69, 0.2);
+}
+.quote-modal__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.quote-modal__chip {
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1.5px solid #d6dfd0;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 15px;
+  color: #1f2a1a;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+.quote-modal__chip:hover {
+  border-color: #63ab45;
+}
+.quote-modal__chip[aria-pressed="true"] {
+  border-color: #63ab45;
+  background: #63ab45;
+  color: #fff;
+}
+.quote-modal__chip:focus-visible,
+.quote-modal__close:focus-visible {
+  outline: 3px solid #f7921e;
+  outline-offset: 2px;
+}
+.quote-modal__submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 56px; /* mismo alto que los botones del tema con ícono */
+  padding: 18px 40px; /* el tema solo trae padding a la izquierda, pensado para el círculo del ícono */
+  border: none;
 }
 
 /* Política de Privacidad */
