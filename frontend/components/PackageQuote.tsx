@@ -1,6 +1,7 @@
 'use client'
 
-import { useId, useMemo, useRef, useState, type FormEvent, type RefObject } from 'react'
+import { useEffect, useId, useMemo, useRef, useState, type FormEvent, type RefObject } from 'react'
+import { createPortal } from 'react-dom'
 import { DayPicker } from '@daypicker/react'
 import { es } from '@daypicker/react/locale'
 import '@daypicker/react/style.css'
@@ -166,6 +167,13 @@ function formatDate(date: Date): string {
   return date.toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
 }
 
+/** Como el calendario de los detalles de tour/paquete (theme.js): semana desde domingo, días en dos letras y "HOY". */
+const WEEKDAYS = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá']
+const CALENDAR_FORMATTERS = {
+  formatWeekdayName: (d: Date) => WEEKDAYS[d.getDay()],
+  formatDay: (d: Date) => (d.toDateString() === new Date().toDateString() ? 'HOY' : String(d.getDate())),
+}
+
 function startOfToday(): Date {
   const now = new Date()
   return new Date(now.getFullYear(), now.getMonth(), now.getDate())
@@ -210,7 +218,13 @@ function QuoteModal({ dialogRef, title, tiers }: {
     close()
   }
 
-  return (
+  // El modal se monta en <body>: dentro de la caja "Detalles del paquete" heredaba los estilos del tema
+  // para `ul.info-list li span` (tamaño y peso de letra) y desacomodaba el calendario y la fecha elegida.
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+  if (!mounted) return null
+
+  return createPortal(
     <dialog
       ref={dialogRef}
       className="quote-modal"
@@ -242,29 +256,35 @@ function QuoteModal({ dialogRef, title, tiers }: {
             ¿Cuándo quieres salir?
             <span className="quote-modal__subtitle">Toca en el calendario el día en que quieres salir.</span>
           </legend>
-          {/* Envoltura del ancho del calendario: la línea de la fecha elegida se acomoda a ese ancho */}
-          <div className="quote-modal__calendar-wrap">
-            <DayPicker
-              className="quote-modal__calendar"
-              mode="single"
-              locale={es}
-              selected={departure}
-              onSelect={(d) => { setDeparture(d); if (d) setDateError(false) }}
-              disabled={{ before: today }}
-              startMonth={today}
-            />
-            <div className={`quote-modal__selection${dateError ? ' quote-modal__selection--error' : ''}`} aria-live="polite">
-              {departure ? (
-                <>
-                  <span>
-                    <i className="far fa-calendar-alt" aria-hidden></i>
-                    <span>Salida: <strong>{formatDate(departure)}</strong></span>
-                  </span>
-                  <button type="button" className="quote-modal__clear" onClick={() => setDeparture(undefined)}>Cambiar</button>
-                </>
-              ) : dateError && (
-                <span role="alert">Elige el día en que quieres salir.</span>
-              )}
+          {/* Tarjeta de fondo claro para que el calendario se distinga del resto del modal */}
+          <div className="quote-modal__calendar-card">
+            <div className="quote-modal__calendar-wrap">
+              <DayPicker
+                className="quote-modal__calendar"
+                mode="single"
+                locale={es}
+                weekStartsOn={0}
+                navLayout="around"
+                showOutsideDays
+                formatters={CALENDAR_FORMATTERS}
+                selected={departure}
+                onSelect={(d) => { setDeparture(d); if (d) setDateError(false) }}
+                disabled={{ before: today }}
+                startMonth={today}
+              />
+              <div className={`quote-modal__selection${dateError ? ' quote-modal__selection--error' : ''}`} aria-live="polite">
+                {departure ? (
+                  <>
+                    <span>
+                      <i className="far fa-calendar-alt" aria-hidden></i>
+                      <span>Salida: <strong>{formatDate(departure)}</strong></span>
+                    </span>
+                    <button type="button" className="quote-modal__clear" onClick={() => setDeparture(undefined)}>Cambiar</button>
+                  </>
+                ) : dateError && (
+                  <span role="alert">Elige el día en que quieres salir.</span>
+                )}
+              </div>
             </div>
           </div>
         </fieldset>
@@ -302,6 +322,7 @@ function QuoteModal({ dialogRef, title, tiers }: {
           Enviar
         </button>
       </form>
-    </dialog>
+    </dialog>,
+    document.body,
   )
 }

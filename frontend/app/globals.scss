@@ -2695,7 +2695,7 @@ html:has(.quote-modal[open]) {
   margin: auto;
   width: calc(100% - 32px);
   height: fit-content;
-  max-width: 480px;
+  max-width: 540px;
   max-height: calc(100dvh - 32px);
   padding: 0;
   border: none;
@@ -2722,7 +2722,12 @@ html:has(.quote-modal[open]) {
   display: flex;
   flex-direction: column;
   gap: 28px;
-  padding: 28px 24px 24px;
+  padding: 44px 48px 40px;
+}
+@media (max-width: 575.98px) {
+  .quote-modal__card {
+    padding: 36px 28px 32px;
+  }
 }
 .quote-modal__head {
   display: flex;
@@ -2808,109 +2813,165 @@ legend.quote-modal__label {
   width: 160px; /* con solo el número basta un contador más corto */
 }
 
-/* Calendario de salida (@daypicker/react): números oscuros y legibles, día elegido en círculo verde relleno */
+/* Calendario de salida (@daypicker/react) con el mismo diseño que el calendario de los detalles de tour/paquete
+   (vendor/calendar + .calendar-container): mes centrado en mayúsculas, números en negritas, HOY en verde y
+   el día elegido en cuadro naranja */
 .quote-modal__calendar.rdp-root {
-  --rdp-accent-color: #63ab45;
-  --rdp-accent-background-color: #e4f1de;
-  --rdp-today-color: #f7921e;
-  --rdp-day-width: clamp(36px, calc((100vw - 96px) / 7), 48px);
-  --rdp-day-height: clamp(36px, calc((100vw - 96px) / 7), 46px);
-  --rdp-day_button-width: calc(var(--rdp-day-width) - 4px);
-  --rdp-day_button-height: calc(var(--rdp-day-height) - 4px);
+  --rdp-accent-color: #f7921e;
+  /* Los 7 días se reparten todo el ancho de la tarjeta (tabla de ancho fijo, abajo) */
+  --rdp-day-width: auto;
+  --rdp-day-height: 46px;
+  /* 40px como el calendario del sitio, o el ancho de la columna si es menor (celulares angostos) */
+  --rdp-day_button-width: min(40px, 100%);
+  --rdp-day_button-height: auto;
+  --rdp-day_button-border-radius: 4px;
   --rdp-day_button-border: none;
   --rdp-selected-border: none;
-  --rdp-disabled-opacity: 1; /* el color gris de abajo ya los distingue; la opacidad los volvía ilegibles */
+  --rdp-disabled-opacity: 1;
+  --rdp-outside-opacity: 1;
   --rdp-weekday-opacity: 1;
-  margin: 0 auto;
-  color: #1c231f;
+  --rdp-weekday-padding: 12px 0;
+  --rdp-nav-height: 44px;
+  --rdp-nav_button-width: 44px;
+  --rdp-nav_button-height: 44px;
+  width: 100%;
+  color: #444;
 }
+.quote-modal__calendar .rdp-months,
+.quote-modal__calendar .rdp-month {
+  width: 100%;
+  max-width: none;
+}
+.quote-modal__calendar .rdp-month_grid {
+  width: 100%;
+  table-layout: fixed;
+  margin-top: 14px;
+}
+/* Mes: más grande, oscuro y con aire debajo, para que se lea como encabezado y no como otra fila de días */
 .quote-modal__calendar .rdp-month_caption {
-  font-size: 18px;
-  font-weight: 600;
+  align-items: center;
+}
+.quote-modal__calendar .rdp-caption_label {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
   color: #1c231f;
   text-transform: capitalize;
 }
-.quote-modal__calendar .rdp-weekday {
-  font-size: 13px;
-  font-weight: 600;
-  text-transform: uppercase;
-  color: #6b6b6b;
+.quote-modal__calendar .rdp-button_previous,
+.quote-modal__calendar .rdp-button_next {
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  border: 1px solid #e3e8df;
+  border-radius: 50%;
+  background: #fff;
+  transition: background-color 0.15s ease;
+}
+.quote-modal__calendar .rdp-button_previous:not(:disabled):hover,
+.quote-modal__calendar .rdp-button_next:not(:disabled):hover {
+  background: #e4f1de;
+}
+.quote-modal__calendar .rdp-button_previous:disabled,
+.quote-modal__calendar .rdp-button_next:disabled {
+  opacity: 0.4;
+}
+@media (max-width: 575.98px) {
+  .quote-modal__calendar.rdp-root {
+    --rdp-nav-height: 36px;
+    --rdp-nav_button-width: 36px;
+    --rdp-nav_button-height: 36px;
+  }
+  .quote-modal__calendar .rdp-button_previous,
+  .quote-modal__calendar .rdp-button_next {
+    width: 36px;
+  }
+  .quote-modal__calendar .rdp-caption_label {
+    font-size: 17px;
+  }
 }
 .quote-modal__calendar .rdp-chevron {
-  fill: #63ab45;
+  width: 14px;
+  height: 14px;
+  fill: #1c231f;
+}
+/* Días de la semana: chicos, en mayúsculas y grises; un nivel abajo del mes y distintos de los números */
+.quote-modal__calendar .rdp-weekday {
+  border-bottom: 1px solid #e3e8df;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #8b9085;
+}
+.quote-modal__calendar .rdp-day {
+  text-align: center;
 }
 .quote-modal__calendar .rdp-day_button {
+  aspect-ratio: 1;
+  margin: 0 auto;
   font-size: 16px;
-  font-weight: 500;
-  color: #1c231f;
-  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: #444;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 .quote-modal__calendar .rdp-day:not(.rdp-disabled):not(.rdp-selected) .rdp-day_button:hover {
-  background: #e4f1de;
+  background: rgba(247, 146, 30, 0.15);
 }
-/* Hoy: número en naranja con un punto debajo */
+/* Hoy: "HOY" en verde sobre fondo verde claro (.calendar-container .day.today) */
 .quote-modal__calendar .rdp-today:not(.rdp-selected) .rdp-day_button {
-  position: relative;
-  color: #d9730d;
-  font-weight: 700;
-}
-.quote-modal__calendar .rdp-today:not(.rdp-selected) .rdp-day_button::after {
-  content: "";
-  position: absolute;
-  bottom: 5px;
-  left: 50%;
-  width: 4px;
-  height: 4px;
-  margin-left: -2px;
-  border-radius: 50%;
-  background: #f7921e;
+  background: rgba(25, 135, 84, 0.2);
+  color: #198754;
+  font-size: 0.8em;
 }
 .quote-modal__calendar .rdp-selected .rdp-day_button {
-  background: #63ab45;
+  background: #f7921e;
   color: #fff;
-  font-weight: 700;
-  box-shadow: 0 2px 8px rgba(99, 171, 69, 0.35);
 }
-.quote-modal__calendar .rdp-disabled .rdp-day_button {
-  color: #b9beb4;
-  font-weight: 400;
-  text-decoration: line-through;
-  text-decoration-color: rgba(185, 190, 180, 0.6);
+.quote-modal__calendar .rdp-selected.rdp-today .rdp-day_button {
+  font-size: 0.8em;
 }
+.quote-modal__calendar .rdp-disabled .rdp-day_button,
 .quote-modal__calendar .rdp-outside .rdp-day_button {
-  color: #b9beb4;
+  color: #aaa;
 }
 .quote-modal__calendar .rdp-day_button:focus-visible {
   outline: 3px solid #f7921e;
   outline-offset: 1px;
 }
+.quote-modal__calendar-card {
+  padding: 18px 16px 14px;
+  border: 1px solid #e6ebe1;
+  border-radius: 16px;
+  background: #f7f9f4;
+}
 .quote-modal__calendar-wrap {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  width: fit-content;
-  max-width: 100%;
-  margin: 0 auto;
 }
 .quote-modal__selection {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  /* width 0 + min-width 100%: no ensancha la envoltura, toma el ancho del calendario y el texto se parte en líneas */
-  width: 0;
-  min-width: 100%;
   padding: 0 4px;
   line-height: 1.4;
   font-size: 15px;
   color: #444;
 }
-.quote-modal__selection span {
-  display: inline-flex;
-  align-items: center;
-  flex-wrap: wrap;
+.quote-modal__selection > span {
+  display: flex;
+  align-items: flex-start;
   gap: 8px;
+}
+.quote-modal__selection span {
+  font-size: 15px;
+  font-weight: 400;
+}
+.quote-modal__selection > span > i {
+  flex: none;
+  margin-top: 3px;
 }
 .quote-modal__selection i {
   color: #63ab45;
