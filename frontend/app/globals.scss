@@ -2684,6 +2684,34 @@ ul.info-list > li.package-quote {
   color: #6b6b6b;
 }
 
+/* Botón "Armar mi cotización" (aventura): mismo círculo blanco del botón de WhatsApp, con flecha verde.
+   El tema le pone display: block a todo span de la lista y margen a sus íconos; aquí se restaura el centrado. */
+.sidebar-widget-area .booking-info-widget ul.info-list li .main-btn .package-quote__next-icon {
+  display: flex;
+}
+/* La flecha es un <i> dentro de .main-btn: el tema le da a esos íconos su propio círculo de 50px con margen;
+   aquí el círculo ya lo pone .whatsapp-icon, así que la flecha va sola y centrada */
+.main-btn .package-quote__next-icon i,
+.sidebar-widget-area .booking-info-widget ul.info-list li .main-btn .package-quote__next-icon i {
+  display: block;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  line-height: 1;
+}
+.main-btn .package-quote__next-icon i {
+  font-size: 18px;
+  color: #63ab45;
+  transition: transform 0.2s ease;
+}
+.main-btn:hover .package-quote__next-icon i {
+  color: #f7921e; /* el botón se vuelve naranja al pasar el mouse; la flecha lo acompaña */
+  transform: translateX(3px);
+}
+
 /* Detalle de paquete de aventura: modal "Cotizar por WhatsApp" con fechas y motivo */
 html:has(.quote-modal[open]) {
   overflow: hidden;

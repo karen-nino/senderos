@@ -79,8 +79,12 @@ export default function PackageQuote({ price, priceInternational, pricePerPerson
     return (
       <li>
         <div className="submit-button">
+          {/* Abre el modal (personas, fecha, motivo): es un paso previo, por eso flecha y no el ícono de WhatsApp */}
           <button type="button" className="main-btn primary-btn" onClick={() => dialogRef.current?.showModal()}>
-            Cotizar por WhatsApp<WhatsAppIcon className="whatsapp-icon" />
+            Armar mi cotización
+            <span className="whatsapp-icon package-quote__next-icon" aria-hidden>
+              <i className="fas fa-arrow-right"></i>
+            </span>
           </button>
         </div>
         <QuoteModal dialogRef={dialogRef} title={title} tiers={tiers} />
