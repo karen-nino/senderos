@@ -193,12 +193,14 @@ function QuoteModal({ dialogRef, title, tiers }: {
   tiers: Tier[] | null
 }) {
   const { min: minPeople, max: maxPeople } = peopleRange(tiers, 30)
+  const [name, setName] = useState('')
   const [people, setPeople] = useState(minPeople)
   const [departure, setDeparture] = useState<Date | undefined>()
   const [dateError, setDateError] = useState(false)
   const [reason, setReason] = useState('')
   const [otherReason, setOtherReason] = useState('')
   const titleId = useId()
+  const nameId = useId()
   const peopleLabelId = useId()
   const today = useMemo(startOfToday, [])
   // Mes que se está viendo: los días grises de otros meses se ven pero no se pueden elegir
@@ -215,7 +217,7 @@ function QuoteModal({ dialogRef, title, tiers }: {
     // "Otro" sin texto se manda como "Otro": así el mensaje no pierde lo que se marcó en el modal
     const motive = reason === 'Otro' ? otherReason.trim() || 'Otro' : reason
     const message = [
-      'Hola 👋, me gustaría cotizar el siguiente paquete:',
+      `Hola 👋, soy ${name.trim()} y me gustaría cotizar el siguiente paquete:`,
       '',
       `🧗‍♂️ *${title}*`,
       `- ${people} ${people === 1 ? 'Persona' : 'Personas'}`,
@@ -250,6 +252,25 @@ function QuoteModal({ dialogRef, title, tiers }: {
             <i className="far fa-times" aria-hidden></i>
           </button>
         </div>
+
+        <div className="quote-modal__field">
+          <label className="quote-modal__label" htmlFor={nameId}>¿Cómo te llamas?</label>
+          <input
+            id={nameId}
+            type="text"
+            className="quote-modal__input"
+            placeholder="Tu nombre"
+            autoComplete="name"
+            maxLength={60}
+            required
+            pattern=".*\S.*"
+            title="Escribe tu nombre"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </div>
+
+        <hr className="quote-modal__divider" />
 
         <div className="quote-modal__field">
           <span className="quote-modal__label" id={peopleLabelId}>¿Cuántas personas viajan?</span>
