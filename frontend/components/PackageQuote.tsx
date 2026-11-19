@@ -166,9 +166,9 @@ function PeopleStepper({ labelId, people, min, max, onChange, numberOnly = false
 
 const REASONS = ['Cumpleaños', 'Aniversario', 'Luna de miel', 'Vacaciones en familia', 'Viaje con amigos', 'Otro'] as const
 
-/** Date → "sábado 15 de marzo de 2027". */
+/** Date → "15 de marzo de 2027". */
 function formatDate(date: Date): string {
-  return date.toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+  return date.toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
 /** Como el calendario de los detalles de tour/paquete (theme.js): semana desde domingo, días en dos letras y "HOY". */
@@ -212,13 +212,14 @@ function QuoteModal({ dialogRef, title, tiers }: {
       setDateError(true)
       return
     }
-    const motive = reason === 'Otro' ? otherReason.trim() : reason
+    // "Otro" sin texto se manda como "Otro": así el mensaje no pierde lo que se marcó en el modal
+    const motive = reason === 'Otro' ? otherReason.trim() || 'Otro' : reason
     const message = [
       'Hola 👋, me gustaría cotizar el siguiente paquete:',
       '',
       `🧗‍♂️ *${title}*`,
       `- ${people} ${people === 1 ? 'Persona' : 'Personas'}`,
-      `- Fecha deseada de salida: ${formatDate(departure)} (por confirmar disponibilidad)`,
+      `- Fecha deseada: ${formatDate(departure)}`,
       ...(motive ? [`- Motivo del viaje: ${motive}`] : []),
     ].join('\n')
     window.open(whatsappHref(message), '_blank', 'noopener,noreferrer')
