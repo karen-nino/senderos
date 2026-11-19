@@ -254,6 +254,8 @@ function QuoteModal({ dialogRef, title, tiers }: {
           </div>
         </div>
 
+        <hr className="quote-modal__divider" />
+
         <fieldset className="quote-modal__field">
           <legend className="quote-modal__label">
             ¿Cuándo quieres salir?
@@ -292,6 +294,8 @@ function QuoteModal({ dialogRef, title, tiers }: {
             )}
           </div>
         </fieldset>
+
+        <hr className="quote-modal__divider" />
 
         <fieldset className="quote-modal__field">
           <legend className="quote-modal__label">Motivo del viaje <em>(opcional)</em></legend>

@@ -2695,7 +2695,7 @@ html:has(.quote-modal[open]) {
   margin: auto;
   width: calc(100% - 32px);
   height: fit-content;
-  max-width: 540px;
+  max-width: 560px;
   max-height: calc(100dvh - 32px);
   padding: 0;
   border: none;
@@ -2721,12 +2721,21 @@ html:has(.quote-modal[open]) {
 .quote-modal__card {
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 32px;
   padding: 44px 48px 40px;
+}
+/* Línea fina entre secciones (personas, salida, motivo): el ojo sabe dónde empieza cada una.
+   Es un <hr> aparte porque el borde de un <fieldset> se dibuja alrededor de su <legend>. */
+.quote-modal__divider {
+  margin: 0;
+  border: 0;
+  border-top: 1px solid #e9ede5;
+  opacity: 1;
 }
 @media (max-width: 575.98px) {
   .quote-modal__card {
-    padding: 36px 28px 32px;
+    gap: 28px;
+    padding: 36px 24px 32px;
   }
 }
 .quote-modal__head {
@@ -2768,7 +2777,7 @@ html:has(.quote-modal[open]) {
 .quote-modal__field {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 18px;
   margin: 0;
   padding: 0;
   border: none;
@@ -2940,10 +2949,15 @@ legend.quote-modal__label {
   outline-offset: 1px;
 }
 .quote-modal__calendar-card {
-  padding: 18px 16px 14px;
+  padding: 22px 20px 18px;
   border: 1px solid #e6ebe1;
   border-radius: 16px;
   background: #f7f9f4;
+}
+@media (max-width: 575.98px) {
+  .quote-modal__calendar-card {
+    padding: 18px 12px 14px;
+  }
 }
 .quote-modal__selection {
   display: flex;
@@ -3019,11 +3033,11 @@ legend.quote-modal__label {
 .quote-modal__chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
 }
 .quote-modal__chip {
-  min-height: 40px;
-  padding: 0 16px;
+  min-height: 44px;
+  padding: 0 18px;
   border: 1.5px solid #d6dfd0;
   border-radius: 999px;
   background: #fff;
@@ -3051,6 +3065,7 @@ legend.quote-modal__label {
   justify-content: center;
   width: 100%;
   min-height: 56px; /* mismo alto que los botones del tema con ícono */
+  margin-top: 8px;
   padding: 18px 40px; /* el tema solo trae padding a la izquierda, pensado para el círculo del ícono */
   border: none;
 }
