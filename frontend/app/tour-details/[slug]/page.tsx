@@ -35,6 +35,7 @@ function getMapUrl(
 const FALLBACK_DESTINATION = {
   title: 'Tour en Chiapas',
   description: '',
+  duration: undefined as string | undefined,
   subtitle: undefined as string | undefined,
   image: '/assets/images/place/single-place-1.jpg',
   imagesDetails: [] as string[],
@@ -188,7 +189,7 @@ export default async function TourDetailPage({ params }: PageProps) {
 
               {/* Booking Info + Calendar - Visible only on mobile/tablet, right after Tour Title (misma info que desktop) */}
               <div className="sidebar-widget-area d-block d-xl-none pb-30">
-                <TourDepartures departures={tourDepartures} idPrefix="salida-movil" className="wow fadeInUp mb-40" />
+                <TourDepartures departures={tourDepartures} duration={destination.duration} idPrefix="salida-movil" className="wow fadeInUp mb-40" />
               </div>
 
               <div className="row">
@@ -389,7 +390,7 @@ export default async function TourDetailPage({ params }: PageProps) {
                   <div className="sidebar-widget-area pt-60 pl-lg-30">
                     {/* Booking Info Widget - Visible only on desktop (xl) */}
                     <div className="d-none d-xl-block">
-                      <TourDepartures departures={tourDepartures} idPrefix="salida-escritorio" className="wow fadeInUp mb-100" />
+                      <TourDepartures departures={tourDepartures} duration={destination.duration} idPrefix="salida-escritorio" className="wow fadeInUp mb-100" />
                     </div>
                     {/* Recent Place Widget - hasta 4 tours aleatorios (TourItem) */}
                     <div className="sidebar-widget recent-place-widget mb-160 wow fadeInUp">

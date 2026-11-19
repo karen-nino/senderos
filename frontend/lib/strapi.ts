@@ -1438,6 +1438,7 @@ export async function fetchDestinationsForHome(): Promise<
 export interface AdaptedDestinationDetail {
   title: string;
   description: string;
+  duration?: string;
   subtitle?: string;
   image: string;
   imagesDetails: string[];
@@ -1696,6 +1697,7 @@ function adaptToDestinationDetail(
   return {
     title: d.title ?? "",
     description: descriptionFromBlocks(d.description),
+    duration: d.duration?.trim() || undefined,
     subtitle: d.subtitle?.trim() || undefined,
     image: fullImageUrl,
     imagesDetails,

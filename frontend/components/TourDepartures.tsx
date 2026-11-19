@@ -21,6 +21,8 @@ export interface TourDeparture {
 
 interface TourDeparturesProps {
   departures: TourDeparture[]
+  /** Duración del tour; es la misma para todas las salidas. */
+  duration?: string
   /** Prefijo para ids únicos: el bloque se pinta dos veces (móvil y escritorio). */
   idPrefix: string
   className?: string
@@ -30,7 +32,7 @@ interface TourDeparturesProps {
  * Caja "Detalles del Tour". Con varias salidas muestra un selector "¿Desde dónde sales?" y solo los datos
  * de la salida elegida, para que quede claro que son alternativas; el botón de WhatsApp manda esa salida.
  */
-export default function TourDepartures({ departures, idPrefix, className = '' }: TourDeparturesProps) {
+export default function TourDepartures({ departures, duration, idPrefix, className = '' }: TourDeparturesProps) {
   const [active, setActive] = useState(0)
   const dep = departures[active] ?? departures[0]
   const hasChoice = departures.length > 1
@@ -71,6 +73,7 @@ export default function TourDepartures({ departures, idPrefix, className = '' }:
         role={hasChoice ? 'tabpanel' : undefined}
         aria-labelledby={hasChoice ? `${idPrefix}-tab-${active}` : undefined}
       >
+        <li><span><i className="fal fa-clock"></i>Duración<span style={{ float: 'none' }}>{duration || 'Variable'}</span></span></li>
         {dep.minimumParticipants && <li><span><i className="fal fa-users"></i>Mínimo de participantes<span style={{ float: 'none' }}>{dep.minimumParticipants}</span></span></li>}
         {dep.departure && <li><span><i className="far fa-map-marker-alt"></i>Salida desde<span style={{ float: 'none', display: 'block' }}>{dep.departure}</span></span></li>}
         {dep.arrival && dep.arrival.length > 0 && (
