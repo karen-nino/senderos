@@ -103,7 +103,7 @@ export default async function Home() {
               <div className="row justify-content-center">
                 <div className="col-xl-8">
                   <div className="section-title text-center mb-45 wow fadeInDown">
-                    <span className="sub-title">Paquetes</span>
+                    <span className="sub-title">Paquetes Clásicos</span>
                     <h2>Recorre, disfruta y respira Chiapas</h2>
                   </div>
                 </div>
@@ -114,7 +114,7 @@ export default async function Home() {
                     <PackageCard
                       className={`wow ${index % 2 === 0 ? 'fadeInUp' : 'fadeInDown'}`}
                       href={pkg.link || '#'}
-                      tag="Paquete"
+                      tag="Clásico"
                       title={pkg.title}
                       image={pkg.image && !pkg.image.includes('las-tres-tzimoleras') ? pkg.image : '/assets/images/place/single-place-1.jpg'}
                       badge={pkg.badge}

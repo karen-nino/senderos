@@ -5,7 +5,7 @@ interface PackageCardProps {
   title: string
   image: string
   href: string
-  /** Etiqueta fija sobre la foto: "Paquete", "Aventura", "Temporada". */
+  /** Etiqueta fija sobre la foto: "Clásico", "Aventura", "Temporada". */
   tag: string
   badge?: 'nuevo' | 'pocos_lugares' | 'agotado' | 'oculto'
   description?: string

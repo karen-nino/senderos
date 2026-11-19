@@ -99,13 +99,13 @@ export default async function PackagesPage() {
                   {
                     id: 'paquetes',
                     icon: 'fas fa-suitcase-rolling',
-                    label: 'Paquetes',
-                    title: 'Paquetes',
-                    subtitle: 'Explora todas nuestras opciones disponibles',
+                    label: 'Clásicos',
+                    title: 'Paquetes Clásicos',
+                    subtitle: 'Las rutas imprescindibles para conocer Chiapas',
                     items: displayPackages.map((pkg, i) => ({
                       key: String(pkg.slug || pkg.title || i),
                       href: pkg.slug ? `/paquete-detalles/${pkg.slug}` : (pkg.link || '/paquetes'),
-                      tag: 'Paquete',
+                      tag: 'Clásico',
                       title: pkg.title,
                       image: pkg.image && !pkg.image.includes('las-tres-tzimoleras') ? pkg.image : DEFAULT_IMAGE,
                       badge: pkg.badge,
