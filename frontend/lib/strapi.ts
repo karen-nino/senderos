@@ -987,6 +987,7 @@ export interface StrapiSeasonItem {
   description?: string | StrapiBlock | StrapiBlock[];
   departureDate?: string;
   duration?: string;
+  accommodation?: string;
   price?: string;
   link?: string;
   home?: boolean;
@@ -1010,6 +1011,7 @@ export interface AdaptedSeason {
   /** Extracto de description (blocks) para tarjeta */
   description?: string;
   duration?: string;
+  accommodation?: string;
   price?: string;
   badge?: "nuevo" | "pocos_lugares" | "agotado" | "oculto";
 }
@@ -1082,6 +1084,7 @@ function adaptStrapiSeasonItem(
     image: fullImageUrl,
     description: description || undefined,
     duration: s.duration?.trim() || undefined,
+    accommodation: s.accommodation?.trim() || undefined,
     price: stripZeroCents(s.price?.trim()) || undefined,
     badge: normalizeBadge(s.badge),
   };

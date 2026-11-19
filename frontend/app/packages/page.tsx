@@ -92,6 +92,7 @@ export default async function PackagesPage() {
                       description: adventure.category || adventure.description,
                       departureDate: adventure.dateFormatted,
                       duration: adventure.duration,
+                      accommodation: adventure.accommodation,
                       price: adventure.price,
                     })),
                   },

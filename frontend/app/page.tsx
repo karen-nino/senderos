@@ -155,6 +155,7 @@ export default async function Home() {
                       description={adventure.category || adventure.description}
                       departureDate={adventure.dateFormatted}
                       duration={adventure.duration}
+                      accommodation={adventure.accommodation}
                       price={adventure.price}
                     />
                   </div>

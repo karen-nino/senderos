@@ -11,6 +11,7 @@ interface PackageCardProps {
   description?: string
   departureDate?: string
   duration?: string
+  accommodation?: string
   route?: string
   price?: string
   priceLabel?: string
@@ -37,6 +38,7 @@ export default function PackageCard({
   description,
   departureDate,
   duration,
+  accommodation,
   route,
   price,
   priceLabel = 'Precios desde',
@@ -64,6 +66,9 @@ export default function PackageCard({
         )}
         {duration && (
           <p className="package-card__meta"><i className="far fa-clock" aria-hidden></i>{duration}</p>
+        )}
+        {accommodation && (
+          <p className="package-card__meta"><i className="far fa-bed" aria-hidden></i>{accommodation}</p>
         )}
         {route && (
           <p className="package-card__meta package-card__meta--route"><i className="far fa-map-marked-alt" aria-hidden></i><span className="package-card__route">{route}</span></p>
