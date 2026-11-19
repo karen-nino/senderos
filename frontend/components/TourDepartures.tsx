@@ -53,7 +53,9 @@ export default function TourDepartures({ departures, duration, idPrefix, classNa
         {hasChoice ? (
           <>
             <p className="tour-departures__question" id={`${idPrefix}-question`}>
-              Este tour tiene {departures.length} puntos de salida. ¿Desde dónde sales?
+              Este tour tiene {departures.length} puntos de salida.
+              <br />
+              ¿Desde dónde sales?
             </p>
             <div className="tour-departures__tabs" role="tablist" aria-labelledby={`${idPrefix}-question`}>
               {departures.map((d, i) => (
@@ -77,7 +79,8 @@ export default function TourDepartures({ departures, duration, idPrefix, classNa
         {hasArrivalChoice && (
           <>
             <p className="tour-departures__question" id={`${idPrefix}-arrival-question`}>
-              {hasChoice ? '¿Hacia dónde regresas?' : `Este tour tiene ${arrivals.length} opciones de regreso. ¿Hacia dónde regresas?`}
+              {!hasChoice && <>Este tour tiene {arrivals.length} opciones de regreso.<br /></>}
+              ¿Hacia dónde regresas?
             </p>
             <div className="tour-departures__tabs" role="tablist" aria-labelledby={`${idPrefix}-arrival-question`}>
               {arrivals.map((a, i) => (
