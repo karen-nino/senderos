@@ -4,7 +4,10 @@ import {
   fetchPackages,
   getTourDetailHref,
 } from "@/lib/strapi";
-import { LANGS, localizePath, type Lang } from "@/lib/i18n";
+import { ENGLISH_PUBLIC, LANGS, localizePath, type Lang } from "@/lib/i18n";
+
+/** Idiomas que se anuncian a Google: el inglés solo cuando ENGLISH_PUBLIC está activo. */
+const PUBLIC_LANGS: readonly Lang[] = ENGLISH_PUBLIC ? LANGS : ["es"];
 
 const SITE_URL = "https://senderosdechiapas.com.mx";
 
@@ -70,12 +73,12 @@ const STATIC_ROUTES_ES: MetadataRoute.Sitemap = [
 const STATIC_ROUTES: MetadataRoute.Sitemap = STATIC_ROUTES_ES.flatMap((route) => {
   const esPath = route.url.slice(SITE_URL.length) || "/";
   const languages = Object.fromEntries(
-    LANGS.map((lang) => [lang, `${SITE_URL}${localizePath(lang, esPath)}`.replace(/\/$/, "")]),
+    PUBLIC_LANGS.map((lang) => [lang, `${SITE_URL}${localizePath(lang, esPath)}`.replace(/\/$/, "")]),
   );
-  return LANGS.map((lang) => ({
+  return PUBLIC_LANGS.map((lang) => ({
     ...route,
     url: languages[lang],
-    alternates: { languages },
+    ...(ENGLISH_PUBLIC ? { alternates: { languages } } : {}),
   }));
 });
 
@@ -119,6 +122,6 @@ async function detailUrls(lang: Lang): Promise<MetadataRoute.Sitemap> {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const details = await Promise.all(LANGS.map(detailUrls));
+  const details = await Promise.all(PUBLIC_LANGS.map(detailUrls));
   return [...STATIC_ROUTES, ...details.flat()];
 }

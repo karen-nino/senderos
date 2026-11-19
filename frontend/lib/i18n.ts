@@ -8,6 +8,13 @@ export const LANGS = ['es', 'en'] as const
 export type Lang = (typeof LANGS)[number]
 export const DEFAULT_LANG: Lang = 'es'
 
+/**
+ * El sitio en inglés ya funciona en /en, pero se mantiene oculto hasta completar las traducciones en Strapi.
+ * En false: no se muestra el botón de idioma, /en no se anuncia en el sitemap ni en hreflang y lleva noindex.
+ * Para publicarlo, cambiar a true.
+ */
+export const ENGLISH_PUBLIC = false
+
 export function isLang(value: unknown): value is Lang {
   return typeof value === 'string' && (LANGS as readonly string[]).includes(value)
 }
@@ -106,6 +113,6 @@ export function pageAlternates(lang: Lang, esPath: string) {
   const url = (l: Lang) => `${SITE_URL}${localizePath(l, esPath)}`.replace(/(\.mx)\/$/, '$1')
   return {
     canonical: url(lang),
-    languages: { es: url('es'), en: url('en'), 'x-default': url('es') },
+    ...(ENGLISH_PUBLIC ? { languages: { es: url('es'), en: url('en'), 'x-default': url('es') } } : {}),
   }
 }

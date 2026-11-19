@@ -6,7 +6,7 @@ import Link from 'next/link'
 import Preloader from './Preloader'
 import { WhatsAppIcon } from './WhatsAppIcon'
 import { whatsappHref } from '@/lib/contact'
-import { switchLangPath } from '@/lib/i18n'
+import { ENGLISH_PUBLIC, switchLangPath } from '@/lib/i18n'
 import { useDict, useLang, useLocalizePath } from './LangProvider'
 
 export default function Header() {
@@ -176,12 +176,14 @@ export default function Header() {
                   </ul>
                 </nav>
 
-                {/* Idioma (móvil, dentro del menú) */}
+                {/* Idioma (móvil, dentro del menú) — oculto mientras ENGLISH_PUBLIC sea false */}
+                {ENGLISH_PUBLIC && (
                 <div className="lang-switch-mobile mt-30 d-xl-none">
                   <Link href={switchHref} hrefLang={otherLang} className="lang-switch" aria-label={t.switchAria} onClick={closeMenu}>
                     <GlobeIcon />{t.switchLabel}
                   </Link>
                 </div>
+                )}
 
                 {/* Menu Button */}
                 <div className="menu-button mt-40 d-xl-none">
@@ -199,10 +201,12 @@ export default function Header() {
 
               {/* Nav Right Item */}
               <div className="nav-right-item">
-                {/* Idioma (escritorio) */}
-                <Link href={switchHref} hrefLang={otherLang} className="lang-switch d-none d-xl-inline-flex" aria-label={t.switchAria}>
-                  <GlobeIcon />{t.switchShort}
-                </Link>
+                {/* Idioma (escritorio) — oculto mientras ENGLISH_PUBLIC sea false */}
+                {ENGLISH_PUBLIC && (
+                  <Link href={switchHref} hrefLang={otherLang} className="lang-switch d-none d-xl-inline-flex" aria-label={t.switchAria}>
+                    <GlobeIcon />{t.switchShort}
+                  </Link>
+                )}
                 <div className="menu-button d-xl-block d-none">
                   <a
                     href={whatsappHref(t.whatsappGreeting)}

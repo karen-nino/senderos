@@ -7,7 +7,7 @@ import { JsonLd, buildOrganizationJsonLd } from '@/components/JsonLd'
 import { Prompt } from 'next/font/google'
 import { notFound } from 'next/navigation'
 import { LangProvider } from '@/components/LangProvider'
-import { HTML_LANG, LANGS, OG_LOCALE, isLang } from '@/lib/i18n'
+import { ENGLISH_PUBLIC, HTML_LANG, LANGS, OG_LOCALE, isLang } from '@/lib/i18n'
 import { getDictionary } from '@/lib/dictionaries'
 import '../globals.scss'
 
@@ -44,6 +44,8 @@ export function generateMetadata({ params }: { params: { lang: string } }): Meta
       description: meta.description,
       images: [{ url: OG_IMAGE_URL, width: 1200, height: 630, alt: meta.title }],
     },
+    // Inglés aún sin publicar: que Google no lo indexe (ver ENGLISH_PUBLIC)
+    ...(lang === 'en' && !ENGLISH_PUBLIC ? { robots: { index: false, follow: false } } : {}),
     twitter: {
       card: 'summary_large_image',
       title: meta.title,
