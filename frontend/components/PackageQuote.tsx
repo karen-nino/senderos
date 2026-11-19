@@ -329,7 +329,8 @@ function QuoteModal({ dialogRef, title, tiers }: {
         </fieldset>
 
         <button type="submit" className="main-btn primary-btn quote-modal__submit">
-          Cotizar por WhatsApp<WhatsAppIcon className="whatsapp-icon" />
+          <span className="quote-modal__submit-text">Cotizar por WhatsApp</span>
+          <WhatsAppIcon className="whatsapp-icon" />
         </button>
       </form>
     </dialog>,

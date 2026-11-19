@@ -3060,15 +3060,23 @@ legend.quote-modal__label {
   outline-offset: 2px;
 }
 .quote-modal__submit {
-  display: inline-flex;
+  /* Tres columnas: hueco del ancho del ícono | texto centrado | círculo de WhatsApp a la orilla derecha.
+     El hueco izquierdo equilibra al ícono para que el texto quede centrado en todo el botón. */
+  display: grid;
+  grid-template-columns: 50px 1fr 50px;
   align-items: center;
-  justify-content: space-between; /* texto a la izquierda y círculo de WhatsApp a la orilla, como en Detalles del paquete */
   width: 100%;
   margin-top: 8px;
+  padding: 3px;
   border: none;
 }
+.quote-modal__submit-text {
+  grid-column: 2;
+  text-align: center;
+}
 .quote-modal__submit .whatsapp-icon {
-  margin-left: auto; /* siempre pegado a la orilla derecha, aunque el texto sea corto o largo */
+  grid-column: 3;
+  margin-left: 0;
 }
 
 /* Política de Privacidad */
