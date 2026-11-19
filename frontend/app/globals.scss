@@ -3062,12 +3062,13 @@ legend.quote-modal__label {
 .quote-modal__submit {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between; /* texto a la izquierda y círculo de WhatsApp a la orilla, como en Detalles del paquete */
   width: 100%;
-  min-height: 56px; /* mismo alto que los botones del tema con ícono */
   margin-top: 8px;
-  padding: 18px 40px; /* el tema solo trae padding a la izquierda, pensado para el círculo del ícono */
   border: none;
+}
+.quote-modal__submit .whatsapp-icon {
+  margin-left: auto; /* siempre pegado a la orilla derecha, aunque el texto sea corto o largo */
 }
 
 /* Política de Privacidad */

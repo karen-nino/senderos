@@ -214,7 +214,7 @@ function QuoteModal({ dialogRef, title, tiers }: {
       '',
       `🧗‍♂️ *${title}*`,
       `- ${people} ${people === 1 ? 'Persona' : 'Personas'}`,
-      `- Fecha de salida: ${formatDate(departure)}`,
+      `- Fecha deseada de salida: ${formatDate(departure)} (por confirmar disponibilidad)`,
       ...(motive ? [`- Motivo del viaje: ${motive}`] : []),
     ].join('\n')
     window.open(whatsappHref(message), '_blank', 'noopener,noreferrer')
@@ -258,8 +258,10 @@ function QuoteModal({ dialogRef, title, tiers }: {
 
         <fieldset className="quote-modal__field">
           <legend className="quote-modal__label">
-            ¿Cuándo quieres salir?
-            <span className="quote-modal__subtitle">Toca en el calendario el día en que quieres salir.</span>
+            ¿Cuándo te gustaría salir?
+            <span className="quote-modal__subtitle">
+              Elige tu fecha ideal en el calendario. Revisamos la disponibilidad y te confirmamos por WhatsApp.
+            </span>
           </legend>
           {/* Tarjeta de fondo claro para que el calendario se distinga del resto del modal */}
           <div className="quote-modal__calendar-card">
@@ -285,12 +287,12 @@ function QuoteModal({ dialogRef, title, tiers }: {
               <>
                 <span>
                   <i className="far fa-calendar-alt" aria-hidden></i>
-                  <span>Salida: <strong>{formatDate(departure)}</strong></span>
+                  <span>Fecha deseada: <strong>{formatDate(departure)}</strong></span>
                 </span>
                 <button type="button" className="quote-modal__clear" onClick={() => setDeparture(undefined)}>Cambiar</button>
               </>
             ) : dateError && (
-              <span role="alert">Elige el día en que quieres salir.</span>
+              <span role="alert">Elige el día en que te gustaría salir.</span>
             )}
           </div>
         </fieldset>
@@ -327,7 +329,7 @@ function QuoteModal({ dialogRef, title, tiers }: {
         </fieldset>
 
         <button type="submit" className="main-btn primary-btn quote-modal__submit">
-          Enviar
+          Cotizar por WhatsApp<WhatsAppIcon className="whatsapp-icon" />
         </button>
       </form>
     </dialog>,
