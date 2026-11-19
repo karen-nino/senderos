@@ -21,7 +21,10 @@
       "type": "string"
     },
     "description": {
-      "type": "blocks"
+      "type": "text"
+    },
+    "duration": {
+      "type": "string"
     },
     "departure": {
       "type": "component",

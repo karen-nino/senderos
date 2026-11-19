@@ -492,7 +492,7 @@ export interface ApiAdventureAdventure extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     departure: Schema.Attribute.String;
     departureDate: Schema.Attribute.String;
-    description: Schema.Attribute.Blocks;
+    description: Schema.Attribute.Text;
     duration: Schema.Attribute.String;
     home: Schema.Attribute.Boolean;
     idealFor: Schema.Attribute.Text;
@@ -511,8 +511,6 @@ export interface ApiAdventureAdventure extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     mapItem: Schema.Attribute.Component<'map.map-item', true>;
     noIncludes: Schema.Attribute.Blocks;
-    price: Schema.Attribute.String;
-    priceInternational: Schema.Attribute.String;
     pricePerPerson: Schema.Attribute.Component<'prices.price-per-person', true>;
     publishedAt: Schema.Attribute.DateTime;
     recommendation: Schema.Attribute.Blocks;
@@ -630,7 +628,7 @@ export interface ApiHolidayHoliday extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     departure: Schema.Attribute.String;
     departureDate: Schema.Attribute.String;
-    description: Schema.Attribute.Blocks;
+    description: Schema.Attribute.Text;
     duration: Schema.Attribute.String;
     home: Schema.Attribute.Boolean;
     image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
@@ -733,7 +731,7 @@ export interface ApiInternationalInternational
       Schema.Attribute.Private;
     departure: Schema.Attribute.String;
     departureDate: Schema.Attribute.String;
-    description: Schema.Attribute.String;
+    description: Schema.Attribute.Text;
     duration: Schema.Attribute.String;
     home: Schema.Attribute.Boolean;
     image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
@@ -782,7 +780,7 @@ export interface ApiPackagePackage extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     departure: Schema.Attribute.String;
     departureDate: Schema.Attribute.String;
-    description: Schema.Attribute.Blocks;
+    description: Schema.Attribute.Text;
     duration: Schema.Attribute.String;
     home: Schema.Attribute.Boolean;
     image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
@@ -831,7 +829,8 @@ export interface ApiTourTour extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     departure: Schema.Attribute.Component<'departure.departure-option', true>;
-    description: Schema.Attribute.Blocks;
+    description: Schema.Attribute.Text;
+    duration: Schema.Attribute.String;
     home: Schema.Attribute.Boolean;
     image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     imagesDetails: Schema.Attribute.Media<

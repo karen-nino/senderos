@@ -21,7 +21,7 @@
       "type": "string"
     },
     "description": {
-      "type": "blocks"
+      "type": "text"
     },
     "route": {
       "type": "blocks"

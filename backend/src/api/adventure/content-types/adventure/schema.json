@@ -30,7 +30,7 @@
       "type": "string"
     },
     "description": {
-      "type": "blocks"
+      "type": "text"
     },
     "pricePerPerson": {
       "type": "component",
@@ -39,9 +39,6 @@
     },
     "idealFor": {
       "type": "text"
-    },
-    "recommendation": {
-      "type": "blocks"
     },
     "route": {
       "type": "blocks"
@@ -56,12 +53,6 @@
       "type": "string"
     },
     "accommodation": {
-      "type": "string"
-    },
-    "price": {
-      "type": "string"
-    },
-    "priceInternational": {
       "type": "string"
     },
     "departureDate": {
@@ -97,6 +88,9 @@
       "type": "blocks"
     },
     "noIncludes": {
+      "type": "blocks"
+    },
+    "recommendation": {
       "type": "blocks"
     },
     "itineraryItem": {
